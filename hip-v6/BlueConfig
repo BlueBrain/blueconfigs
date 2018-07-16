@@ -1,0 +1,76 @@
+Run Default
+{
+	Date    14:2:13
+	Time    11:32:35
+    svnPath https://bbpteam.epfl.ch/svn/bluebrain
+	Version    1094
+
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj42/entities/morphologies/20180215/
+    METypePath /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20180216/hoc
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20180216/mecombo_emodel.tsv
+    CellLibraryFile circuit.mvd3
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj42/circuits/rat.CA1/20180309/
+    nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/rat.CA1/20180309/connectome/functional/
+    CurrentDir .
+    OutputRoot .
+    TargetFile user.target
+
+    NumSynapseFiles 2048
+    BaseSeed 10
+    # RunMode LoadBalance
+    CircuitTarget Column
+    Duration 100
+    Dt 0.025
+    #ForwardSkip 5000
+}
+
+Report soma
+{
+    Target Mosaic
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format Bin
+    Dt 0.1
+    StartTime 0
+    EndTime 1000
+}
+
+Connection ConUni-Uni
+{
+    Source Mosaic
+    Destination Mosaic
+    Weight 1.0
+    SpontMinis 0.006
+}
+
+# Adjust global synapse parameters, e.g. reversals
+
+Connection GABAB_erev
+{
+    Source Inhibitory
+    Destination Mosaic
+    SynapseConfigure %s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081
+}
+
+Connection MGGate
+{
+    Source Excitatory
+    Destination Mosaic
+    SynapseConfigure %s.mg = 1.0
+}
+
+# Adjust AMPA_NMDA and GABAA_B ratios
+Connection scheme_minus2
+{
+    Source Excitatory
+    Destination Excitatory
+    SynapseConfigure %s.NMDA_ratio = 0.4
+}
+
+Connection scheme_minus1
+{
+    Source Excitatory
+    Destination Inhibitory
+    SynapseConfigure %s.NMDA_ratio = 0.8
+}

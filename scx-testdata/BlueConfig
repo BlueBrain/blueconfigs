@@ -1,0 +1,167 @@
+Run Default
+{
+	Date    9:1:14
+	Time    16:43:10
+        MorphologyPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/morphologies
+        METypePath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/CCells
+        MeshPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/NeuMesh_output
+        CircuitPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/Functionalizer_output
+        nrnPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/Functionalizer_output
+        TargetFile /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/default_user.target
+          gitPath ssh://bbpgit.epfl.ch/sim/neurodamus/bbp
+	  Version HEAD
+	CurrentDir   .
+	OutputRoot   .
+    Simulator NEURON
+    RNGMode Random123
+    CircuitTarget Column
+         RunMode WholeCell
+         Duration 100
+               Dt 0.025
+             Note Sample configuration file.
+}
+
+Stimulus hypamp
+{
+    Mode Current
+    Pattern Hyperpolarizing
+    Delay 0
+    Duration 1000
+}
+
+StimulusInject hypampIntoMosaic
+{
+    Target 	 Column
+  	Stimulus hypamp
+}
+
+Stimulus depolarize
+{
+    Mode 		 Current
+    Pattern 	 RelativeLinear
+	PercentStart 80
+    Delay 		 0
+    Duration 	 1000
+}
+
+StimulusInject depIntoMosaic
+{
+    Target Column
+  Stimulus depolarize
+}
+
+Stimulus noise1
+{
+          Mode Current
+       Pattern Noise
+   MeanPercent 50
+      Variance 2.5
+         Delay 0.000000
+      Duration 100.000000
+}
+
+StimulusInject pInj2
+{
+  Stimulus   noise1
+    Target   Column
+}
+
+Report somas
+{
+        Target mini50
+          Type compartment
+      ReportOn v
+          Unit mV
+        Format Bin
+            Dt 0.1
+     StartTime 0
+       EndTime 1000
+}
+
+Report voltages
+{
+        Target allmini50
+          Type compartment
+      ReportOn v
+          Unit mV
+        Format Bin
+            Dt 0.1
+     StartTime 0
+       EndTime 1000
+}
+
+#Report currents
+{
+        Target allmini50
+          Type Summation
+      ReportOn i_membrane
+          Unit nA
+        Format Bin
+            Dt 0.1
+     StartTime 0
+       EndTime 1000
+}
+
+#Report areas
+{
+        Target allmini50
+          Type compartment
+      ReportOn area
+          Unit um
+        Format Bin
+            Dt 0.1
+     StartTime 0
+       EndTime 0.1
+}
+
+#Stimulus Threshold
+#{
+#    Mode          Current
+#    Pattern       SubThreshold
+#    PercentLess   0
+#    Delay         0
+#    Duration      50.000000
+#}
+
+#Stimulus depolarize
+#{
+#        Mode      Current
+#        Pattern   Linear
+#        AmpStart  0.15
+#        AmpEnd    0.15
+#        Delay     0
+#        Duration  50
+#}
+
+
+#Report v2
+#{
+#        Target Column
+#          Type compartment
+#      ReportOn v
+#          Unit mV
+#        Format HDF5
+#            Dt 0.1
+#     StartTime 0
+#       EndTime 1000
+#}
+
+#Connection Scheme1
+#{
+#    Source          Column
+#    Destination     Column
+#    Weight          5
+#}
+
+#Report voltage
+#{
+#        Target Layer1
+#          Type Synapse
+#      ReportOn i
+#          Unit nA
+#        Format HDF5
+#            Dt 0.1
+#     StartTime 0
+#       EndTime 1000
+#}
+
