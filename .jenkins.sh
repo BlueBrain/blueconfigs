@@ -1,47 +1,64 @@
 #!/bin/bash
-set -e
+set -xe
 
-# if you want to run locally on BB5, set following
-#export WORKSPACE=$HOME/$USER-spack-sim-test
+############################## BLUECONFIG REPOSITORY #############################
+
+# NOTE: if you want to run locally on BB5, set following
+# export WORKSPACE=$HOME/$USER-spack-sim-test
+WORKSPACE=`pwd`
+BLUECONFIG_DIR=`pwd`
+
 
 ############################### SETUP BUILD ENVIRONMENT ###############################
-cd $WORKSPACE
-mkdir -p $WORKSPACE/BUILD_HOME
-export SOFTS_DIR_PATH=$WORKSPACE/INSTALL_HOME
+
+mkdir -p $WORKSPACE/HOME_DIR
+export SOFTS_DIR_PATH=$WORKSPACE/softs
+
 
 ################################ CLEANUP SPACK CONFIGS ################################
-export HOME=$WORKSPACE/BUILD_HOME
+
+export HOME=$WORKSPACE/HOME_DIR
 cd $HOME
 rm -rf blueconfigs spack $HOME/.spack
 
+
 ################################# CLONE SPACK REPOSITORY ##############################
+
 git clone https://github.com/BlueBrain/spack.git
 export SPACK_ROOT=`pwd`/spack
 export PATH=$SPACK_ROOT/bin:$PATH
 source $SPACK_ROOT/share/spack/setup-env.sh
 
+
 ################################### SETUP PACKAGE CONFIGS ##############################
+
 mkdir -p $SPACK_ROOT/etc/spack/defaults/linux
 cp $SPACK_ROOT/sysconfig/bb5/users/* $SPACK_ROOT/etc/spack/defaults/linux/
 
 export MODULEPATH=/gpfs/bbp.cscs.ch/apps/compilers/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
 export MODULEPATH=/gpfs/bbp.cscs.ch/apps/tools/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
-module av hpe-mpi
+
 
 ################################## BUILD REQUIRED PACKAGES #############################
-spack install -v neurodamus@master~coreneuron
-spack install -v neurodamus@plasticity~coreneuron
-spack install -v neurodamus@hippocampus~coreneuron
 
-############################## CLONE BLUECONFIG REPOSITORY #############################
-git clone ssh://bbpcode.epfl.ch/hpc/blueconfigs
-BLUECONFIG_DIR=`pwd`/blueconfigs
+# inside jenkins we have to build neuron's nmodl separately
+OPTIONS=""
+if [ -n "$JENKINS_URL" ]; then
+    OPTIONS="^neuron+cross-compile"
+fi
+
+spack install neurodamus@master~coreneuron $OPTIONS
+spack install neurodamus@plasticity~coreneuron $OPTIONS
+spack install neurodamus@hippocampus~coreneuron $OPTIONS
+
+# reload module paths
+source $SPACK_ROOT/share/spack/setup-env.sh
+
 
 #################################### RUN TESTS ####################################
 
 # list of simulations to run
 declare -A tests
-tests[scx-testdata]="neurodamus@master~coreneuron"
 tests[scx-v5]="neurodamus@master~coreneuron"
 tests[scx-v6]="neurodamus@master~coreneuron"
 tests[scx-v5-plasticity]="neurodamus@plasticity~coreneuron"
@@ -63,9 +80,6 @@ do
     # sort the spikes and compare the output
     cat out.dat | sort -k 1n,1n -k 2n,2n > out.sorted.new
     diff -w out.sorted out.sorted.new > diff.dat 2>&1
-    if [ -s diff.dat ]
-    then
-        echo "$testname validation failed!"
-        exit 1
-    fi
 done
+
+echo "\n--------- ALL TESTS PASSED ---------\n"
