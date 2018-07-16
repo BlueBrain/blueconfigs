@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# if you want to run locally, set following
-export WORKSPACE=/gpfs/bbp.cscs.ch/project/proj20/$USER-spack-test
+# if you want to run locally on BB5, set following
+#export WORKSPACE=$HOME/$USER-spack-sim-test
 
 ############################### SETUP BUILD ENVIRONMENT ###############################
 cd $WORKSPACE
