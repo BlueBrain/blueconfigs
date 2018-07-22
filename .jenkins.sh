@@ -27,16 +27,13 @@ rm -rf spack $HOME/.spack
 git clone https://github.com/BlueBrain/spack.git
 export SPACK_ROOT=`pwd`/spack
 export PATH=$SPACK_ROOT/bin:$PATH
-source $SPACK_ROOT/share/spack/setup-env.sh
 
 
 ################################### SETUP PACKAGE CONFIGS ##############################
 
 mkdir -p $SPACK_ROOT/etc/spack/defaults/linux
 cp $SPACK_ROOT/sysconfig/bb5/users/* $SPACK_ROOT/etc/spack/defaults/linux/
-
-export MODULEPATH=/gpfs/bbp.cscs.ch/apps/compilers/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
-export MODULEPATH=/gpfs/bbp.cscs.ch/apps/tools/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
+source $SPACK_ROOT/share/spack/setup-env.sh
 
 
 ################################## BUILD REQUIRED PACKAGES #############################
