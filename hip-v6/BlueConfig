@@ -36,6 +36,18 @@ Report soma
     EndTime 1000
 }
 
+Report compartment
+{
+    Target AllCompartments
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format Bin
+    Dt 0.4
+    StartTime 0
+    EndTime 1000
+}
+
 Connection ConUni-Uni
 {
     Source Mosaic

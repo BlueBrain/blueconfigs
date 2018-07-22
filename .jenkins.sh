@@ -19,7 +19,7 @@ export SOFTS_DIR_PATH=$WORKSPACE/softs
 
 export HOME=$WORKSPACE/HOME_DIR
 cd $HOME
-rm -rf blueconfigs spack $HOME/.spack
+rm -rf spack $HOME/.spack
 
 
 ################################# CLONE SPACK REPOSITORY ##############################
@@ -41,11 +41,8 @@ export MODULEPATH=/gpfs/bbp.cscs.ch/apps/tools/modules/tcl/linux-rhel7-x86_64:$M
 
 ################################## BUILD REQUIRED PACKAGES #############################
 
-# inside jenkins we have to build neuron's nmodl separately
-OPTIONS=""
-if [ -n "$JENKINS_URL" ]; then
-    OPTIONS="^neuron+cross-compile"
-fi
+# inside jenkins or slurm job we have to build neuron's nmodl separately
+OPTIONS="^neuron+cross-compile"
 
 spack install neurodamus@master~coreneuron $OPTIONS
 spack install neurodamus@plasticity~coreneuron $OPTIONS
@@ -64,6 +61,14 @@ tests[scx-v6]="neurodamus@master~coreneuron"
 tests[scx-v5-plasticity]="neurodamus@plasticity~coreneuron"
 tests[hip-v6]="neurodamus@hippocampus~coreneuron"
 
+# list of simulation results
+declare -A results
+results[scx-v5]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5/simulation"
+results[scx-v6]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v6/simulation"
+results[scx-v5-plasticity]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-plasticity/simulation"
+results[hip-v6]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-hip-v6/simulation"
+
+
 # iterate over all test
 for testname in "${!tests[@]}"
 do
@@ -80,6 +85,12 @@ do
     # sort the spikes and compare the output
     cat out.dat | sort -k 1n,1n -k 2n,2n > out.sorted.new
     diff -w out.sorted out.sorted.new > diff.dat 2>&1
+
+    # compare reports
+    find . -name "*.bbp" | while read report; do
+        diff $report ${results[$testname]}/$report
+    done
+
 done
 
 echo "\n--------- ALL TESTS PASSED ---------\n"
