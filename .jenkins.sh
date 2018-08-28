@@ -39,7 +39,7 @@ source $SPACK_ROOT/share/spack/setup-env.sh
 ################################## BUILD REQUIRED PACKAGES #############################
 
 # inside jenkins or slurm job we have to build neuron's nmodl separately
-OPTIONS="^neuron+cross-compile"
+OPTIONS="^neuron+cross-compile+debug"
 
 spack install neurodamus@master~coreneuron $OPTIONS
 spack install neurodamus@plasticity~coreneuron $OPTIONS
