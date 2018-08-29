@@ -56,6 +56,7 @@ declare -A tests
 tests[scx-v5]="neurodamus@master~coreneuron"
 tests[scx-v6]="neurodamus@master~coreneuron"
 tests[scx-v5-plasticity]="neurodamus@plasticity~coreneuron"
+tests[scx-v5-gapjunctions]="neurodamus@master~coreneuron"
 tests[hip-v6]="neurodamus@hippocampus~coreneuron"
 
 # list of simulation results
@@ -63,6 +64,7 @@ declare -A results
 results[scx-v5]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5/simulation"
 results[scx-v6]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v6/simulation"
 results[scx-v5-plasticity]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-plasticity/simulation"
+results[scx-v5-gapjunctions]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-gapjunctions/simulation"
 results[hip-v6]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-hip-v6/simulation"
 
 

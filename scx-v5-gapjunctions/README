@@ -1,0 +1,11 @@
+scx-v5-gapjunctions
+===================
+
+This neurodamus blueconfig is extracted from a real use case and uses the
+following advanced features:
+ * GapJunctions
+ * Projections
+ * Synapse Replay
+ *   - With Delay
+ * Summation Report
+
