@@ -18,10 +18,10 @@ Run Default
         BonusSynapseFile /gpfs/bbp.cscs.ch/project/proj32/BlobStim/proj_test_O1/s2f/proj_nrn.h5
 
         CurrentDir .
-        OutputRoot .
+        OutputRoot output
         TargetFile user.target
 
-      	RunMode WholeCell
+      	RunMode RR
         CircuitTarget Column
         Duration 100
         Dt 0.025

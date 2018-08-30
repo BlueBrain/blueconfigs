@@ -1,24 +1,26 @@
 Run Default
 {
-	Date    9:1:14
-	Time    16:43:10
-        MorphologyPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/morphologies
-        METypePath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/CCells
-        MeshPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/NeuMesh_output
-        CircuitPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/Functionalizer_output
-        nrnPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/Functionalizer_output
-        TargetFile /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/default_user.target
-          gitPath ssh://bbpgit.epfl.ch/sim/neurodamus/bbp
-	  Version HEAD
-	CurrentDir   .
-	OutputRoot   .
+    Date    9:1:14
+    Time    16:43:10
+    gitPath ssh://bbpgit.epfl.ch/sim/neurodamus/bbp
+    Version HEAD
+
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/morphologies
+    METypePath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/CCells
+    MeshPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/NeuMesh_output
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/Functionalizer_output
+    nrnPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/Functionalizer_output
+    TargetFile /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/default_user.target
+
+    CurrentDir   .
+    OutputRoot   output
     Simulator NEURON
     RNGMode Random123
     CircuitTarget Column
-         RunMode WholeCell
-         Duration 100
-               Dt 0.025
-             Note Sample configuration file.
+    RunMode RR
+    Duration 100
+    Dt 0.025
+    Note Sample configuration file.
 }
 
 Stimulus hypamp
@@ -31,17 +33,17 @@ Stimulus hypamp
 
 StimulusInject hypampIntoMosaic
 {
-    Target 	 Column
-  	Stimulus hypamp
+    Target Column
+  Stimulus hypamp
 }
 
 Stimulus depolarize
 {
-    Mode 		 Current
-    Pattern 	 RelativeLinear
-	PercentStart 80
-    Delay 		 0
-    Duration 	 1000
+    Mode         Current
+    Pattern      RelativeLinear
+    PercentStart 80
+    Delay        0
+    Duration     1000
 }
 
 StimulusInject depIntoMosaic

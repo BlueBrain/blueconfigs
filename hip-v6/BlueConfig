@@ -12,12 +12,12 @@ Run Default
     CircuitPath /gpfs/bbp.cscs.ch/project/proj42/circuits/rat.CA1/20180309/
     nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/rat.CA1/20180309/connectome/functional/
     CurrentDir .
-    OutputRoot .
+    OutputRoot output
     TargetFile user.target
 
     NumSynapseFiles 2048
     BaseSeed 10
-    # RunMode LoadBalance
+    RunMode RR
     CircuitTarget Column
     Duration 100
     Dt 0.025

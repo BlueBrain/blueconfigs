@@ -16,7 +16,7 @@ Run Default
     ElectrodesPath /gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit
 
     CurrentDir .
-    OutputRoot .
+    OutputRoot output
     TargetFile user.target
 
     RunMode RR

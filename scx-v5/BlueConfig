@@ -16,10 +16,10 @@ Run Default
         RNGMode Random123
 
         CurrentDir .
-        OutputRoot .
+        OutputRoot output
         TargetFile user.target
 
-      	RunMode WholeCell
+      	RunMode RR
         CircuitTarget Column
         Duration 100
         Dt 0.025

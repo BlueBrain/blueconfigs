@@ -1,26 +1,26 @@
 Run Default
 {
-   MorphologyPath /gpfs/bbp.cscs.ch/project/proj59/entities/morphologies/2017.10.31
-   METypePath   /gpfs/bbp.cscs.ch/project/proj64/home/vangeit/modelmanagement/prod.20171103/mm_runs/run/1810912/output/emodels_hoc/
-   MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj64/home/vangeit/modelmanagement/prod.20171103/megate_runs/run/6c6d611/output_select/mecombo_emodel.tsv
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj59/entities/morphologies/2017.10.31
+    METypePath   /gpfs/bbp.cscs.ch/project/proj64/home/vangeit/modelmanagement/prod.20171103/mm_runs/run/1810912/output/emodels_hoc/
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj64/home/vangeit/modelmanagement/prod.20171103/megate_runs/run/6c6d611/output_select/mecombo_emodel.tsv
 
-      CircuitPath /gpfs/bbp.cscs.ch/project/proj64/circuits/S1.v6a/20171206/
-          nrnPath /gpfs/bbp.cscs.ch/project/proj64/circuits/S1.v6a/20171206/ncsFunctionalAllRecipePathways
-  CellLibraryFile circuit.mvd3
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj64/circuits/S1.v6a/20171206/
+    nrnPath /gpfs/bbp.cscs.ch/project/proj64/circuits/S1.v6a/20171206/ncsFunctionalAllRecipePathways
+    CellLibraryFile circuit.mvd3
 
-   SimulatorMode NEURON
-   RNGMode Random123
-  BaseSeed 719775
+    SimulatorMode NEURON
+    RNGMode Random123
+    BaseSeed 719775
 
-	CurrentDir .
-      OutputRoot .
-      TargetFile user.target
+    CurrentDir .
+    OutputRoot output
+    TargetFile user.target
 
-       RunMode WholeCell
+    RunMode RR
     CircuitTarget Column
-         Duration 100
-               Dt 0.025
-	 #ForwardSkip 5000
+    Duration 100
+    Dt 0.025
+    #ForwardSkip 5000
 }
 
 Report soma
@@ -226,7 +226,7 @@ Connection ConInh-Uni
         Source Inhibitory
         Destination Mosaic
         Weight 1.0
-	SpontMinis 0.012
+        SpontMinis 0.012
 }
 
 
@@ -234,18 +234,18 @@ Connection ConInh-Uni
 
 Connection GABAB_erev
 {
-	Source Inhibitory
-	Destination Mosaic
-	Weight 1.0
-	SynapseConfigure %s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081
+    Source Inhibitory
+    Destination Mosaic
+    Weight 1.0
+    SynapseConfigure %s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081
 }
 
 #Connection MGGate
 {
-	Source Excitatory
-	Destination Mosaic
-	Weight 1.0
-	SynapseConfigure %s.mg = 1.0
+    Source Excitatory
+    Destination Mosaic
+    Weight 1.0
+    SynapseConfigure %s.mg = 1.0
 }
 
 # Use adjustments due to Calcium 1.4 mM compared to normal 2.0 mM
