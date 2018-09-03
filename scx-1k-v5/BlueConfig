@@ -5,7 +5,7 @@ Run Default
     MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/morphologies
     METypePath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/ccells
     CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional
-    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional
+    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional.syn2
     gitPath ssh://bbpgit.epfl.ch/sim/neurodamus/bbp
     Version HEAD
 

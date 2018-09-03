@@ -1,7 +1,7 @@
 Run Default
 {
     CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k
-    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/touches/functional
+    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/touches/functional.syn2
     MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/morphologies
     METypePath /gpfs/bbp.cscs.ch/project/proj64/entities/emodels/2017.11.03/hoc
     MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj64/entities/emodels/2017.11.03/mecombo_emodel.tsv

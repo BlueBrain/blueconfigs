@@ -46,10 +46,13 @@ rm -rf $HOME/.spack
 
 ################################# CLONE SPACK REPOSITORY ##############################
 
-if [ -d spack ]; then
-    (cd spack && git pull && git reset --hard HEAD)
-else
-    git clone https://github.com/BlueBrain/spack.git
+if [ ! -d spack ]; then
+    SPACK_REPO=https://github.com/BlueBrain/spack.git
+    if [ $SPACK_BRANCH ]; then
+        git clone $SPACK_REPO --single-branch -b $SPACK_BRANCH
+    else
+        git clone $SPACK_REPO --single_branch
+    fi
 fi
 export SPACK_ROOT=`pwd`/spack
 export PATH=$SPACK_ROOT/bin:$PATH
@@ -65,14 +68,20 @@ source $SPACK_ROOT/share/spack/setup-env.sh
 ################################## BUILD REQUIRED PACKAGES #############################
 
 # inside jenkins or slurm job we have to build neuron's nmodl separately
+echo "======== Building Neurodamus with Support for SynapseTool ========="
+NEURODAMUS_OPTIONS="~coreneuron+syn2"
 OPTIONS="^neuron+cross-compile+debug"
 
-echo -e "[$Blue INFO $ColorReset] Building neurodamus@master~coreneuron"
-spack install neurodamus@master~coreneuron $OPTIONS
-echo -e "[$Blue INFO $ColorReset] Building neurodamus@plasticity~coreneuron"
-spack install neurodamus@plasticity~coreneuron $OPTIONS
-echo -e "[$Blue INFO $ColorReset] Building neurodamus@hippocampus~coreneuron"
-spack install neurodamus@hippocampus~coreneuron $OPTIONS
+ND_MASTER="neurodamus@master$NEURODAMUS_OPTIONS"
+ND_HIPPOCAMPUS="neurodamus@hippocampus$NEURODAMUS_OPTIONS"
+ND_PLASTICITY="neurodamus@plasticity~coreneuron"
+
+echo -e "[$Blue INFO $ColorReset] Building $ND_MASTER"
+spack install $ND_MASTER $OPTIONS
+echo -e "[$Blue INFO $ColorReset] Building $ND_HIPPOCAMPUS"
+spack install $ND_HIPPOCAMPUS $OPTIONS
+echo -e "[$Blue INFO $ColorReset] Building $ND_PLASTICITY"
+spack install $ND_PLASTICITY $OPTIONS
 #spack install neurodamus@pydamus~coreneuron $OPTIONS
 
 # reload module paths
@@ -84,28 +93,24 @@ echo -e "[$Green OK $ColorReset] Environment successfully setup\n"
 
 # list of simulations to run
 declare -A tests
-tests[scx-v5]="neurodamus@master~coreneuron"
-tests[scx-v6]="neurodamus@master~coreneuron"
-tests[scx-1k-v5]="neurodamus@master~coreneuron"
-tests[scx-2k-v6]="neurodamus@master~coreneuron"
-tests[scx-v5-plasticity]="neurodamus@plasticity~coreneuron"
-tests[scx-v5-gapjunctions]="neurodamus@master~coreneuron"
-tests[hip-v6]="neurodamus@hippocampus~coreneuron"
-# Python neurodamus
-#tests[pydamus-scx-v6]="neurodamus@pydamus~coreneuron"
-#tests[pydamus-scx-v5-gapjunctions]="neurodamus@pydamus~coreneuron"
+tests[scx-v5]=$ND_MASTER
+tests[scx-v6]=$ND_MASTER
+tests[scx-1k-v5]=$ND_MASTER
+tests[scx-2k-v6]=$ND_MASTER
+tests[scx-v5-plasticity]=$ND_PLASTICITY
+tests[scx-v5-gapjunctions]=$ND_MASTER
+tests[hip-v6]=$ND_HIPPOCAMPUS
 
 # list of simulation results
 declare -A results
-results[scx-v5]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5/simulation"
-results[scx-v6]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v6/simulation"
-results[scx-1k-v5]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/simulation"
-results[scx-2k-v6]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/simulation"
-results[scx-v5-plasticity]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-plasticity/simulation"
-results[scx-v5-gapjunctions]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-gapjunctions/simulation"
-results[hip-v6]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-hip-v6/simulation"
-results[pydamus-scx-v6]=results[scx-v6]
-results[pydamus-scx-v5-gapjunctions]=results[scx-v5-gapjunctions]
+EXTENDED_RESULTS="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular"
+results[scx-v5]="$EXTENDED_RESULTS/circuit-scx-v5/simulation"
+results[scx-v6]="$EXTENDED_RESULTS/circuit-scx-v6/simulation"
+results[scx-1k-v5]="$EXTENDED_RESULTS/circuit-1k/simulation"
+results[scx-2k-v6]="$EXTENDED_RESULTS/circuit-2k/simulation"
+results[scx-v5-plasticity]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation"
+results[scx-v5-gapjunctions]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simulation"
+results[hip-v6]="$EXTENDED_RESULTS/circuit-hip-v6/simulation"
 
 
 echo "
@@ -144,6 +149,5 @@ do
 done
 
 echo -e "[$Green SUCCESS $ColorReset] ALL TESTS PASSED"
-
 
 
