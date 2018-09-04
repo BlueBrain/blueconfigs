@@ -51,7 +51,7 @@ if [ ! -d spack ]; then
     if [ $SPACK_BRANCH ]; then
         git clone $SPACK_REPO --single-branch -b $SPACK_BRANCH
     else
-        git clone $SPACK_REPO --single_branch
+        git clone $SPACK_REPO --single-branch
     fi
 fi
 export SPACK_ROOT=`pwd`/spack
@@ -132,7 +132,7 @@ do
     set -x
     cd $BLUECONFIG_DIR/$testname
     rm -rf $RESULTS && mkdir -p $RESULTS
-    srun special $HOC_LIBRARY_PATH/init.hoc -mpi > $RESULTS/run.log 2>&1
+    srun special $HOC_LIBRARY_PATH/init.hoc -mpi #> $RESULTS/run.log 2>&1
 
     # sort the spikes and compare the output
     sort -n -k'1,1' -k2 < $RESULTS/out.dat > $RESULTS/out.sorted
