@@ -1,13 +1,10 @@
 #!/bin/bash
 set -e
-source "${BASH_SOURCE%/*}/envutils.sh"
-
+[ $ENVUTILS_LOADED ] || source "${BASH_SOURCE%/*}/envutils.sh"
 BLUECONFIG_DIR=`pwd`
-# Test simulation results
-OUTPUT=output
 
 # list of simulation results
-EXTENDED_RESULTS="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular"
+EXTENDED_RESULTS="$DATADIR/cellular"
 declare -A REF_RESULTS
 REF_RESULTS["scx-v5"]="$EXTENDED_RESULTS/circuit-scx-v5/simulation"
 REF_RESULTS["scx-v6"]="$EXTENDED_RESULTS/circuit-scx-v6/simulation"
@@ -20,21 +17,26 @@ REF_RESULTS["hip-v6"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation"
 
 
 _prepare_run() {
-    testname=$1
-    neurodamus_version=$2
-    echo -e "\n[$Blue INFO $ColorReset] Running test $testname ($neurodamus_version)"
+    set +x
+    echo -e "\n[$Blue INFO $ColorReset] Running test $testname ($spec) #$hash"
     echo -e "[$Blue INFO $ColorReset] ------------------"
 
     # load required modules
-    echo "COMMANDS: module purge; spack load $neurodamus_version"
+    echo "COMMANDS: module purge; spack load $spec"
     module purge
-    spack load $neurodamus_version
+    if [ $RUN_PY_TESTS = "yes" ]; then spack load python; fi
+    spack load $spec
     module list
+    module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
 
     # cd to corresponding directory and clean output
-    echo "COMMANDS: cd $BLUECONFIG_DIR/$testname; rm -rf $OUTPUT && mkdir -p $OUTPUT"
+    set -x
     cd $BLUECONFIG_DIR/$testname
-    rm -rf $OUTPUT && mkdir -p $OUTPUT
+    cp BlueConfig $blueconfig
+    sed -i "s#OutputRoot.*#OutputRoot $output#" $blueconfig
+
+    rm -rf $output && mkdir -p $output
+    set +x && set -$_set  # restore
 }
 
 
@@ -51,27 +53,47 @@ run_debug() {
 
 
 test_check_results() {
-    testname=$1
-
     # sort the spikes and compare the output
-    [ -f $OUTPUT/spikes.dat ] && mv $OUTPUT/spikes.dat $OUTPUT/out.dat
-    sort -n -k'1,1' -k2 < $OUTPUT/out.dat > $OUTPUT/out.sorted
-    diff -wy --suppress-common-lines out.sorted $OUTPUT/out.sorted
+    [ -f $output/spikes.dat ] && mv $output/spikes.dat $output/out.dat
+    sort -n -k'1,1' -k2 < $output/out.dat > $output/out.sorted
+    (set -x; diff -wy --suppress-common-lines out.sorted $output/out.sorted)
 
     # compare reports
-    for report in $(cd $OUTPUT && ls *.bbp); do
+    set +x
+    for report in $(cd $output && ls *.bbp); do
         (set -x
-         cmp ${REF_RESULTS[$testname]}/$report $OUTPUT/$report)
+         cmp ${REF_RESULTS[$testname]}/$report $output/$report)
     done
 
-    echo -e "[$Green PASS $ColorReset] Test $testname successfull"
+    echo -e "[$Green PASS $ColorReset] Test $testname successfull\n"
+    set -$_set  # restore
 }
 
 
 run_test() {
+    _set=$-
     testname=$1
-    _prepare_run $1 $2
-    N=2 bb5_run special $HOC_LIBRARY_PATH/init.hoc -mpi
+    spec=$2
+    hash=$(echo $spec | md5sum | cut -c 1-8)
+    # To run in parallel output and BlueConfig must be unique
+    output="output_$hash"
+    blueconfig="BlueConfig_$hash"
 
-    test_check_results $testname
+    _prepare_run
+
+    if [[ $RUN_PY_TESTS == "yes" && $NEURODAMUS_PYTHON ]]; then
+        INIT_ARGS=("-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=BlueConfig_$hash")
+    else
+        INIT_ARGS=("-c" "{strdef configFile configFile=\"BlueConfig_$hash\"}" "$HOC_LIBRARY_PATH/init.hoc")
+    fi
+
+    N=2 bb5_run special "${INIT_ARGS[@]}" -mpi
+
+    test_check_results
 }
+
+
+# Prepare for immediate test run
+_set=$-; set +x
+source $SPACK_ROOT/share/spack/setup-env.sh
+set -$_set

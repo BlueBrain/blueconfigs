@@ -1,6 +1,6 @@
 #!/bin/bash
 # NOTE: This file shall be sourced so that important variables are avail to other scripts
-
+ENVUTILS_LOADED=1
 unset $(set +x; env | awk -F= '/^(PMI|SLURM)_/ {print $1}' | xargs)
 
 Red='\033[0;31m'
@@ -10,16 +10,23 @@ ColorReset='\033[0m'
 
 
 # On error abort with a meaningful msg
-error() {
+error() (
     set +x
     echo -e "[$Red FATAL $ColorReset] Command returned $1."
     exit 1
-}
+)
 
 trap 'error ${?}' ERR
 
+if [[ -z "$ADDITIONAL_ENV_VARS" && -n "$GERRIT_CHANGE_COMMIT_MESSAGE" ]]; then
+    ADDITIONAL_ENV_VARS=$(set +x; echo "$GERRIT_CHANGE_COMMIT_MESSAGE" | sed -n "s/^ENV_VARS://p")
+fi
+# Handle generic env variables set
+[ $ADDITIONAL_ENV_VARS ] && eval $ADDITIONAL_ENV_VARS
 
-bb5_run() {
+
+bb5_run() (
+    set +x
     # default partition is interactive
     partition="interactive"
     hour=`date +%H`
@@ -31,7 +38,7 @@ bb5_run() {
         limit="-n$n"
     fi
 
-    cmd="salloc -p$partition -N$N $limit --ntasks-per-node=36 -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00 srun $@"
-    echo "$cmd"
-    $cmd
-}
+    cmd_base="salloc -p$partition -N$N $limit --ntasks-per-node=36 -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00 srun --pty"
+    echo "$cmd_base $@"
+    $cmd_base "$@"
+)

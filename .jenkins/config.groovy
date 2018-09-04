@@ -4,6 +4,7 @@ library(identifier: 'bbp@master',
              remote: 'ssh://bbpcode.epfl.ch/hpc/jenkins-pipeline']))
 
 def PACKAGE="neurodamus"
+def PACKAGE_DEFAULT_VARIANT = "~coreneuron+syntool+python"
 def PACKAGE_COMPILE_OPTIONS ="%intel ^neuron+cross-compile+debug%intel "
 def EXTENDED_RESULTS ="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular"
 def PACKAGES_YAML = "/gpfs/bbp.cscs.ch/project/proj12/jenkins/devel_builds/packages.yaml"
@@ -15,10 +16,10 @@ def PARAMS = [
         plasticity: "plasticity"
     ],
     specs: [
-        master: "~coreneuron+syn2",
-        master_no_syn2: "~coreneuron~syn2",
-        hippocampus: "~coreneuron",
-        plasticity: "+coreneuron"
+        master: PACKAGE_DEFAULT_VARIANT,
+        master_no_syn2: "~coreneuron~syntool+python",
+        hippocampus: PACKAGE_DEFAULT_VARIANT,
+        plasticity: "+coreneuron~syntool+python"
     ],
     tests: [
         master: ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis"],
@@ -38,14 +39,17 @@ pipeline {
         text(name: 'TEST_VERSIONS', defaultValue: "master\nmaster_no_syn2\nhippocampus\nplasticity",
              description: 'Which version of the package to build & test.' )
         string(name: 'SPACK_BRANCH', defaultValue: 'develop', description: 'Which branch of spack to use for the build.', )
+        string(name: 'RUN_PY_TESTS', defaultValue: 'no', description: 'Run tests with Python Neurodamus, or plain hoc')
+        string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '', description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x')
+        string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '')
     }
 
     triggers {
-        cron('H H(0-7) * * *')
+        cron('H H(0-6) * * *')
     }
 
     environment {
-        DATADIR = "/gpfs/bbp.cscs.ch/project/proj12/jenkins/"
+        DATADIR = "/gpfs/bbp.cscs.ch/project/proj12/jenkins"
         HOME = "${WORKSPACE}/BUILD_HOME"
         SOFTS_DIR_PATH = "${WORKSPACE}/INSTALL_HOME"
         SPACK_ROOT = "${HOME}/spack"
@@ -55,13 +59,7 @@ pipeline {
     stages {
         stage("Setup Spack") {
             steps {
-                spackSetup(SPACK_BRANCH)
-                spackLocalize(PACKAGE)
-
-                //Use develop packages.yaml
-                sh("cp ${PACKAGES_YAML} ${env.SPACK_ROOT}/etc/spack/defaults/linux/")
-                // Patch modules names to have suffix
-                sh("sed -i \"s#hash_length: 0#hash_length: 8#g\" ${SPACK_ROOT}/etc/spack/defaults/linux/modules.yaml")
+                sh("source .jenkins/envsetup.sh")
             }
         }
         stage('Build') {
@@ -96,10 +94,7 @@ pipeline {
                             tasks[taskname] = {
                                 stage(taskname) {
                                     sh("""
-                                        cd ${WORKSPACE}
                                         source .jenkins/testutils.sh
-                                        set +x
-                                        source ${SPACK_ROOT}/share/spack/setup-env.sh
                                         run_test ${testname} ${fullspec}
                                         """
                                     )
