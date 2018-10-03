@@ -97,8 +97,9 @@ tests[scx-v5]=$ND_MASTER
 tests[scx-v6]=$ND_MASTER
 tests[scx-1k-v5]=$ND_MASTER
 tests[scx-2k-v6]=$ND_MASTER
-tests[scx-v5-plasticity]=$ND_PLASTICITY
 tests[scx-v5-gapjunctions]=$ND_MASTER
+tests[scx-v5-bonus-minis]=$ND_MASTER
+tests[scx-v5-plasticity]=$ND_PLASTICITY
 tests[hip-v6]=$ND_HIPPOCAMPUS
 
 # list of simulation results
@@ -108,8 +109,9 @@ results[scx-v5]="$EXTENDED_RESULTS/circuit-scx-v5/simulation"
 results[scx-v6]="$EXTENDED_RESULTS/circuit-scx-v6/simulation"
 results[scx-1k-v5]="$EXTENDED_RESULTS/circuit-1k/simulation"
 results[scx-2k-v6]="$EXTENDED_RESULTS/circuit-2k/simulation"
-results[scx-v5-plasticity]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation"
 results[scx-v5-gapjunctions]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simulation"
+results[scx-v5-bonus-minis]="$EXTENDED_RESULTS/circuit-scx-v5-bonus-minis/simulation"
+results[scx-v5-plasticity]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation"
 results[hip-v6]="$EXTENDED_RESULTS/circuit-hip-v6/simulation"
 
 

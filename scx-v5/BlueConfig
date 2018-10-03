@@ -27,7 +27,7 @@ Run Default
 
 
 # Setup Reports
-# Report soma
+Report soma
 {
               Target Mosaic
                 Type compartment
