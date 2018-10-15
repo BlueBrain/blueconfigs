@@ -103,8 +103,9 @@ echo -e "[$Green OK $ColorReset] Environment successfully setup\n"
 # list of simulations to run
 # NOTE: scx-v5-gapjunctions is re-run without syn2 support since it's a very complete
 #       test, loading synapses, projections and GJs, some with syn2 and nrn, other only nrn
+tests_master_debug=(scx-v5-gapjunctions)
 tests_master=(scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis)
-#tests_master_no_syn2=(scx-v5-gapjunctions)
+tests_master_no_syn2=(scx-v5-gapjunctions)
 tests_plasticity=(scx-v5-plasticity)
 tests_hippocampus=(hip-v6)
 
@@ -125,6 +126,30 @@ echo "
 =====================================================================
 Running Tests
 ====================================================================="
+run_debug() {
+    testname=$1
+    neurodamus_version=$2
+    echo -e "\n[$Blue INFO $ColorReset] Running Debug test $testname ($neurodamus_version)"
+    echo -e "[$Blue INFO $ColorReset] ------------------"
+
+    # load required modules
+    module purge
+    spack load $neurodamus_version
+
+    # cd to corresponding directory and run test
+    set -x
+    cd $BLUECONFIG_DIR/$testname
+    rm -rf $RESULTS && mkdir -p $RESULTS
+    srun special $HOC_LIBRARY_PATH/_debug.hoc -mpi
+
+    # compare nrndat
+    set +x
+    for nrnfile in *.nrndat; do
+        (set -x
+         diff -wy --suppress-common-lines expected_nrndat/$nrnfile $nrnfile)
+    done
+}
+
 
 run_test() {
     testname=$1
@@ -157,6 +182,9 @@ run_test() {
 }
 
 # iterate over all test
+for testname in "${tests_master_debug[@]}"; do
+    run_debug $testname $ND_MASTER
+done
 for testname in "${tests_master[@]}"; do
     run_test $testname $ND_MASTER
 done
