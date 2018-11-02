@@ -31,9 +31,9 @@ source .jenkins/envsetup.sh
 source .jenkins/build.sh
 
 # iterate over all test
-for testname in "${tests_master_debug[@]}"; do
-    run_debug $testname "$ND_MASTER"
-done
+#for testname in "${tests_master_debug[@]}"; do
+#    run_debug $testname "$ND_MASTER"
+#done
 for testname in "${tests_master[@]}"; do
     run_test $testname $ND_MASTER
 done
