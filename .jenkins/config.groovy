@@ -19,7 +19,7 @@ def PARAMS = [
         master: PACKAGE_DEFAULT_VARIANT,
         master_no_syn2: "~coreneuron~syntool+python",
         hippocampus: PACKAGE_DEFAULT_VARIANT,
-        plasticity: "+coreneuron~syntool+python"
+        plasticity: "+coreneuron+syntool+python"
     ],
     tests: [
         master: ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis"],

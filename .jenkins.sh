@@ -22,7 +22,7 @@ declare -A VERSIONS
 VERSIONS[master]="neurodamus@master$DEFAULT_VARIANT"
 VERSIONS[master_no_syn2]="neurodamus@master~coreneuron~syntool+python"
 VERSIONS[hippocampus]="neurodamus@hippocampus$DEFAULT_VARIANT"
-VERSIONS[plasticity]="neurodamus@plasticity+coreneuron~syntool+python"
+VERSIONS[plasticity]="neurodamus@plasticity+coreneuron+syntool+python"
 
 # list of simulations to run
 # NOTE: scx-v5-gapjunctions is re-run without syn2 support since it's a very complete
