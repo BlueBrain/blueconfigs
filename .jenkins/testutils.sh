@@ -14,6 +14,8 @@ REF_RESULTS["scx-v5-gapjunctions"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunction
 REF_RESULTS["scx-v5-bonus-minis"]="$EXTENDED_RESULTS/circuit-scx-v5-bonus-minis/simulation"
 REF_RESULTS["scx-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation"
 REF_RESULTS["hip-v6"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation"
+REF_RESULTS["quick-v5-gaps"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simulation_quick"
+REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick"
 
 
 _prepare_run() {
@@ -87,7 +89,8 @@ run_test() {
         INIT_ARGS=("-c" "{strdef configFile configFile=\"BlueConfig_$hash\"}" "$HOC_LIBRARY_PATH/init.hoc")
     fi
 
-    N=2 bb5_run special "${INIT_ARGS[@]}" -mpi
+    N=$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2) \
+    bb5_run special "${INIT_ARGS[@]}" -mpi
 
     test_check_results
 }
