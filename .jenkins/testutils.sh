@@ -3,6 +3,10 @@ set -e
 [ $ENVUTILS_LOADED ] || source "${BASH_SOURCE%/*}/envutils.sh"
 BLUECONFIG_DIR=`pwd`
 
+# defaults
+RUN_PY_TESTS="${RUN_PY_TESTS:-master}"
+DATADIR="${DATADIR:-/gpfs/bbp.cscs.ch/project/proj12/jenkins}"
+
 # list of simulation results
 EXTENDED_RESULTS="$DATADIR/cellular"
 declare -A REF_RESULTS
@@ -18,40 +22,73 @@ REF_RESULTS["quick-v5-gaps"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simu
 REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick"
 
 
-_prepare_run() {
+
+_prepare_test() {
+    _set=$-
+    set -e
+    unset localtest
+
+    # If test not provided check if curdir has BlueConfig
+    if [ -z "$testname" ]; then
+        if [[ -f BlueConfig && -f out.sorted ]]; then
+            testname="${PWD##*/}"
+            localtest=1
+        else
+            echo "Test name not provided and not found in cur dir"
+            exit -1
+        fi
+    fi
+
+    # If neurodamus spec not given, check cur loaded
+    if [ -z "$spec" ]; then
+        spec=default
+        which special  # Ensure available
+    fi
+
+    # To run in parallel output and BlueConfig must be unique
+    hash=$(echo $spec | md5sum | cut -c 1-8)
+    output="output_$hash"
+    blueconfig="BlueConfig_$hash"
+
+    #
+    # Now actually load env modules, patch BlueConfig and clear any results
     set +x
     echo -e "\n[$Blue INFO $ColorReset] Running test $testname ($spec) #$hash"
     echo -e "[$Blue INFO $ColorReset] ------------------"
 
     # load required modules
-    echo "COMMANDS: module purge; spack load $spec"
-    module purge
-    if [ $RUN_PY_TESTS = "yes" ]; then spack load python; fi
-    spack load $spec
+    if [ $spec != "default" ]; then
+        echo "COMMANDS: module purge; spack load $spec"
+        module purge
+        if [ $RUN_PY_TESTS = "yes" ]; then spack load python; fi
+        spack load $spec
+    fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
 
-    # cd to corresponding directory and clean output
     set -x
-    cd $BLUECONFIG_DIR/$testname
+    [ "$localtest" ] || cd $BLUECONFIG_DIR/$testname
     cp BlueConfig $blueconfig
     sed -i "s#OutputRoot.*#OutputRoot $output#" $blueconfig
 
     rm -rf $output && mkdir -p $output
-    set +x && set -$_set  # restore
+    set +x && set -$_set  # restore env
 }
 
 
-run_debug() {
-    _prepare_run $1 $2
-    N=2 bb5_run special $HOC_LIBRARY_PATH/_debug.hoc -mpi
+run_debug() (
+    testname=$1
+    spec=$2
+    _prepare_test
+
+    bb5_run special $HOC_LIBRARY_PATH/_debug.hoc -mpi
 
     # compare nrndat
     for nrnfile in *.nrndat; do
         (set -x
          diff -wy --suppress-common-lines expected_nrndat/$nrnfile $nrnfile)
     done
-}
+)
 
 
 test_check_results() {
@@ -72,16 +109,10 @@ test_check_results() {
 }
 
 
-run_test() {
-    _set=$-
+run_test() (
     testname=$1
     spec=$2
-    hash=$(echo $spec | md5sum | cut -c 1-8)
-    # To run in parallel output and BlueConfig must be unique
-    output="output_$hash"
-    blueconfig="BlueConfig_$hash"
-
-    _prepare_run
+    _prepare_test
 
     if [[ $RUN_PY_TESTS == "yes" && $NEURODAMUS_PYTHON ]]; then
         INIT_ARGS=("-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=BlueConfig_$hash")
@@ -93,10 +124,12 @@ run_test() {
     bb5_run special "${INIT_ARGS[@]}" -mpi
 
     test_check_results
-}
+    set +e
+)
 
 
 # Prepare for immediate test run
 _set=$-; set +x
 source $SPACK_ROOT/share/spack/setup-env.sh
 set -$_set
+set +e

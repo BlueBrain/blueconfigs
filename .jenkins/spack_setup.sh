@@ -4,11 +4,9 @@ set -e
 [ $ENVUTILS_LOADED ] || source "${BASH_SOURCE%/*}/envutils.sh"
 
 ############################## SPACK REPOSITORY #############################
-[ $WORKSPACE ]
-
 (set +x; echo "
 =====================================================================
-Preparing environment...
+Preparing spack environment...
 =====================================================================")
 
 mkdir -p $HOME

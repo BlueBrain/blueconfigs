@@ -13,7 +13,6 @@ ColorReset='\033[0m'
 error() (
     set +x
     echo -e "[$Red FATAL $ColorReset] Command returned $1."
-    exit 1
 )
 
 trap 'error ${?}' ERR

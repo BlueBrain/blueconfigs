@@ -62,7 +62,7 @@ pipeline {
     stages {
         stage("Setup Spack") {
             steps {
-                sh("source .jenkins/envsetup.sh")
+                sh("source .jenkins/spack_setup.sh")
             }
         }
         stage('Build') {
