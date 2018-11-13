@@ -2,6 +2,12 @@ Target Compartment AllCompartments
 {
 Mosaic
 }
+
+Target Cell miniColumn
+{
+MiniColumn_701 MiniColumn_705
+}
+
 Target Cell Column1k
 {
 MiniColumn_701 MiniColumn_703 MiniColumn_705 MiniColumn_708 MiniColumn_709 MiniColumn_710 MiniColumn_711 MiniColumn_712 MiniColumn_713 MiniColumn_714
