@@ -22,17 +22,16 @@ REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick"
 
 
 _prepare_test() {
-    unset localtest
-
     # If test not provided check if curdir has BlueConfig
     if [ -z "$testname" ]; then
         if [[ -f BlueConfig && -f out.sorted ]]; then
             testname="${PWD##*/}"
-            localtest=1
         else
             echo "Test name not provided and not found in cur dir"
             exit -1
         fi
+    else
+        cd $BLUECONFIG_DIR/$testname
     fi
 
     # If neurodamus spec not given, check cur loaded
@@ -43,16 +42,34 @@ _prepare_test() {
 
     # To run in parallel output and BlueConfig must be unique
     hash=$(echo $spec | md5sum | cut -c 1-8)
-    output="output_$hash"
-    blueconfig="BlueConfig_$hash"
+    cp BlueConfig "BlueConfig_$hash"
 
-    #
-    # Now actually load env modules, patch BlueConfig and clear any results
+    blueconfigs=("BlueConfig_$hash")
+    declare -gA outputs
+
+    # Try find test_* scripts, which generate more BlueConfigs
+    for bc_script in test_*.sh; do
+        [ -f $bc_script ] || break  # bash will take it literally when does not exist
+        bc_copy="BlueConfig_${bc_script:5:-3}_$hash"
+        cp BlueConfig $bc_copy
+        sh $bc_script $bc_copy
+        blueconfigs+=( "$bc_copy" )
+    done
+
+    # Patch all Blueconfigs, clean exisiting res
+    for bc in ${blueconfigs[@]}; do
+        suffix=${bc:11}
+        _output=output_$suffix
+        sed -i "s#OutputRoot.*#OutputRoot $_output#" $bc
+        outputs["$bc"]=$_output
+        rm -rf $_output
+    done
+
+    # load env modules
     set +x
     echo -e "\n[$Blue INFO $ColorReset] Running test $testname ($spec) #$hash"
     echo -e "[$Blue INFO $ColorReset] ------------------"
 
-    # load required modules
     if [ $spec != "default" ]; then
         echo "COMMANDS: module purge; spack load $spec"
         module purge
@@ -61,32 +78,27 @@ _prepare_test() {
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
-
-    set -x
-    [ "$localtest" ] || cd $BLUECONFIG_DIR/$testname
-    cp BlueConfig $blueconfig
-    sed -i "s#OutputRoot.*#OutputRoot $output#" $blueconfig
-
-    rm -rf $output && mkdir -p $output
 }
 
 
 test_check_results() (
-    set -e
+    set -ex
     output=$1
     ref_results=$2
     ref_spikes=${3:-out.sorted}
+    # Print nice msg on error
+    trap "(set +x; echo -e \"[$Red Error $ColorReset] Results DON'T Match\n\"; exit 1)" ERR
 
-    # sort the spikes and compare the output
     [ -f $output/spikes.dat ] && mv $output/spikes.dat $output/out.dat
-    sort -n -k'1,1' -k2 < $output/out.dat > $output/out.sorted
-    (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out.sorted)
+    # Core neuron doesnt have a /scatter (!?)
+    grep '/scatter' $output/out.dat || sed -i '1s#^#/scatter\n#' $output/out.dat
+    sort -n -k'1,1' -k2 < $output/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $output/out.sorted
+    diff -wy --suppress-common-lines $ref_spikes $output/out.sorted
 
     # compare reports
     set +x
     for report in $(cd $output && ls *.bbp); do
-        (set -x
-         cmp $ref_results/$report $output/$report)
+        (set -x; cmp "$ref_results/$report" "$output/$report")
     done
     echo -e "[$Green OK $ColorReset] Results Match\n"
 )
@@ -96,12 +108,56 @@ run_test() (
     set -e
     testname=$1
     spec=$2
+    export OMP_NUM_THREADS=2
 
+    # Will set $blueconfigs and an $output associate array
     _prepare_test
 
-    run_blueconfig BlueConfig_$hash
-    test_check_results $output ${REF_RESULTS[$testname]}
-    echo -e "[$Green PASS $ColorReset] Test $testname successfull\n"
+    if [ ${#blueconfigs[@]} -eq 1 ]; then
+        run_blueconfig $blueconfigs
+    	test_check_results "${outputs[$blueconfigs]}" "${REF_RESULTS[$testname]}"
+    else
+        # Otherwise we launch several processes to the background, store output and wait
+        # Loop over $blueconfig tests
+        declare -A pids
+        for bc in ${blueconfigs[@]}; do
+            echo -e "$Green => $ColorReset Starting simulation from $bc in parallel"
+            run_blueconfig $bc &> _$bc.log &
+            pids[$bc]=$!
+        done
+
+        sleep 10  # Some time to have salloc info
+        for bc in ${blueconfigs[@]}; do
+            echo -e "[$Blue Info $ColorReset] Simulation $bc status:"
+            grep 'salloc:' _$bc.log | sed 's/^/    /'
+        done
+
+        # Run checks in fg
+        ERR=
+        echo
+        for bc in ${blueconfigs[@]}; do
+            echo -e "$Green => $ColorReset Waiting for simulation $bc results"
+            wait ${pids[$bc]} || {
+                echo -e "[$Red Error $ColorReset] Failed to run simulation. Log:"; cat _$bc.log; ERR=y
+                continue
+            }
+
+            echo "Simulation log:"; cat _$bc.log
+
+            # Inner -e is not respected if we have '||'. We need to check $?
+            set +e
+            test_check_results "${outputs[$bc]}" "${REF_RESULTS[$testname]}"
+            [ $? -eq 0 ] || ERR=y
+            set -e
+        done
+
+        if [ $ERR ]; then
+            echo -e "[$Red FAIL $ColorReset] Tests $testname failed\n"
+            return 1
+        fi
+    fi
+
+    echo -e "[$Green PASS $ColorReset] Tests $testname successfull\n"
 )
 
 
