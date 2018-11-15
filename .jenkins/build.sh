@@ -17,7 +17,7 @@ Building Neurodamus...
 
 for version in $TEST_VERSIONS; do
     echo -e "[$Blue INFO $ColorReset] Building ${VERSIONS[$version]} $BUILD_OPTIONS"
-    spack install ${VERSIONS[$version]} $BUILD_OPTIONS
+    spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
 done
 
 echo -e "[$Green OK $ColorReset] Environment successfully setup\n"
