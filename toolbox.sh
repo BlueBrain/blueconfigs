@@ -46,7 +46,7 @@ blue_set() (
     grep $entry $blueconf > /dev/null
     if [ $? -ne 0 ]; then
         # add before first closing tag
-        sed "0,/}/s//   $entry $newval\n}/" $blueconf
+        sed -i "0,/}/s//    $entry $newval\n}/" $blueconf
     else
         blue_uncomment $entry $blueconf
         blue_change $entry $newval $blueconf

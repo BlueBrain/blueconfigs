@@ -1,0 +1,1 @@
+../scx-v6/test_multicycle_neuron.sh

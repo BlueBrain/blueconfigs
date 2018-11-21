@@ -1,22 +1,23 @@
 #!/bin/bash
 source .jenkins/envutils.sh
 
-# Test parameters eventually defined in Jenkins
+# Test parameters eventually defined by Jenkins (env vars)
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
 export TEST_VERSIONS=${TEST_VERSIONS:-"master master_no_syn2 hippocampus plasticity"}
 export SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 
 # Test definitions
-export DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
-DEFAULT_VARIANT="~coreneuron+syntool+python"
-BUILD_OPTIONS="%intel ^neuron+cross-compile+debug %intel"
+DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
+if [ $RUN_PY_TESTS = "yes" ]; then EXTRA_VARIANT="$EXTRA_VARIANT+python"; fi
+DEFAULT_VARIANT="${DEFAULT_VARIANT:-"~coreneuron+syntool"}$EXTRA_VARIANT"
+BUILD_OPTIONS="${BUILD_OPTIONS:-"%intel ^neuron+cross-compile+debug %intel"}"
 
 declare -A VERSIONS
 VERSIONS[master]="neurodamus@master$DEFAULT_VARIANT"
-VERSIONS[master_no_syn2]="neurodamus@master~coreneuron~syntool+python"
+VERSIONS[master_no_syn2]="neurodamus@master~coreneuron~syntool$EXTRA_VARIANT"
 VERSIONS[hippocampus]="neurodamus@hippocampus$DEFAULT_VARIANT"
-VERSIONS[plasticity]="neurodamus@plasticity+coreneuron+syntool+python"
+VERSIONS[plasticity]="neurodamus@plasticity+coreneuron+syntool$EXTRA_VARIANT"
 VERSIONS[master_quick]=${VERSIONS[master]}
 
 # list of simulations to run
@@ -31,9 +32,9 @@ TESTS[plasticity]="scx-v5-plasticity"
 
 ## Prepare spack
 if [[ -z "$USE_SYSTEM_SPACK" || -z "$SPACK_ROOT" ]]; then
-    export HOME="${WORKSPACE}/BUILD_HOME"
+    BUILD_HOME="${WORKSPACE}/BUILD_HOME"
     export SOFTS_DIR_PATH="${WORKSPACE}/INSTALL_HOME"
-    export SPACK_ROOT="${HOME}/spack"
+    export SPACK_ROOT="${BUILD_HOME}/spack"
     export PATH="${SPACK_ROOT}/bin:${PATH}"
 
     source .jenkins/spack_setup.sh

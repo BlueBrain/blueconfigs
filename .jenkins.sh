@@ -2,6 +2,10 @@
 set -ex
 _THISDIR=$(dirname $BASH_SOURCE)
 
+# In jenkins mode set HOME to BUILD_HOME
+export WORKSPACE=${WORKSPACE:-$_THISDIR}
+export HOME=$WORKSPACE/BUILD_HOME
+
 # Prepare environment / spack
 source $_THISDIR/.tests_setup.sh
 
