@@ -31,11 +31,14 @@ blue_uncomment() (
     sed -i "s#\#$line#$line#" $blueconf
 )
 
+
+# Changes the first occurence of some entry in
 blue_change() (
     entry=$1
     newval=$2
     blueconf=${3:-BlueConfig}
-    sed -i "s#$entry.*#$entry $newval#" $blueconf
+    section=${4:-'^Run'}
+    sed -i "/${section}/,/}/s#$entry.*#$entry $newval#" $blueconf
 )
 
 # Uncomments or adds if non-existing then set value
@@ -43,12 +46,12 @@ blue_set() (
     entry=$1
     newval=$2
     blueconf=${3:-BlueConfig}
-    grep $entry $blueconf > /dev/null
-    if [ $? -ne 0 ]; then
-        # add before first closing tag
-        sed -i "0,/}/s//    $entry $newval\n}/" $blueconf
-    else
+    section=${4:-'^Run'}
+    if (grep $entry $blueconf > /dev/null); then
         blue_uncomment $entry $blueconf
-        blue_change $entry $newval $blueconf
+        blue_change $entry $newval $blueconf $section
+    else
+        # add before first closing tag
+        sed -i "/${section}/,/}/s#}#    $entry $newval\n}#" $blueconf
     fi
 )

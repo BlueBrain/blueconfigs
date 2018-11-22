@@ -10,14 +10,14 @@ export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 # Test definitions
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 if [ $RUN_PY_TESTS = "yes" ]; then EXTRA_VARIANT="$EXTRA_VARIANT+python"; fi
-DEFAULT_VARIANT="${DEFAULT_VARIANT:-"~coreneuron+syntool"}$EXTRA_VARIANT"
-BUILD_OPTIONS="${BUILD_OPTIONS:-"%intel ^neuron+cross-compile+debug %intel"}"
+DEFAULT_VARIANT="${DEFAULT_VARIANT:-"~coreneuron+syntool"}$EXTRA_VARIANT %intel"
+BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+cross-compile+debug %intel"}"
 
 declare -A VERSIONS
 VERSIONS[master]="neurodamus@master$DEFAULT_VARIANT"
 VERSIONS[master_no_syn2]="neurodamus@master~coreneuron~syntool$EXTRA_VARIANT"
 VERSIONS[hippocampus]="neurodamus@hippocampus$DEFAULT_VARIANT"
-VERSIONS[plasticity]="neurodamus@plasticity+coreneuron+syntool$EXTRA_VARIANT"
+VERSIONS[plasticity]="neurodamus@plasticity+coreneuron+syntool$EXTRA_VARIANT ^coreneuron+debug%intel"
 VERSIONS[master_quick]=${VERSIONS[master]}
 
 # list of simulations to run
@@ -35,8 +35,6 @@ if [[ -z "$USE_SYSTEM_SPACK" || -z "$SPACK_ROOT" ]]; then
     BUILD_HOME="${WORKSPACE}/BUILD_HOME"
     export SOFTS_DIR_PATH="${WORKSPACE}/INSTALL_HOME"
     export SPACK_ROOT="${BUILD_HOME}/spack"
-    export PATH="${SPACK_ROOT}/bin:${PATH}"
-
     source .jenkins/spack_setup.sh
 fi
 

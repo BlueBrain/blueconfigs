@@ -2,6 +2,7 @@
 # NOTE: This file shall be sourced so that important variables are avail to other scripts
 ENVUTILS_LOADED=1
 unset $(set +x; env | awk -F= '/^(PMI|SLURM)_/ {print $1}' | xargs)
+unalias grep || true
 
 Red='\033[0;31m'
 Blue='\033[0;34m'
@@ -27,7 +28,7 @@ fi
 bb5_run() (
     set +x
     # default partition is interactive
-    partition="interactive"
+    partition=${partition:-"interactive"}
     hour=`date +%H`
     # during night is production
     if [ "$hour" -ge "20" ] || [ "$hour" -lt "8" ]; then partition="prod"; fi

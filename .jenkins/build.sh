@@ -25,4 +25,4 @@ echo -e "[$Green OK $ColorReset] Environment successfully setup\n"
 # After install MODULEPATH has to be set again (bug?)
 source $SPACK_ROOT/share/spack/setup-env.sh
 
-set -$_SET
+set +e -$_SET

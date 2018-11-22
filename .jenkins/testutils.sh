@@ -44,24 +44,30 @@ _prepare_test() {
     hash=$(echo $spec | md5sum | cut -c 1-8)
     cp BlueConfig "BlueConfig_$hash"
 
-    blueconfigs=("BlueConfig_$hash")
+    configsrc=("BlueConfig_$hash")
+    declare -gA blueconfigs
     declare -gA outputs
 
-    # Try find test_* scripts, which generate more BlueConfigs
+    # Default
+    blueconfigs["BlueConfig_$hash"]="BlueConfig_$hash"
+
+    # Try find test_*.sh scripts, which can do all sort of stuff and launch the sim
+    # This is specially required for save-resume simulation tests
     for bc_script in test_*.sh; do
         [ -f $bc_script ] || break  # bash will take it literally when does not exist
         bc_copy="BlueConfig_${bc_script:5:-3}_$hash"
         cp BlueConfig $bc_copy
-        sh $bc_script $bc_copy
-        blueconfigs+=( "$bc_copy" )
+        configsrc+=( "$bc_script" )
+        blueconfigs[$bc_script]=$bc_copy
     done
 
     # Patch all Blueconfigs, clean exisiting res
-    for bc in ${blueconfigs[@]}; do
+    for src in ${configsrc[@]}; do
+        bc=${blueconfigs[$src]}
         suffix=${bc:11}
         _output=output_$suffix
         sed -i "s#OutputRoot.*#OutputRoot $_output#" $bc
-        outputs["$bc"]=$_output
+        outputs["$src"]=$_output
         rm -rf $_output
     done
 
@@ -82,16 +88,16 @@ _prepare_test() {
 
 
 test_check_results() (
-    set -ex
+    set -e
     output=$1
-    ref_results=$2
+    ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
     ref_spikes=${3:-out.sorted}
     # Print nice msg on error
     trap "(set +x; echo -e \"[$Red Error $ColorReset] Results DON'T Match\n\"; exit 1)" ERR
 
     [ -f $output/spikes.dat ] && mv $output/spikes.dat $output/out.dat
     # Core neuron doesnt have a /scatter (!?)
-    grep '/scatter' $output/out.dat || sed -i '1s#^#/scatter\n#' $output/out.dat
+    grep '/scatter' $output/out.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out.dat
     sort -n -k'1,1' -k2 < $output/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $output/out.sorted
     diff -wy --suppress-common-lines $ref_spikes $output/out.sorted
 
@@ -113,40 +119,47 @@ run_test() (
     # Will set $blueconfigs and an $output associate array
     _prepare_test
 
-    if [ ${#blueconfigs[@]} -eq 1 ]; then
-        run_blueconfig $blueconfigs
-    	test_check_results "${outputs[$blueconfigs]}" "${REF_RESULTS[$testname]}"
+    if [ ${#configsrc[@]} -eq 1 ]; then
+        run_blueconfig $configsrc
+    	test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
     else
         # Otherwise we launch several processes to the background, store output and wait
         # Loop over $blueconfig tests
         declare -A pids
-        for bc in ${blueconfigs[@]}; do
-            echo -e "$Green => $ColorReset Starting simulation from $bc in parallel"
-            run_blueconfig $bc &> _$bc.log &
-            pids[$bc]=$!
+        for src in ${configsrc[@]}; do
+            echo -e "$Green => $ColorReset Starting simulation from $src in parallel"
+            configfile=${blueconfigs[$src]}
+            # When using test scripts
+            if [ ${src:(-3)} = .sh ]; then
+                runner=$src
+                (source ./$src $configfile ${outputs[$src]}) &> _$src.log &
+            else
+                run_blueconfig $configfile &> _$src.log &
+            fi
+            pids[$src]=$!
         done
 
         sleep 10  # Some time to have salloc info
-        for bc in ${blueconfigs[@]}; do
-            echo -e "[$Blue Info $ColorReset] Simulation $bc status:"
-            grep 'salloc:' _$bc.log | sed 's/^/    /'
+        for src in ${configsrc[@]}; do
+            echo -e "[$Blue Info $ColorReset] Simulation $src status:"
+            grep 'salloc:' _$src.log | sed 's/^/    /'
         done
 
         # Run checks in fg
         ERR=
         echo
-        for bc in ${blueconfigs[@]}; do
-            echo -e "$Green => $ColorReset Waiting for simulation $bc results"
-            wait ${pids[$bc]} || {
-                echo -e "[$Red Error $ColorReset] Failed to run simulation. Log:"; cat _$bc.log; ERR=y
+        for src in ${configsrc[@]}; do
+            echo -e "$Green => $ColorReset Waiting for simulation $src results"
+            wait ${pids[$src]} || {
+                echo -e "[$Red Error $ColorReset] Failed to run simulation. Log:"; cat _$src.log; ERR=y
                 continue
             }
 
-            echo "Simulation log:"; cat _$bc.log
+            echo "Simulation log:"; cat _$src.log
 
             # Inner -e is not respected if we have '||'. We need to check $?
             set +e
-            test_check_results "${outputs[$bc]}" "${REF_RESULTS[$testname]}"
+            test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
             [ $? -eq 0 ] || ERR=y
             set -e
         done
