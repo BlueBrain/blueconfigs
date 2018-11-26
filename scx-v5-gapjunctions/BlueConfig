@@ -21,7 +21,7 @@ Run Default
 
     RunMode RR
     CircuitTarget Column1k
-    Duration 100
+    Duration 60
     Dt 0.025
     ForwardSkip 5000
 }
@@ -46,7 +46,7 @@ Projection Thalamocortical_input_VPM
 Stimulus spikeReplay
 {
     Mode Current
-    Delay 50
+    Delay 0
     Duration 100000000
     Pattern SynapseReplay
     SpikeFile input6666.dat
