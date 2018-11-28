@@ -9,14 +9,14 @@ export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 
 # Test definitions
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
-if [ $RUN_PY_TESTS = "yes" ]; then EXTRA_VARIANT="$EXTRA_VARIANT+python"; fi
-DEFAULT_VARIANT="${DEFAULT_VARIANT:-"~coreneuron+syntool"}$EXTRA_VARIANT %intel"
+if [ $RUN_PY_TESTS = "yes" ]; then EXTRA_VARIANT="$ND_VARIANT+python"; fi
+VARIANT="${BASE_VARIANT:-"~coreneuron+syntool"} $EXTRA_VARIANT %intel"
 BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+cross-compile+debug %intel"}"
 
 declare -A VERSIONS
-VERSIONS[master]="neurodamus@master$DEFAULT_VARIANT"
+VERSIONS[master]="neurodamus@master$VARIANT"
 VERSIONS[master_no_syn2]="neurodamus@master~coreneuron~syntool$EXTRA_VARIANT"
-VERSIONS[hippocampus]="neurodamus@hippocampus$DEFAULT_VARIANT"
+VERSIONS[hippocampus]="neurodamus@hippocampus$VARIANT"
 VERSIONS[plasticity]="neurodamus@plasticity+coreneuron+syntool$EXTRA_VARIANT ^coreneuron+debug%intel"
 VERSIONS[master_quick]=${VERSIONS[master]}
 

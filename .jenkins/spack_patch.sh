@@ -1,15 +1,43 @@
 # Patch to use a different neurodamus branch
+sed_apply() (
+    f=$1
+    sedexp=$2
+    echo "PACTHED $f"
+    (cd $(dirname $f) && git checkout "$f") && sed -i "$sedexp" "$f"
+    grep 'version(' "$f"
+)
+
+# NEURODAMUS branch
+sedexp=
 if [ $NEURODAMUS_BRANCH_MASTER ]; then
-    sed -i "/master/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_MASTER')#g" \
-        ${SPACK_ROOT}/var/spack/repos/builtin/packages/neurodamus-base/package.py
+    sedexp="/master/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_MASTER')#g"
 fi
 if [ $NEURODAMUS_BRANCH_HIPPOCAMPUS ]; then
-    sed -i "/hippocampus/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_HIPPOCAMPUS')#g" \
-        ${SPACK_ROOT}/var/spack/repos/builtin/packages/neurodamus-base/package.py
+    sedexp="/hippocampus/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_HIPPOCAMPUS')#g"
 fi
 if [ $NEURODAMUS_BRANCH_PLASTICITY ]; then
-    sed -i "/plasticity/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_PLASTICITY')#g" \
-        ${SPACK_ROOT}/var/spack/repos/builtin/packages/neurodamus-base/package.py
+    sedexp="/plasticity/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_PLASTICITY')#g"
 fi
 
-grep version\( ${SPACK_ROOT}/var/spack/repos/builtin/packages/neurodamus-base/package.py
+[ "$sedexp" ] && sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/neurodamus-base/package.py" "$sedexp"
+
+
+# In synapsetool we replace version develop and delete all tag versions
+if [ $SYNAPSETOOL_BRANCH ]; then
+    sedexp="/version..develop/ s#version.*#version('develop', git=url, branch='$SYNAPSETOOL_BRANCH', submodules=True)#;
+            /git=url, tag=/ d"
+    sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/synapsetool/package.py" "$sedexp"
+fi
+
+
+# Coreneuron doesnt typically use branches, we add it.
+sedexp=
+if [ $CORENEURON_BRANCH ]; then
+    sedexp="s#git=url#git=url, branch='$CORENEURON_BRANCH'#g"
+fi
+if [ $CORENEURON_BRANCH_PLASTICITY ]; then
+    sedexp="/plasticity/ s#git=url#git=url, branch='$CORENEURON_BRANCH_PLASTICITY'#g"
+fi
+if [ "$sedexp" ]; then
+    sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/coreneuron/package.py" "$sedexp"
+fi

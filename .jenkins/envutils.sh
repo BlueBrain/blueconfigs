@@ -27,18 +27,14 @@ fi
 
 bb5_run() (
     set +x
-    # default partition is interactive
-    partition=${partition:-"interactive"}
+    # default partition is interactive. during night use production
     hour=`date +%H`
-    # during night is production
-    if [ "$hour" -ge "20" ] || [ "$hour" -lt "8" ]; then partition="prod"; fi
+    if [ "$hour" -ge "20" ] || [ "$hour" -lt "8" ]; then export SALLOC_PARTITION="prod"; fi
 
     N=${N:-1}
-    if [ -n "$n" ]; then
-        limit="-n$n"
-    fi
+    if [ -n "$n" ]; then SALLOC_OPTS="$SALLOC_OPTS -n$n"; fi
 
-    cmd_base="salloc -p$partition -N$N $limit --ntasks-per-node=36 -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00 srun --pty"
+    cmd_base="salloc -N$N $SALLOC_OPTS --ntasks-per-node=36 -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00 srun --pty"
     echo "$cmd_base $@"
     $cmd_base "$@"
 )
