@@ -39,6 +39,18 @@ Report soma
              EndTime 1000
 }
 
+Report gAMPA
+{
+              Target MiniColumn_712_10cell
+                Type Synapse
+            ReportOn ProbAMPANMDA_EMS.g_AMPA
+                Unit uS
+              Format Bin
+                  Dt 1.0
+           StartTime 0.0
+             EndTime 30000
+}
+
 # Report rho
 {
               Target AllCompartments_mc2_Excitatory
