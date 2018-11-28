@@ -24,11 +24,11 @@ def PARAMS = [
         master_quick: PACKAGE_DEFAULT_VARIANT
     ],
     tests: [
-        master: ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis"],
+        master: ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis", "quick-v5-multisplit"],
         master_no_syn2: ["scx-v5-gapjunctions"],
         hippocampus: ["hip-v6"],
         plasticity: ["scx-v5-plasticity"],
-        master_quick: ["quick-v5-gaps", "quick-v6"]
+        master_quick: ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"]
     ]
 ]
 

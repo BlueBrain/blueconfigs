@@ -23,9 +23,9 @@ VERSIONS[master_quick]=${VERSIONS[master]}
 # list of simulations to run
 # NOTE: scx-v5-gapjunctions is re-run without syn2 support since it's a very complete test
 declare -A TESTS
-TESTS[master]="scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis"
+TESTS[master]="scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis quick-v5-multisplit"
 TESTS[master_no_syn2]="scx-v5-gapjunctions"
-TESTS[master_quick]="quick-v5-gaps quick-v6"
+TESTS[master_quick]="quick-v5-gaps quick-v6 quick-v5-multisplit"
 TESTS[hippocampus]="hip-v6"
 TESTS[plasticity]="scx-v5-plasticity"
 
