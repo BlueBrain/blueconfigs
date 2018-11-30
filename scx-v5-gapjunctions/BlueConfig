@@ -29,7 +29,7 @@ Run Default
 Projection gapjunction
 {
     # can use absolute path
-    Path /gpfs/bbp.cscs.ch/project/proj2/circuits/SomatosensoryCxS1-v5.r0/O1/0p0um/ncsStructural_gjdevel_withsoma2/pathways/Cond0_5/AlltoAll
+    Path gap_junctions
     Type GapJunction
     Source Non
 }
