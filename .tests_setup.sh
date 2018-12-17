@@ -30,7 +30,9 @@ TESTS[hippocampus]="hip-v6"
 TESTS[plasticity]="scx-v5-plasticity"
 
 
-## Prepare spack
+# Prepare spack
+# =============
+
 if [[ -z "$USE_SYSTEM_SPACK" || -z "$SPACK_ROOT" ]]; then
     BUILD_HOME="${WORKSPACE}/BUILD_HOME"
     export SOFTS_DIR_PATH="${WORKSPACE}/INSTALL_HOME"
@@ -42,27 +44,29 @@ fi
 source .jenkins/testutils.sh
 
 
-# ------------------------
 # HELPERS
-# ------------------------
+# =======
+
 install_neurodamus() {
     source .jenkins/build.sh
 }
 
 
-run_all_tests() {
+run_all_tests() (
+    set -e
     for version in $TEST_VERSIONS; do
         spec=${VERSIONS[$version]}
         for testname in ${TESTS[$version]}; do
             run_test $testname $spec
         done
     done
-}
+)
 
 
-run_quick_tests() {
+run_quick_tests() (
+    set -e
     _TESTS_BK=$TEST_VERSIONS
     TEST_VERSIONS="master_quick"
     run_all_tests
     TEST_VERSIONS=$_TESTS_BK
-}
+)

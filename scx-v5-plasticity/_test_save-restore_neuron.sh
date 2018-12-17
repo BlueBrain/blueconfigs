@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 source ../toolbox.sh
 
 blue_comment '^Report' $1

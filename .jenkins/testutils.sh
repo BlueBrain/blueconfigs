@@ -1,8 +1,8 @@
 #!/bin/bash
 [ $ENVUTILS_LOADED ] || source "${BASH_SOURCE%/*}/envutils.sh"
-BLUECONFIG_DIR=`pwd`
 
 # defaults
+BLUECONFIG_DIR=`pwd`
 RUN_PY_TESTS="${RUN_PY_TESTS:-no}"
 DATADIR="${DATADIR:-/gpfs/bbp.cscs.ch/project/proj12/jenkins}"
 
@@ -100,10 +100,9 @@ test_check_results() (
     # Core neuron doesnt have a /scatter (!?)
     grep '/scatter' $output/out.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out.dat
     sort -n -k'1,1' -k2 < $output/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $output/out.sorted
-    diff -wy --suppress-common-lines $ref_spikes $output/out.sorted
+    (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out.sorted)
 
     # compare reports
-    set +x
     for report in $(cd $output && ls *.bbp); do
         (set -x; cmp "$ref_results/$report" "$output/$report")
     done
@@ -111,6 +110,14 @@ test_check_results() (
 )
 
 
+#
+# Main function to start a test given its directory name.
+# _prepare_test will additionally search for test_*.sh files and call them with a copy
+#     of BlueConfig. Tests are then ran in parallel
+#
+# @param testname : The directory name containing the test, from the suite
+# @param spec : the neurodamus spack version to be loaded (unique spec)
+#
 run_test() (
     set -e
     testname=$1
@@ -132,7 +139,6 @@ run_test() (
             configfile=${blueconfigs[$src]}
             # When using test scripts
             if [ ${src:(-3)} = .sh ]; then
-                runner=$src
                 (source ./$src $configfile ${outputs[$src]}) &> _$src.log &
             else
                 run_blueconfig $configfile &> _$src.log &
@@ -174,11 +180,43 @@ run_test() (
     echo -e "[$Green PASS $ColorReset] Tests $testname successfull\n"
 )
 
+#
+# Alternative function to start, in debug mode, a test given its directory name.
+# Simiar to start_test() except it will enable bash -x and run sub-tests sequentially
+#
+run_test_debug() (
+    set -xe
+    testname=$1
+    spec=$2
+    export OMP_NUM_THREADS=1
 
+    # Will set $blueconfigs and an $output associate array
+    _prepare_test
+
+    for src in ${configsrc[@]}; do
+        echo -e "$Green => $ColorReset Starting simulation from $src"
+        configfile=${blueconfigs[$src]}
+
+        # When using test scripts
+        if [ ${src:(-3)} = .sh ]; then
+            (source ./$src $configfile ${outputs[$src]})
+        else
+            run_blueconfig $configfile
+        fi
+        test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
+    done
+    echo -e "[$Green PASS $ColorReset] Tests $testname successfull\n"
+)
+
+
+#
 # Run neurodmus directly on a given blueconfig
+#
+# @param configFile: (optional) The BlueConfig for the simulation
+#
 run_blueconfig() (
     set -e
-    configfile=$1
+    configfile=${1:-"BlueConfig"}
 
     if [[ $RUN_PY_TESTS == "yes" && $NEURODAMUS_PYTHON ]]; then
         INIT_ARGS=("-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile")
@@ -191,6 +229,9 @@ run_blueconfig() (
 )
 
 
+#
+# Launches a debug neurodamus session, using '_debug.[hoc/py]'
+#
 run_debug() (
     testname=$1
     spec=$2
@@ -206,7 +247,8 @@ run_debug() (
 )
 
 
-# Prepare for immediate test run
+# Prepare env for running tests
+# -----------------------------
 if [ -z $SPACK_ROOT ]; then
     echo "Warning: no SPACK_ROOT. Please setup spack before launching tests. Consider sourcing '.tests_setup.sh' instead"
 else

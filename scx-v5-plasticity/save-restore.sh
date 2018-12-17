@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 configfile=$1
 config1=${configfile}.first
 config2=${configfile}.second
@@ -35,8 +36,6 @@ check_report_length() (
      [[ -f "$rep" && "$rep" != $output/checkpoint.bbp ]] || continue
      [ $(set +x; somaDump $rep $(listgid $rep | head -n1) | wc -l) -eq $length ]
   done
-  # We need to delete these reports, otherwise the framework wil compare them
-  rm -f $output/*.bbp
 )
 
 echo "Running FIRST PART"
@@ -50,6 +49,9 @@ check_report_length $output2 15
 echo "Running THIRD PART"
 run_blueconfig $config3
 check_report_length $output3 15
+
+# delete bbp files otherwise the framework will try to compare them
+rm -f $output1/*.bbp $output2/*.bbp $output3/*.bbp
 
 # Combine results to be tested against reference results
 cat $output2/out.dat >> $output1/out.dat

@@ -51,6 +51,7 @@ popd
 source "${BASH_SOURCE%/*}/spack_patch.sh"
 
 # spack env
+set +x
 source $SPACK_ROOT/share/spack/setup-env.sh
 
 # restore
