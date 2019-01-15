@@ -36,8 +36,11 @@ TESTS[plasticity]="scx-v5-plasticity"
 if [[ -z "$USE_SYSTEM_SPACK" || -z "$SPACK_ROOT" ]]; then
     BUILD_HOME="${WORKSPACE}/BUILD_HOME"
     export SOFTS_DIR_PATH="${WORKSPACE}/INSTALL_HOME"
+    export SPACK_INSTALL_PREFIX="${WORKSPACE}/INSTALL_HOME"
     export SPACK_ROOT="${BUILD_HOME}/spack"
     source .jenkins/spack_setup.sh
+    # Temporarily required since latest large patches
+    export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
 fi
 
 # load test/check routines

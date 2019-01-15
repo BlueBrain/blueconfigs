@@ -55,8 +55,10 @@ pipeline {
         DATADIR = "/gpfs/bbp.cscs.ch/project/proj12/jenkins"
         HOME = "${WORKSPACE}/BUILD_HOME"
         SOFTS_DIR_PATH = "${WORKSPACE}/INSTALL_HOME"
+        SPACK_INSTALL_PREFIX = "${WORKSPACE}/INSTALL_HOME"
         SPACK_ROOT = "${HOME}/spack"
         PATH = "${SPACK_ROOT}/bin:${PATH}"
+        MODULEPATH="${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
     }
 
     stages {

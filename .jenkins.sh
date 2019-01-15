@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-_THISDIR=$(dirname $BASH_SOURCE)
+_THISDIR=$(readlink -f $(dirname $BASH_SOURCE))
 
 # In jenkins mode set HOME to BUILD_HOME
 export WORKSPACE=${WORKSPACE:-$_THISDIR}
