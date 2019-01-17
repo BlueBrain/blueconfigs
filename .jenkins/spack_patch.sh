@@ -3,7 +3,7 @@ sed_apply() (
     f=$1
     sedexp=$2
     echo "PACTHED $f"
-    (cd $(dirname $f) && git checkout "$f") && sed -i "$sedexp" "$f"
+    (cd $(dirname $f) && git checkout "$(basename $f)") && sed -i "$sedexp" "$f"
     grep 'version(' "$f"
 )
 

@@ -1,18 +1,18 @@
 #!/bin/bash
 set -e
-configfile=$1
-config1=${configfile}.first
-config2=${configfile}.second
-config3=${configfile}.third
+_bc=${1:-BlueConfig}
+config1=${_bc}.first
+config2=${_bc}.second
+config3=${_bc}.third
 
-output1=$2
+output1=${2:-output}
 output2=${output1}.second
 output3=${output1}.third
 
-blue_set Dt "2.0" $configfile '^Report'
-cp $configfile $config1
-cp $configfile $config2
-cp $configfile $config3
+blue_set Dt "2.0" $_bc '^Report'
+cp $_bc $config1
+cp $_bc $config2
+cp $_bc $config3
 
 blue_set Duration 40 $config1
 blue_set SpikeFile input.dat $config1

@@ -22,7 +22,7 @@ if [[ -z "$ADDITIONAL_ENV_VARS" && -n "$GERRIT_CHANGE_COMMIT_MESSAGE" ]]; then
     ADDITIONAL_ENV_VARS=$(set +x; echo "$GERRIT_CHANGE_COMMIT_MESSAGE" | sed -n "s/^ENV_VARS://p")
 fi
 # Handle generic env variables set
-[ $ADDITIONAL_ENV_VARS ] && eval $ADDITIONAL_ENV_VARS
+[ "$ADDITIONAL_ENV_VARS" ] && eval $ADDITIONAL_ENV_VARS
 
 
 bb5_run() (

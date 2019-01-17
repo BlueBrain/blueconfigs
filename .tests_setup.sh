@@ -3,31 +3,30 @@ source .jenkins/envutils.sh
 
 # Test parameters eventually defined by Jenkins (env vars)
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS=${TEST_VERSIONS:-"master master_no_syn2 hippocampus plasticity"}
+export TEST_VERSIONS=${TEST_VERSIONS:-"master_bare master plasticity hippocampus"}
 export SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 
 # Test definitions
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 if [ $RUN_PY_TESTS = "yes" ]; then EXTRA_VARIANT="$ND_VARIANT+python"; fi
-VARIANT="${BASE_VARIANT:-"~coreneuron+syntool"} $EXTRA_VARIANT %intel"
 BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+cross-compile+debug %intel"}"
+DEFAULT_VARIANT="~plasticity+coreneuron+synapsetool"
+CORENRN_DEP="^coreneuron+debug"
 
 declare -A VERSIONS
-VERSIONS[master]="neurodamus@master$VARIANT"
-VERSIONS[master_no_syn2]="neurodamus@master~coreneuron~syntool$EXTRA_VARIANT"
-VERSIONS[hippocampus]="neurodamus@hippocampus$VARIANT"
-VERSIONS[plasticity]="neurodamus@plasticity+coreneuron+syntool$EXTRA_VARIANT ^coreneuron+debug%intel"
-VERSIONS[master_quick]=${VERSIONS[master]}
+# Master is a plain v5+v6 version
+VERSIONS[master]="neurodamus-neocortex@develop$DEFAULT_VARIANT $CORENRN_DEP"
+VERSIONS[master_no_syn2]="neurodamus-neocortex@develop~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
+VERSIONS[plasticity]="neurodamus-neocortex@develop+plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
+VERSIONS[hippocampus]="neurodamus-hippocampus@develop$EXTRA_VARIANT"
 
 # list of simulations to run
-# NOTE: scx-v5-gapjunctions is re-run without syn2 support since it's a very complete test
 declare -A TESTS
-TESTS[master]="scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis quick-v5-multisplit"
-TESTS[master_no_syn2]="scx-v5-gapjunctions"
-TESTS[master_quick]="quick-v5-gaps quick-v6 quick-v5-multisplit"
-TESTS[hippocampus]="hip-v6"
+TESTS[master]="scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis"
+TESTS[master_no_syn2]="quick-v5-gaps quick-v6 quick-v5-multisplit"
 TESTS[plasticity]="scx-v5-plasticity"
+TESTS[hippocampus]="hip-v6"
 
 
 # Prepare spack
@@ -50,15 +49,17 @@ source .jenkins/testutils.sh
 # HELPERS
 # =======
 
-install_neurodamus() {
+install_neurodamus() (
     source .jenkins/build.sh
-}
+)
 
 
 run_all_tests() (
     set -e
+    unset spec
+    which special || LOAD_SPEC=1
     for version in $TEST_VERSIONS; do
-        spec=${VERSIONS[$version]}
+        [ $LOAD_SPEC ] && spec=${VERSIONS[$version]}
         for testname in ${TESTS[$version]}; do
             run_test $testname $spec
         done
@@ -67,7 +68,6 @@ run_all_tests() (
 
 
 run_quick_tests() (
-    set -e
     _TESTS_BK=$TEST_VERSIONS
     TEST_VERSIONS="master_quick"
     run_all_tests

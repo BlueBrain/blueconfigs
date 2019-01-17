@@ -55,3 +55,12 @@ blue_set() (
         sed -i "/${section}/,/}/s#}#    $entry $newval\n}#" $blueconf
     fi
 )
+
+# Copies the configfile to avoid messing the original
+# Sets new variable $configfile
+configfile_bk() {
+    f0=${1:-BlueConfig}
+    blueconfig=${f0}.copy
+    cp $f0 $blueconfig
+}
+

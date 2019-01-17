@@ -53,7 +53,7 @@ Report compartment
              EndTime 1000
 }
 
-Report rho
+#Report rho
 {
               Target AllCompartments_mc2_Excitatory
                 Type Synapse
@@ -65,7 +65,7 @@ Report rho
              EndTime 1000
 }
 
-Report use
+#Report use
 {
               Target AllCompartments_mc2_Excitatory
                 Type Synapse

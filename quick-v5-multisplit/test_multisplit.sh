@@ -1,11 +1,12 @@
 #!/bin/sh
 source ../toolbox.sh
+configfile_bk $1
 
-echo ">> Setting RunMode to LoadBalance in $1"
-blue_set RunMode LoadBalance $1
+echo ">> Setting RunMode to LoadBalance in $blueconfig"
+blue_set RunMode LoadBalance $blueconfig
 
 # Clear eventual leftovers from previous run
 rm -rf cx*
 
 # Simulate with 8 ranks (Multisplit is still troublesome with ranks >> cells)
-n=8 run_blueconfig $1
+n=8 run_blueconfig $blueconfig
