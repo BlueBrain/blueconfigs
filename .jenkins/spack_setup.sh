@@ -33,13 +33,10 @@ if [ ! -d $SPACK_ROOT ]; then
 
     # Patch to bbp configs
     mkdir -p $SPACK_ROOT/etc/spack/defaults/linux
-    cp $SPACK_ROOT/sysconfig/bb5/users/* $SPACK_ROOT/etc/spack/defaults/linux/
+    cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/*.yaml $SPACK_ROOT/etc/spack/
 
     # Use develop packages.yaml
-    cp $DATADIR/devel_builds/packages.yaml $SPACK_ROOT/etc/spack/defaults/linux/
-
-    # Patch for modules suffix, otherwise clash
-    sed -i "s#hash_length: 0#hash_length: 8#g" $SPACK_ROOT/etc/spack/defaults/linux/modules.yaml
+    cp $DATADIR/devel_builds/packages.yaml $SPACK_ROOT/etc/spack/
 fi
 
 # Get back to workspace

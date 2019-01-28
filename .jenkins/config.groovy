@@ -4,7 +4,7 @@ library(identifier: 'bbp@master',
              remote: 'ssh://bbpcode.epfl.ch/hpc/jenkins-pipeline']))
 
 def PACKAGE="neurodamus"
-def PACKAGE_DEFAULT_VARIANT = "~coreneuron+syntool+python"
+def PACKAGE_DEFAULT_VARIANT = "~coreneuron+syntool"
 def PACKAGE_COMPILE_OPTIONS ="%intel ^neuron+cross-compile+debug%intel "
 def EXTENDED_RESULTS ="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular"
 def PACKAGES_YAML = "/gpfs/bbp.cscs.ch/project/proj12/jenkins/devel_builds/packages.yaml"
@@ -18,9 +18,9 @@ def PARAMS = [
     ],
     specs: [
         master: PACKAGE_DEFAULT_VARIANT,
-        master_no_syn2: "~coreneuron~syntool+python",
+        master_no_syn2: "~coreneuron~syntool",
         hippocampus: PACKAGE_DEFAULT_VARIANT,
-        plasticity: "+coreneuron+syntool+python",
+        plasticity: "+coreneuron+syntool",
         master_quick: PACKAGE_DEFAULT_VARIANT
     ],
     tests: [
