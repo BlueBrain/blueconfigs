@@ -1,0 +1,190 @@
+Run Default
+{
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus
+    CellLibraryFile circuit.mvd3
+    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/functional
+
+    MorphologyPath  /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/morph_release
+    METypePath      /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/emodels
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/mecombo_emodel.tsv
+
+    BaseSeed 360820
+
+    CurrentDir .
+    OutputRoot output
+    TargetFile user.target
+
+
+    RunMode RR
+    CircuitTarget Small
+    Duration 300
+    Dt 0.025
+    ForwardSkip 5000
+}
+
+Projection MedialLemniscus
+{
+    Path projections/ML
+    Source ML_afferents
+}
+
+Report soma
+{
+    Target All
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format Bin
+    Dt 0.1
+    StartTime 0
+    EndTime 7000
+}
+
+Stimulus spikeReplay
+{
+    Mode Current
+    Delay 0
+    Duration 500
+    Pattern SynapseReplay
+    SpikeFile input.dat
+
+}
+
+StimulusInject spikeReplayIntoUniverse
+{
+    Stimulus spikeReplay
+    Target Mosaic
+}
+
+Stimulus ThresholdDepol
+{
+
+          Mode Current
+       Pattern Noise
+   MeanPercent 200.0
+      Variance 0.001
+         Delay 2000.0
+      Duration 2500.0
+}
+
+
+StimulusInject ThresholdDepolInj
+{
+    Stimulus ThresholdDepol
+    Target VPL_TC
+}
+
+
+Stimulus hypamp
+{
+      Mode Current
+   Pattern Hyperpolarizing
+     Delay 0.0
+  Duration 7000
+}
+
+StimulusInject hypamp_mosaic
+{
+    Stimulus hypamp
+    Target Mosaic
+}
+
+
+
+# Adjust global synapse parameters, e.g. reversals
+Connection GABAB_erev
+{
+	Source Inhibitory
+	Destination Mosaic
+	Weight 1.0
+	SynapseConfigure %s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081
+}
+
+Connection MGGate
+{
+	Source Excitatory
+	Destination Mosaic
+	Weight 1.0
+	SynapseConfigure %s.mg = 1.0
+}
+
+# Use adjustments due to Calcium 2.0 mM compared to normal 2.0 mM
+
+#Connection scheme_CaUse_ee
+{
+              Source Excitatory
+         Destination Excitatory
+              Weight 1.0
+    SynapseConfigure %s.Use *= 1.0
+}
+
+Connection scheme_CaUse_e_2_Other_Inh
+{
+              Source Excitatory
+         Destination Inhibitory
+              Weight 1.0
+    SynapseConfigure %s.Use *= 1.0
+}
+
+Connection scheme_CaUse_Other_Inh_2_e
+{
+              Source Inhibitory
+         Destination Excitatory
+              Weight 1.0
+    SynapseConfigure %s.Use *= 1.0
+}
+
+Connection scheme_CaUse_Inh_Inh
+{
+              Source Inhibitory
+         Destination Inhibitory
+              Weight 1.0
+    SynapseConfigure %s.Use *= 1.0
+}
+
+
+# Adjust AMPA_NMDA and GABAA_B ratios
+#Connection scheme_minus2
+{
+              Source Excitatory
+         Destination Excitatory
+              Weight 1.0
+    SynapseConfigure %s.NMDA_ratio = 0.4
+}
+
+Connection scheme_minus1
+{
+              Source Excitatory
+         Destination Inhibitory
+              Weight 1.0
+    SynapseConfigure %s.NMDA_ratio = 0.8
+}
+
+
+Connection scheme1b
+{
+              Source Inhibitory
+         Destination Excitatory
+              Weight 1.0
+    SynapseConfigure %s.GABAB_ratio = 0.75
+}
+
+Connection scheme2b
+{
+              Source Inhibitory
+         Destination Inhibitory
+              Weight 1.0
+    SynapseConfigure %s.GABAB_ratio = 0.75
+}
+
+
+Connection scheme_CaUse_ee_tc2c
+{
+              Source ML_afferents
+         Destination Mosaic
+              Weight 1.0
+    SynapseConfigure %s.Use *= 1.0
+}
+
+
+

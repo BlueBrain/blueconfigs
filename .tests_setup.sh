@@ -3,7 +3,7 @@ source .jenkins/envutils.sh
 
 # Test parameters eventually defined by Jenkins (env vars)
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS=${TEST_VERSIONS:-"master_bare master plasticity hippocampus"}
+export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity hippocampus thalamus"}
 export SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 
@@ -16,17 +16,19 @@ CORENRN_DEP="^coreneuron+debug"
 
 declare -A VERSIONS
 # Master is a plain v5+v6 version
-VERSIONS[master]="neurodamus-neocortex@develop$DEFAULT_VARIANT $CORENRN_DEP"
-VERSIONS[master_no_syn2]="neurodamus-neocortex@develop~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
-VERSIONS[plasticity]="neurodamus-neocortex@develop+plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
+VERSIONS[neocortex]="neurodamus-neocortex@develop$DEFAULT_VARIANT $CORENRN_DEP"
+VERSIONS[ncx_bare]="neurodamus-neocortex@develop~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
+VERSIONS[ncx_plasticity]="neurodamus-neocortex@develop+plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
 VERSIONS[hippocampus]="neurodamus-hippocampus@develop$EXTRA_VARIANT"
+VERSIONS[thalamus]="neurodamus-thalamus@develop$EXTRA_VARIANT"
 
 # list of simulations to run
 declare -A TESTS
-TESTS[master]="scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis"
-TESTS[master_no_syn2]="quick-v5-gaps quick-v6 quick-v5-multisplit"
-TESTS[plasticity]="scx-v5-plasticity"
+TESTS[neocortex]="scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis"
+TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit"
+TESTS[ncx_plasticity]="scx-v5-plasticity"
 TESTS[hippocampus]="hip-v6"
+TESTS[thalamus]="thalamus"
 
 
 # Prepare spack
@@ -68,8 +70,13 @@ run_all_tests() (
 
 
 run_quick_tests() (
-    _TESTS_BK=$TEST_VERSIONS
-    TEST_VERSIONS="master_quick"
+    _VERSIONS_BK=$TEST_VERSIONS
+    _TESTS_NCX=${TESTS[neocortex]}
+    TEST_VERSIONS="ncx_bare neocortex"
+    TESTS[neocortex]=${TESTS[ncx_bare]}
+
     run_all_tests
-    TEST_VERSIONS=$_TESTS_BK
+
+    TEST_VERSIONS=$_VERSIONS_BK
+    TESTS[neocortex]=_TESTS_NCX
 )

@@ -9,16 +9,18 @@ def EXTENDED_RESULTS ="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular"
 def PACKAGES_YAML = "/gpfs/bbp.cscs.ch/project/proj12/jenkins/devel_builds/packages.yaml"
 def PARAMS = [
     versions: [
-        master:      "neurodamus-neocortex@develop%intel"   + "~plasticity+coreneuron+synapsetool" + CORENRN_DEP,
-        master_no_syn2: "neurodamus-neocortex@develop%intel"   + "~plasticity~coreneuron~synapsetool",
-        plasticity:  "neurodamus-neocortex@develop%intel"   + "+plasticity+coreneuron+synapsetool" + CORENRN_DEP,
-        hippocampus: "neurodamus-hippocampus@develop%intel" + "~coreneuron+synapsetool",
+        neocortex:      "neurodamus-neocortex@develop%intel"   + "~plasticity+coreneuron+synapsetool" + CORENRN_DEP,
+        ncx_bare:       "neurodamus-neocortex@develop%intel"   + "~plasticity~coreneuron~synapsetool",
+        ncx_plasticity: "neurodamus-neocortex@develop%intel"   + "+plasticity+coreneuron+synapsetool" + CORENRN_DEP,
+        hippocampus:    "neurodamus-hippocampus@develop%intel" + "~coreneuron+synapsetool",
+        thalamus:       "neurodamus-thalamus@develop%intel"    + "~coreneuron+synapsetool",
     ],
     tests: [
-        master:       ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis", "quick-v5-multisplit"],
-        master_no_syn2:  ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"],
-        plasticity:   ["scx-v5-plasticity"],
-        hippocampus:  ["hip-v6"],
+        neocortex:      ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis", "quick-v5-multisplit"],
+        ncx_bare:       ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"],
+        ncx_plasticity: ["scx-v5-plasticity"],
+        hippocampus:    ["hip-v6"],
+        thalamus:       ["thalamus"],
     ]
 ]
 
@@ -27,13 +29,19 @@ pipeline {
     agent { label 'bb5' }
 
     parameters {
-        string(name: 'GERRIT_REFSPEC', defaultValue: '', description: 'What refspec to fetch for the build (leave empty for standard manual build)', )
-        string(name: 'GERRIT_PATCHSET_REVISION', defaultValue: 'master', description: 'Which revision to build (master for standard manual build)', )
-        text(name: 'TEST_VERSIONS', defaultValue: "master_no_syn2\nmaster\nhippocampus\nplasticity",
-             description: 'Which version of the package to build & test.' )
-        string(name: 'SPACK_BRANCH', defaultValue: 'develop', description: 'Which branch of spack to use for the build.', )
-        string(name: 'RUN_PY_TESTS', defaultValue: 'no', description: 'Run tests with Python Neurodamus, or plain hoc')
-        string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '', description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x')
+        string(name: 'GERRIT_REFSPEC', defaultValue: '',
+               description: 'What refspec to fetch for the build (leave empty for standard manual build)', )
+        string(name: 'GERRIT_PATCHSET_REVISION', defaultValue: 'master',
+               description: 'Which revision to build (master for standard manual build)')
+        text(name: 'TEST_VERSIONS',
+             defaultValue: "neocortex\nncx_bare\nncx_plasticity\nhippocampus\nthalamus",
+             description: 'Which version of the package to build & test.')
+        string(name: 'SPACK_BRANCH', defaultValue: 'develop',
+               description: 'Which branch of spack to use for the build.')
+        string(name: 'RUN_PY_TESTS', defaultValue: 'no',
+               description: 'Run tests with Python Neurodamus, or plain hoc')
+        string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '',
+               description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x')
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '')
     }
 
