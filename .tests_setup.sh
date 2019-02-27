@@ -33,11 +33,11 @@ TESTS[thalamus]="thalamus"
 
 # Prepare spack
 # =============
+export SPACK_INSTALL_PREFIX="${SPACK_INSTALL_PREFIX:-${WORKSPACE}/INSTALL_HOME}"
+export SOFTS_DIR_PATH=$SPACK_INSTALL_PREFIX  # Deprecated, but might still be reqd
 
 if [[ -z "$USE_SYSTEM_SPACK" || -z "$SPACK_ROOT" ]]; then
     BUILD_HOME="${WORKSPACE}/BUILD_HOME"
-    export SOFTS_DIR_PATH="${WORKSPACE}/INSTALL_HOME"
-    export SPACK_INSTALL_PREFIX="${WORKSPACE}/INSTALL_HOME"
     export SPACK_ROOT="${BUILD_HOME}/spack"
     source .jenkins/spack_setup.sh
     # Temporarily required since latest large patches
