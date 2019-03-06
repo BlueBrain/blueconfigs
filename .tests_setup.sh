@@ -16,7 +16,7 @@ CORENRN_DEP="^coreneuron+debug"
 
 declare -A VERSIONS
 # Master is a plain v5+v6 version
-VERSIONS[neocortex]="neurodamus-neocortex@develop$DEFAULT_VARIANT $CORENRN_DEP"
+VERSIONS[neocortex]="neurodamus-neocortex@develop$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
 VERSIONS[ncx_bare]="neurodamus-neocortex@develop~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
 VERSIONS[ncx_plasticity]="neurodamus-neocortex@develop+plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
 VERSIONS[hippocampus]="neurodamus-hippocampus@develop$EXTRA_VARIANT"
