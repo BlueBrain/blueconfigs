@@ -21,6 +21,11 @@ def PARAMS = [
         ncx_plasticity: ["scx-v5-plasticity"],
         hippocampus:    ["hip-v6"],
         thalamus:       ["thalamus"],
+    ],
+    test_groups: [
+        ['ncx_bare'],
+        ['neocortex'],
+        ['ncx_plasticity', 'hippocampus', 'thalamus']
     ]
 ]
 
@@ -86,25 +91,30 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    def tasks = [:]
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
-                    for (ver in test_versions) {
-                        def spec = "${PARAMS.versions[ver]}"
-                        for (name in PARAMS.tests[ver]) {
-                            def testname = name
-                            def taskname = ver + '-' + name
-                            tasks[taskname] = {
-                                stage(taskname) {
-                                    sh("""
-                                        source .jenkins/testutils.sh
-                                        run_test ${testname} ${spec}
-                                        """
-                                    )
+                    for (group in PARAMS.test_groups) {
+                        def tasks = [:]
+                        for (ver in test_versions) {
+                            if( ! group.contains(ver) ) {
+                                continue
+                            }
+                            def spec = "${PARAMS.versions[ver]}"
+                            for (name in PARAMS.tests[ver]) {
+                                def testname = name
+                                def taskname = ver + '-' + name
+                                tasks[taskname] = {
+                                    stage(taskname) {
+                                        sh("""
+                                            source .jenkins/testutils.sh
+                                            run_test ${testname} ${spec}
+                                            """
+                                        )
+                                    }
                                 }
                             }
                         }
+                        parallel tasks
                     }
-                    parallel tasks
                 }
             }
         }
