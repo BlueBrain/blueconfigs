@@ -81,7 +81,7 @@ _prepare_test() {
     if [ $spec != "default" ]; then
         echo "COMMANDS: module purge; spack load $spec"
         module purge
-        if [ $RUN_PY_TESTS = "yes" ]; then spack load python; fi
+        if [ $RUN_PY_TESTS = "yes" ]; then spack load python@3.6.5d; fi
         spack load $spec
     fi
     module list
