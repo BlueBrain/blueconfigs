@@ -3,7 +3,7 @@ source .jenkins/envutils.sh
 
 # Test parameters eventually defined by Jenkins (env vars)
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS=${TEST_VERSIONS:-"master plasticity master_sympy plasticity_sympy mousify_sympy"}
+export TEST_VERSIONS="master hippocampus plasticity master_sympy hippocampus_sympy plasticity_sympy mousify_sympy"
 export SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 
@@ -24,8 +24,10 @@ VERSIONS[mousify_sympy]="neurodamus@mousify+coreneuron^coreneuron+nmodl+sympy+de
 # NOTE: scx-v5-gapjunctions is re-run without syn2 support since it's a very complete test
 declare -A TESTS
 TESTS[master]="scx-v5 scx-2k-v6 scx-v5-bonus-minis"
+TESTS[hippocampus]="scx-v5-hippocampus"
 TESTS[plasticity]="scx-v5-plasticity"
 TESTS[master_sympy]="scx-v5 scx-2k-v6 scx-v5-bonus-minis"
+TESTS[hippocampus_sympy]="scx-v5-hippocampus"
 TESTS[plasticity_sympy]="scx-v5-plasticity"
 TESTS[mousify_sympy]="mousify"
 
