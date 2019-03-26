@@ -1,0 +1,126 @@
+Run Default
+{
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj68/circuits/O1/20190307
+    nrnPath /gpfs/bbp.cscs.ch/project/proj68/circuits/O1/20190307/connectome/functional
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj68/circuits/O1/20190307/morphologies
+    METypePath /gpfs/bbp.cscs.ch/project/proj68/entities/emodels/20190227.dev/hoc
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj68/circuits/O1/20190307/mecombo_emodel.tsv
+    CellLibraryFile circuit.mvd3
+    BioName /gpfs/bbp.cscs.ch/project/proj68/circuits/O1/20190307/bioname
+    Atlas /gpfs/bbp.cscs.ch/project/proj66/entities/dev/atlas/O1-152/
+
+    Simulator NEURON
+    RNGMode Random123
+    BaseSeed 719775
+
+	CurrentDir .
+    OutputRoot output
+	TargetFile user.target
+
+    RunMode RR
+    CircuitTarget circuit1k
+    Duration 100
+    Dt 0.025
+}
+
+Projection All
+{
+    Path /gpfs/bbp.cscs.ch/project/proj68/circuits/O1/20190307/connectome/functional/All/circuit-aff.syn2
+    Source All
+}
+
+Report soma
+{
+        Target Mosaic
+        Type compartment
+        ReportOn v
+        Unit mV
+        Format Bin
+        Dt 1.0
+        StartTime 0
+        EndTime 10000
+}
+
+#Report use
+{
+              Target AllCompartments_Excitatory
+                Type Synapse
+            ReportOn ProbAMPANMDA_EMS.tsyn
+                Unit nd
+              Format Bin
+                  Dt 100.0
+           StartTime 0.0
+             EndTime 1000
+}
+
+#Report compartments
+{
+        Target AllCompartments
+        Type compartment
+        ReportOn v
+        Unit mV
+        Format Bin
+        Dt 0.25
+        StartTime 0
+        EndTime 1000
+}
+
+#Report compartments_cell
+{
+        Target Visualization_target_cell
+        Type compartment
+        ReportOn v
+        Unit mV
+        Format Bin
+        Dt 0.25
+        StartTime 0
+        EndTime 20000
+}
+
+Stimulus ThresholdExc
+{
+
+              Mode Current
+           Pattern Noise
+       MeanPercent 85.0
+          Variance 0.001
+             Delay 0.000000
+          Duration 4000
+}
+
+Stimulus ThresholdInh
+{
+
+              Mode Current
+           Pattern Noise
+       MeanPercent 85.0
+          Variance 0.001
+             Delay 0.000000
+          Duration 4000
+}
+
+StimulusInject ThresholdIntoExc
+{
+        Stimulus ThresholdExc
+        Target Excitatory
+}
+
+StimulusInject ThresholdIntoInh
+{
+        Stimulus ThresholdInh
+        Target Inhibitory
+}
+
+Stimulus hypamp
+{
+        Mode Current
+  Pattern Hyperpolarizing
+        Delay 0.0
+  Duration 4000
+}
+
+StimulusInject hypamp_mosaic
+{
+        Stimulus hypamp
+        Target Mosaic
+}
