@@ -8,12 +8,12 @@ Run Default
     METypePath      /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/emodels
     MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/mecombo_emodel.tsv
 
+    Simulator NEURON
     BaseSeed 360820
 
     CurrentDir .
     OutputRoot output
     TargetFile user.target
-
 
     RunMode RR
     CircuitTarget Small

@@ -16,6 +16,7 @@ Run Default
     BonusSynapseFile /gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit/ncsThalamocortical_VPM_tcS2F_2p6_ps/proj_nrn.h5
     NumBonusFiles 8192
 
+    Simulator NEURON
     BaseSeed 6013
     RNGMode Random123
 

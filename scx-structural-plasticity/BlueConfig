@@ -12,7 +12,8 @@ Run Default
           nrnPath /gpfs/bbp.cscs.ch/project/proj32/circuits/rewire_SomatosensoryCxS1-v5.r0/merged_circuit/ncsStructural
       SynapseMask /gpfs/bbp.cscs.ch/project/proj32/circuits/rewire_SomatosensoryCxS1-v5.r0/merged_circuit/ncsStructural/nrn_mask.h5
 
-         BaseSeed 4203921
+      Simulator NEURON
+      BaseSeed 4203921
 
        CurrentDir .
        OutputRoot neurodamus_output

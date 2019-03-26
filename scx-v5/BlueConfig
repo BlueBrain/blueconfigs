@@ -11,7 +11,7 @@ Run Default
         CircuitPath /gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit
         nrnPath /gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit/ncsFunctionalAllRecipePathways
 
-        SimulatorMode NEURON
+        Simulator NEURON
         BaseSeed 767740
         RNGMode Random123
 

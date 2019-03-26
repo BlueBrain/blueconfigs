@@ -8,7 +8,7 @@ Run Default
     nrnPath /gpfs/bbp.cscs.ch/project/proj64/circuits/S1.v6a/20171206/ncsFunctionalAllRecipePathways
     CellLibraryFile circuit.mvd3
 
-    SimulatorMode NEURON
+    Simulator NEURON
     RNGMode Random123
     BaseSeed 719775
 
