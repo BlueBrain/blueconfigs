@@ -3,38 +3,37 @@ source .jenkins/envutils.sh
 
 # Test parameters eventually defined by Jenkins (env vars)
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity hippocampus thalamus"}
+export TEST_VERSIONS=${TEST_VERSIONS:-"master plasticity master_sympy plasticity_sympy mousify_sympy"}
 export SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 
 # Test definitions
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
-if [ $RUN_PY_TESTS = "yes" ]; then EXTRA_VARIANT="$ND_VARIANT+python"; fi
-BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+cross-compile+debug %intel"}"
-DEFAULT_VARIANT="~plasticity+coreneuron+synapsetool"
-CORENRN_DEP="^coreneuron+debug"
+BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+cross-compile+debug %intel "}"
 
 declare -A VERSIONS
-# Master is a plain v5+v6 version
-VERSIONS[neocortex]="neurodamus-neocortex@develop$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
-VERSIONS[ncx_bare]="neurodamus-neocortex@develop~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
-VERSIONS[ncx_plasticity]="neurodamus-neocortex@develop+plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
-VERSIONS[hippocampus]="neurodamus-hippocampus@develop$EXTRA_VARIANT"
-VERSIONS[thalamus]="neurodamus-thalamus@develop$EXTRA_VARIANT"
+VERSIONS[master]="neurodamus@master+coreneuron^coreneuron+nmodl~sympy+debug"
+VERSIONS[hippocampus]="neurodamus@hippocampus+coreneuron^coreneuron+nmodl~sympy+debug"
+VERSIONS[plasticity]="neurodamus@plasticity+coreneuron^coreneuron+nmodl~sympy+debug"
+VERSIONS[master_sympy]="neurodamus@master+coreneuron^coreneuron+nmodl+sympy+debug"
+VERSIONS[hippocampus_sympy]="neurodamus@hippocampus+coreneuron^coreneuron+nmodl+sympy+debug"
+VERSIONS[plasticity_sympy]="neurodamus@plasticity+coreneuron^coreneuron+nmodl+sympy+debug"
+VERSIONS[mousify_sympy]="neurodamus@mousify+coreneuron^coreneuron+nmodl+sympy+debug"
 
 # list of simulations to run
+# NOTE: scx-v5-gapjunctions is re-run without syn2 support since it's a very complete test
 declare -A TESTS
-TESTS[neocortex]="scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis"
-TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit"
-TESTS[ncx_plasticity]="scx-v5-plasticity"
-TESTS[hippocampus]="hip-v6"
-TESTS[thalamus]="thalamus"
+TESTS[master]="scx-v5 scx-2k-v6 scx-v5-bonus-minis"
+TESTS[plasticity]="scx-v5-plasticity"
+TESTS[master_sympy]="scx-v5 scx-2k-v6 scx-v5-bonus-minis"
+TESTS[plasticity_sympy]="scx-v5-plasticity"
+TESTS[mousify_sympy]="mousify"
 
 
 # Prepare spack
 # =============
-export SPACK_INSTALL_PREFIX="${SPACK_INSTALL_PREFIX:-${WORKSPACE}/INSTALL_HOME}"
-export SOFTS_DIR_PATH=$SPACK_INSTALL_PREFIX  # Deprecated, but might still be reqd
+export SOFTS_DIR_PATH="${WORKSPACE}/INSTALL_HOME"
+export SPACK_INSTALL_PREFIX="$SOFTS_DIR_PATH"
 
 if [[ -z "$USE_SYSTEM_SPACK" || -z "$SPACK_ROOT" ]]; then
     BUILD_HOME="${WORKSPACE}/BUILD_HOME"
@@ -51,32 +50,20 @@ source .jenkins/testutils.sh
 # HELPERS
 # =======
 
-install_neurodamus() (
+install_neurodamus() {
     source .jenkins/build.sh
-)
+}
 
 
 run_all_tests() (
-    set -e
-    unset spec
-    which special || LOAD_SPEC=1
+    set +e  # Continue on errors
     for version in $TEST_VERSIONS; do
-        [ $LOAD_SPEC ] && spec=${VERSIONS[$version]}
+        spec=${VERSIONS[$version]}
         for testname in ${TESTS[$version]}; do
+            echo "Patching for no reports"
+            sed -i 's/Report/#Report/' $testname/BlueConfig
             run_test $testname $spec
         done
     done
 )
 
-
-run_quick_tests() (
-    _VERSIONS_BK=$TEST_VERSIONS
-    _TESTS_NCX=${TESTS[neocortex]}
-    TEST_VERSIONS="ncx_bare neocortex"
-    TESTS[neocortex]=${TESTS[ncx_bare]}
-
-    run_all_tests
-
-    TEST_VERSIONS=$_VERSIONS_BK
-    TESTS[neocortex]=_TESTS_NCX
-)
