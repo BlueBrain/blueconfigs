@@ -4,7 +4,7 @@ source .jenkins/envutils.sh
 # Test parameters eventually defined by Jenkins (env vars)
 set +x
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity hippocampus thalamus"}
+export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify"}
 export SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRANCH; RUN_PY_TESTS=$RUN_PY_TESTS" "DBG"
@@ -24,6 +24,7 @@ VERSIONS[ncx_bare]="neurodamus-neocortex@develop~plasticity~coreneuron~synapseto
 VERSIONS[ncx_plasticity]="neurodamus-neocortex@develop+plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
 VERSIONS[hippocampus]="neurodamus-hippocampus@develop$EXTRA_VARIANT"
 VERSIONS[thalamus]="neurodamus-thalamus@develop$EXTRA_VARIANT"
+VERSIONS[mousify]="neurodamus@mousify$EXTRA_VARIANT"
 
 # list of simulations to run
 declare -A TESTS
@@ -32,6 +33,7 @@ TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit"
 TESTS[ncx_plasticity]="scx-v5-plasticity"
 TESTS[hippocampus]="hip-v6"
 TESTS[thalamus]="thalamus"
+TESTS[mousify]="mousify"
 
 # Prepare spack (install+env)
 source .jenkins/spack_setup.sh

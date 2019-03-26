@@ -14,11 +14,12 @@ def PARAMS = [
         ncx_plasticity: ["scx-v5-plasticity"],
         hippocampus:    ["hip-v6"],
         thalamus:       ["thalamus"],
+        mousify:        ['mousify']
     ],
     test_groups: [
         ['ncx_bare'],
         ['neocortex'],
-        ['ncx_plasticity', 'hippocampus', 'thalamus']
+        ['ncx_plasticity', 'hippocampus', 'thalamus', 'mousify']
     ]
 ]
 
@@ -32,7 +33,7 @@ pipeline {
         string(name: 'GERRIT_PATCHSET_REVISION', defaultValue: 'master',
                description: 'Which revision to build (master for standard manual build)')
         text(name: 'TEST_VERSIONS',
-             defaultValue: "neocortex\nncx_bare\nncx_plasticity\nhippocampus\nthalamus",
+             defaultValue: "neocortex\nncx_bare\nncx_plasticity\nhippocampus\nthalamus\nmousify",
              description: 'Which version of the package to build & test.')
         string(name: 'SPACK_BRANCH', defaultValue: 'develop',
                description: 'Which branch of spack to use for the build.')
