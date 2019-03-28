@@ -17,6 +17,8 @@ Run Default
     OutputRoot output
     TargetFile user.target
 
+    RNGMode Random123
+
     Simulator NEURON
     BaseSeed 10
 
