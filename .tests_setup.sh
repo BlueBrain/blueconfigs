@@ -3,7 +3,7 @@ source .jenkins/envutils.sh
 
 # Test parameters eventually defined by Jenkins (env vars)
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS="master hippocampus plasticity master_sympy hippocampus_sympy plasticity_sympy mousify_sympy"
+export TEST_VERSIONS=${TEST_VERSIONS:-"master hippocampus plasticity master_sympy hippocampus_sympy plasticity_sympy mousify_sympy"}
 export SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 
