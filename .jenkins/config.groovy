@@ -8,13 +8,6 @@ def CORENRN_DEP = "^coreneuron+debug"
 def EXTENDED_RESULTS ="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular"
 def PACKAGES_YAML = "/gpfs/bbp.cscs.ch/project/proj12/jenkins/devel_builds/packages.yaml"
 def PARAMS = [
-    versions: [
-        neocortex:      "neurodamus-neocortex@develop%intel"   + "~plasticity+coreneuron+synapsetool" + CORENRN_DEP,
-        ncx_bare:       "neurodamus-neocortex@develop%intel"   + "~plasticity~coreneuron~synapsetool",
-        ncx_plasticity: "neurodamus-neocortex@develop%intel"   + "+plasticity+coreneuron+synapsetool" + CORENRN_DEP,
-        hippocampus:    "neurodamus-hippocampus@develop%intel" + "~coreneuron+synapsetool",
-        thalamus:       "neurodamus-thalamus@develop%intel"    + "~coreneuron+synapsetool",
-    ],
     tests: [
         neocortex:      ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis", "quick-v5-multisplit"],
         ncx_bare:       ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"],
@@ -67,7 +60,7 @@ pipeline {
     stages {
         stage("Setup Spack") {
             steps {
-                sh("source .jenkins/spack_setup.sh")
+                sh("source ${WORKSPACE}/.tests_setup.sh")
             }
         }
         stage('Build') {
@@ -75,13 +68,8 @@ pipeline {
                 script {
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
                     for (ver in test_versions) {
-                        def fullspec = "${PARAMS.versions[ver]}" + PACKAGE_COMPILE_OPTIONS
-                        sh("""
-                            source ${WORKSPACE}/.jenkins/envutils.sh
-                            set +x
-                            echo "\n\nINSTALLING ${fullspec} (ver=$ver)"
-                            source ${SPACK_ROOT}/share/spack/setup-env.sh
-                            spack install --show-log-on-error $fullspec
+                        sh("""source ${WORKSPACE}/.tests_setup.sh
+                            install_neurodamus ${ver}
                             """
                         )
                     }
@@ -98,15 +86,14 @@ pipeline {
                             if( ! group.contains(ver) ) {
                                 continue
                             }
-                            def spec = "${PARAMS.versions[ver]}"
                             for (name in PARAMS.tests[ver]) {
                                 def testname = name
                                 def taskname = ver + '-' + name
+                                def v = ver
                                 tasks[taskname] = {
                                     stage(taskname) {
-                                        sh("""
-                                            source .jenkins/testutils.sh
-                                            run_test ${testname} ${spec}
+                                        sh("""source ${WORKSPACE}/.tests_setup.sh
+                                            run_test ${testname} \${VERSIONS[$v]}
                                             """
                                         )
                                     }

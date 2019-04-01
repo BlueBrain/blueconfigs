@@ -1,28 +1,33 @@
 #!/bin/bash
-_SET=$-
-set -e
-[ $ENVUTILS_LOADED ] || source "${BASH_SOURCE%/*}/envutils.sh"
-set +x
-source $SPACK_ROOT/share/spack/setup-env.sh
+_THISDIR=$(readlink -f $(dirname $BASH_SOURCE))
+source "$_THISDIR/envutils.sh"
 
-# If reusing software, be sure modules uptodate
+install_neurodamus() (
+set -e +x
+echo "
+=====================================================================
+Building required Neurodamus versions
+====================================================================="
+if [[ -z "$1" && -z "$TEST_VERSIONS" ]]; then
+    log_error "No TEST_VERSIONS defined and no argument specifying version to install"
+    false
+fi
+if [ -z "$SPACK_ROOT" ]; then
+    log_error "No spack available"
+    false
+fi
+
+log "Spack module refresh"
 spack module tcl refresh -y --delete-tree
 
-################################## BUILD REQUIRED PACKAGES #############################
+declare ND_VERSIONS=${1:-"$TEST_VERSIONS"}
 
-# inside jenkins or slurm job we have to build neuron's nmodl separately
-echo "
-Building Neurodamus...
-======================"
-
-for version in $TEST_VERSIONS; do
-    echo -e "[$Blue INFO $ColorReset] Building ${VERSIONS[$version]} $BUILD_OPTIONS  (version=$version)"
+for version in $ND_VERSIONS; do
+    log "Building ${VERSIONS[$version]} $BUILD_OPTIONS  (version=$version)"
     spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
 done
 
-echo -e "[$Green OK $ColorReset] Environment successfully setup\n"
+log_ok "Environment successfully setup"
 
-# After install MODULEPATH has to be set again (bug?)
-source $SPACK_ROOT/share/spack/setup-env.sh
+) #eof install_neurodamus f
 
-set +e -$_SET

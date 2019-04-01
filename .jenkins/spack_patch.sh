@@ -1,8 +1,10 @@
+[ -n "$SPACK_SETUP_DONE" ] && return || true
+
 # Patch to use a different neurodamus branch
 sed_apply() (
     f=$1
     sedexp=$2
-    echo "PACTHED $f"
+    log "PATCHING $f..."
     (cd $(dirname $f) && git checkout "$(basename $f)") && sed -i "$sedexp" "$f"
     grep 'version(' "$f"
 )

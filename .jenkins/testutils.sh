@@ -1,13 +1,14 @@
 #!/bin/bash
 [ $ENVUTILS_LOADED ] || source "${BASH_SOURCE%/*}/envutils.sh"
 
-# defaults
-BLUECONFIG_DIR=`pwd`
-RUN_PY_TESTS="${RUN_PY_TESTS:-no}"
-DATADIR="${DATADIR:-/gpfs/bbp.cscs.ch/project/proj12/jenkins}"
+log "Loading test definitions..."
 
-# list of simulation results
+# defaults
+RUN_PY_TESTS="${RUN_PY_TESTS:-no}"
+BLUECONFIG_DIR=`pwd`
+DATADIR="${DATADIR:-/gpfs/bbp.cscs.ch/project/proj12/jenkins}"
 EXTENDED_RESULTS="$DATADIR/cellular"
+
 declare -A REF_RESULTS
 REF_RESULTS["scx-v5"]="$EXTENDED_RESULTS/circuit-scx-v5/simulation"
 REF_RESULTS["scx-v6"]="$EXTENDED_RESULTS/circuit-scx-v6/simulation"
@@ -29,7 +30,7 @@ _prepare_test() {
         if [[ -f BlueConfig && -f out.sorted ]]; then
             testname="${PWD##*/}"
         else
-            echo "Test name not provided and not found in cur dir"
+            log_error  "Test name not provided and not found in cur dir"
             exit -1
         fi
     else
@@ -43,7 +44,7 @@ _prepare_test() {
     fi
 
     # To run in parallel output and BlueConfig must be unique
-    hash=$(echo $spec | md5sum | cut -c 1-8)
+    hash=$(echo "$spec" | md5sum | cut -c 1-8)
     cp BlueConfig "BlueConfig_$hash"
 
     configsrc=("BlueConfig_$hash")
@@ -75,13 +76,12 @@ _prepare_test() {
 
     # load env modules
     set +x
-    echo -e "\n[$Blue INFO $ColorReset] Running test $testname ($spec) #$hash"
-    echo -e "[$Blue INFO $ColorReset] ------------------"
+    log "Launching test $testname ($spec) #$hash"
 
     if [ $spec != "default" ]; then
-        echo "COMMANDS: module purge; spack load $spec"
+        log "COMMANDS: module purge; spack load $spec" "DBG"
         module purge
-        if [ $RUN_PY_TESTS = "yes" ]; then spack load python@3.6.5d; fi
+        if [ $RUN_PY_TESTS = "yes" ]; then module load python; fi
         spack load $spec
     fi
     module list
@@ -95,7 +95,7 @@ test_check_results() (
     ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
     ref_spikes=${3:-out.sorted}
     # Print nice msg on error
-    trap "(set +x; echo -e \"[$Red Error $ColorReset] Results DON'T Match\n\"; exit 1)" ERR
+    trap "(set +x; log_error \"Results DON'T Match\n\"; exit 1)" ERR
 
     [ -f $output/spikes.dat ] && mv $output/spikes.dat $output/out.dat
     # Core neuron doesnt have a /scatter (!?)
@@ -107,7 +107,7 @@ test_check_results() (
     for report in $(cd $output && ls *.bbp); do
         (set -x; cmp "$ref_results/$report" "$output/$report")
     done
-    echo -e "[$Green OK $ColorReset] Results Match\n"
+    log_ok "Results Match"
 )
 
 
@@ -123,7 +123,11 @@ run_test() (
     set -e
     testname=$1
     spec=$2
-    export OMP_NUM_THREADS=2
+
+    (set +x; log
+     log "------------ TEST: $testname ------------"
+     log "spec: $spec"
+    )
 
     # Will set $blueconfigs and an $output associate array
     _prepare_test
@@ -136,7 +140,7 @@ run_test() (
         # Loop over $blueconfig tests
         declare -A pids
         for src in ${configsrc[@]}; do
-            echo -e "$Green => $ColorReset Starting simulation from $src in parallel"
+            log "Starting simulation from $src in parallel"
             configfile=${blueconfigs[$src]}
             # When using test scripts
             if [ ${src:(-3)} = .sh ]; then
@@ -149,7 +153,7 @@ run_test() (
 
         sleep 10  # Some time to have salloc info
         for src in ${configsrc[@]}; do
-            echo -e "[$Blue Info $ColorReset] Simulation $src status:"
+            log "Simulation $src status:"
             grep 'salloc:' _$src.log | sed 's/^/    /'
         done
 
@@ -157,28 +161,29 @@ run_test() (
         ERR=
         echo
         for src in ${configsrc[@]}; do
-            echo -e "$Green => $ColorReset Waiting for simulation $src results"
+           log "Waiting for simulation $src results..."
             wait ${pids[$src]} || {
-                echo -e "[$Red Error $ColorReset] Failed to run simulation. Log:"; cat _$src.log; ERR=y
+                log_error "Failed to run simulation. Log:"; cat _$src.log; ERR=y
                 continue
             }
 
-            echo "Simulation log:"; cat _$src.log
+            log "Finished. Simulation log:"; cat _$src.log
 
             # Inner -e is not respected if we have '||'. We need to check $?
             set +e
+            log "Checking results..."
             test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
             [ $? -eq 0 ] || ERR=y
             set -e
         done
 
         if [ $ERR ]; then
-            echo -e "[$Red FAIL $ColorReset] Tests $testname failed\n"
+            log_error "Tests $testname failed\n"
             return 1
         fi
     fi
 
-    echo -e "[$Green PASS $ColorReset] Tests $testname successfull\n"
+    log_ok "Tests $testname successfull\n" "PASS"
 )
 
 #
@@ -195,7 +200,7 @@ run_test_debug() (
     _prepare_test
 
     for src in ${configsrc[@]}; do
-        echo -e "$Green => $ColorReset Starting simulation from $src"
+        log "Starting simulation from $src"
         configfile=${blueconfigs[$src]}
 
         # When using test scripts
@@ -206,7 +211,7 @@ run_test_debug() (
         fi
         test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
     done
-    echo -e "[$Green PASS $ColorReset] Tests $testname successfull\n"
+    log_ok "Tests $testname successfull\n" "PASS"
 )
 
 
@@ -234,6 +239,7 @@ run_blueconfig() (
 # Launches a debug neurodamus session, using '_debug.[hoc/py]'
 #
 run_debug() (
+    set -e
     testname=$1
     spec=$2
     _prepare_test
@@ -248,12 +254,50 @@ run_debug() (
 )
 
 
+# HELPERS
+# =======
+
+run_all_tests() (
+    (set +x; echo """
+=====================================================================
+Running tests
+=====================================================================
+""")
+    set -e
+    unset spec
+    which special || LOAD_SPEC=1
+    for version in $TEST_VERSIONS; do
+        [ $LOAD_SPEC ] && spec=${VERSIONS[$version]}
+        for testname in ${TESTS[$version]}; do
+            run_test $testname $spec
+        done
+    done
+)
+
+
+run_quick_tests() (
+    set -e
+    _VERSIONS_BK=$TEST_VERSIONS
+    _TESTS_NCX=${TESTS[neocortex]}
+    TEST_VERSIONS="ncx_bare neocortex"
+    TESTS[neocortex]=${TESTS[ncx_bare]}
+
+    run_all_tests
+
+    TEST_VERSIONS=$_VERSIONS_BK
+    TESTS[neocortex]=_TESTS_NCX
+)
+
+
 # Prepare env for running tests
 # -----------------------------
 if [ -z $SPACK_ROOT ]; then
-    echo "Warning: no SPACK_ROOT. Please setup spack before launching tests. Consider sourcing '.tests_setup.sh' instead"
+    log_warn "No SPACK_ROOT. Please setup spack before launching tests. Consider sourcing '.tests_setup.sh' instead"
+    return 1
 else
-    _set=$-; set +x -e
+    set +x
     source $SPACK_ROOT/share/spack/setup-env.sh
-    set +e -$_set
+    log_ok "Tests ready"
+    set -$_setbk
 fi
+
