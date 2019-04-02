@@ -20,6 +20,10 @@ def PARAMS = [
         ['ncx_bare'],
         ['neocortex'],
         ['ncx_plasticity', 'hippocampus', 'thalamus', 'mousify']
+    ],
+    alternate: [
+        // Run again some tests with diff configs
+        ncx_bare: [version:'neocortex', env:'RUN_PY_TESTS=yes', tag:'PYTHON']
     ]
 ]
 
@@ -94,9 +98,23 @@ pipeline {
                                 tasks[taskname] = {
                                     stage(taskname) {
                                         sh("""source ${WORKSPACE}/.tests_setup.sh
-                                            run_test ${testname} \${VERSIONS[$v]}
-                                            """
+                                              run_test ${testname} \${VERSIONS[$v]}
+                                             """
                                         )
+                                    }
+                                }
+                                if(PARAMS.alternate.containsKey(ver)) {
+                                    def conf=PARAMS.alternate[ver]
+                                    def v2 = conf.version
+                                    def taskname2 = conf.tag + '_' + v2 + '-' + name
+                                    tasks[taskname2] = {
+                                        stage(taskname2) {
+                                            sh("""export ${conf.get('env', '')}
+                                                  source ${WORKSPACE}/.tests_setup.sh
+                                                  run_test ${testname} \${VERSIONS[$v2]}
+                                                 """
+                                            )
+                                        }
                                     }
                                 }
                             }

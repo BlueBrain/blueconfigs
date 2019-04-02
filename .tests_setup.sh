@@ -11,7 +11,7 @@ log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRA
 
 # Test definitions
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
-if [ $RUN_PY_TESTS = "yes" ]; then EXTRA_VARIANT="$ND_VARIANT+python"; fi
+EXTRA_VARIANT="$ND_VARIANT+python"
 BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+cross-compile+debug %intel"}"
 DEFAULT_VARIANT="~plasticity+coreneuron+synapsetool"
 CORENRN_DEP="^coreneuron+debug"

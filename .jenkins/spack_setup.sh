@@ -33,14 +33,15 @@ export PATH=$SPACK_ROOT/bin/spack:/usr/bin:$PATH
 
 # MODULES
 # Use spack only modules. Last one is added by changing MODULEPATH since it might not exist yet
+module purge
 unset MODULEPATH
 source /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/modules.sh
 module use $DATADIR/devel_builds_04-2019/modules/tcl/linux-rhel7-x86_64
 export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
+PYDEPS_PATH=$BUILD_HOME/pydevpkgs
 
 
-
-############################## CLONE/SETUP REPOSITORY #############################
+############################# CLONE/SETUP REPOSITORY #############################
 
 install_spack() (
     set -e
@@ -63,14 +64,51 @@ install_spack() (
     # sed -i -r "s#([[:space:]]*)(.*)(/parallel')#\1\2\3\n\1'^synapsetool': '\/syntool'#" $SPACK_ROOT/etc/spack/modules.yaml
 )
 
-# Install a Spack environment if needed
-if [ -d $SPACK_ROOT ]; then
-    log_warn "Using existing spack at $SPACK_ROOT"
-else
-    install_spack
-fi
 
-# PATCH SPACK sources
-source "$_THISDIR/spack_patch.sh"
-log_ok "Spack environment setup done"
+# Use centralized python-dev package set
+config_py_deps() (
+    set -e
+    # create a link to centralized site-packages
+    site_pkgs=$($DATADIR/devel_builds_04-2019/pyenv/bin/python -m site | grep devel_builds_04-2019 | sed "s#[,']##g" )
+    log "Configuring Python dependencies (src: $site_pkgs)"
+    ln -sf $site_pkgs $PYDEPS_PATH
+
+   external_pkg_tpl='
+  ${PKG_NAME}:
+    version: [${PKG_VERSION}]
+    paths:
+      ${PKG_NAME}@${PKG_VERSION}${PKG_VARIANT}: ${PKG_PATH}'
+    external_pkg_module_tpl="$external_pkg_tpl"'
+    modules:
+      ${PKG_NAME}@${PKG_VERSION}${PKG_VARIANT}: ${PKG_MODULE}'
+
+    # mpi4py (work w intel stack)
+    echo "$external_pkg_module_tpl" | PKG_NAME=py-mpi4py PKG_VERSION=99 PKG_PATH=. PKG_MODULE=py-mpi4py \
+        envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
+
+    for pkg in numpy h5py lazy-property setuptools; do
+        echo "$external_pkg_tpl" | PKG_NAME=py-$pkg PKG_VERSION=99 PKG_PATH=pydeps envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
+    done
+)
+
+
+spack_setup() (
+    set -e
+    # Install a Spack environment if needed
+    if [ -d $SPACK_ROOT ]; then
+        log_warn "Using existing spack at $SPACK_ROOT"
+    else
+        install_spack
+    fi
+
+    # Setup python deps
+    [ -e "$PYDEPS_PATH" ] || config_py_deps
+
+    # PATCH SPACK sources
+    source "$_THISDIR/spack_patch.sh"
+    log_ok "Spack environment setup done"
+)
+
+
+spack_setup
 

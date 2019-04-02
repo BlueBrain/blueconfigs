@@ -41,7 +41,7 @@ _prepare_test() {
     # If neurodamus spec not given, check cur loaded
     if [ -z "$spec" ]; then
         spec=default
-        which special  # Ensure available
+        which special # Ensure available
     fi
 
     # To run in parallel output and BlueConfig must be unique
@@ -82,7 +82,11 @@ _prepare_test() {
     if [ $spec != "default" ]; then
         log "COMMANDS: module purge; spack load $spec" "DBG"
         module purge
-        if [ $RUN_PY_TESTS = "yes" ]; then module load python; fi
+        if [ $RUN_PY_TESTS = "yes" ]; then
+            log "Loading python with deps"
+            module load python
+            export PYTHONPATH="$BUILD_HOME/pydevpkgs:$PYTHONPATH"
+       fi
         spack load $spec
     fi
     module list
@@ -266,7 +270,7 @@ Running tests
 """)
     set -e
     unset spec
-    which special || LOAD_SPEC=1
+    which special &> /dev/null || LOAD_SPEC=1
     for version in $TEST_VERSIONS; do
         [ $LOAD_SPEC ] && spec=${VERSIONS[$version]}
         for testname in ${TESTS[$version]}; do
