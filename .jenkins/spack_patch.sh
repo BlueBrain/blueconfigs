@@ -16,7 +16,7 @@ sed_apply() (
 # In the original neurodamus repo there were no tags
 # We now have to strip them off as well to avoid using them instead of master
 strip_nd_git_tags() (
-    nd_projects=(core neocortex hippocampus thalamus)
+    nd_projects=(core neocortex hippocampus thalamus mousify)
     for proj in ${nd_projects[@]}; do
         pkg_file=$PKGS_BASE/neurodamus-$proj/package.py
         sed -i '/version.*tag=/d' $pkg_file

@@ -21,6 +21,7 @@ if [[ "$USE_SYSTEM_SPACK" && "$SPACK_ROOT" ]]; then
     return
 fi
 
+DEVEL_DEPLOY=$DATADIR/devel_builds_04-2019/
 BUILD_HOME="${WORKSPACE}/BUILD_HOME"
 export SPACK_ROOT="${BUILD_HOME}/spack"
 log "SPACK_INSTALL_PREFIX=$SPACK_INSTALL_PREFIX; BUILD_HOME=$BUILD_HOME" DBG
@@ -57,8 +58,8 @@ install_spack() (
     mkdir -p $SPACK_ROOT/etc/spack/defaults/linux
     cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/*.yaml $SPACK_ROOT/etc/spack/
 
-    # Use develop upstream
-    cp $DATADIR/devel_builds_04-2019/upstreams.yaml $SPACK_ROOT/etc/spack/
+    # Override configs/upstream with devel
+    cp $DEVEL_DEPLOY/*.yaml $SPACK_ROOT/etc/spack/
     # Avoid clash. Dont autoload
     sed -i 's#hash_length:.*#hash_lengh: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml
     # sed -i -r "s#([[:space:]]*)(.*)(/parallel')#\1\2\3\n\1'^synapsetool': '\/syntool'#" $SPACK_ROOT/etc/spack/modules.yaml
@@ -69,7 +70,7 @@ install_spack() (
 config_py_deps() (
     set -e
     # create a link to centralized site-packages
-    site_pkgs=$($DATADIR/devel_builds_04-2019/pyenv/bin/python -m site | grep devel_builds_04-2019 | sed "s#[,']##g" )
+    site_pkgs=$($DEVEL_DEPLOY/pyenv/bin/python -m site | grep $DEVEL_DEPLOY | sed "s#[,']##g" )
     log "Configuring Python dependencies (src: $site_pkgs)"
     ln -sf $site_pkgs $PYDEPS_PATH
 
