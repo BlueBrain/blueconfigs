@@ -31,7 +31,7 @@ declare -A TESTS
 TESTS[neocortex]="scx-v5 scx-v6 scx-1k-v5 scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis"
 TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit"
 TESTS[ncx_plasticity]="scx-v5-plasticity"
-TESTS[hippocampus]="hip-v6"
+TESTS[hippocampus]="hip-v6 hip-v6-mcr4"
 TESTS[thalamus]="thalamus"
 TESTS[mousify]="mousify"
 

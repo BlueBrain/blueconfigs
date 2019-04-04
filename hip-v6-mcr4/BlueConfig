@@ -18,7 +18,7 @@ Run Default
     TargetFile user.target
 
     Simulator NEURON
-    RNGMode Random123
+    RNGMode Compatibility
     BaseSeed 10
 
     RunMode RR
@@ -40,7 +40,7 @@ Report soma
     EndTime 1000
 }
 
-Report compartment
+#Report compartment
 {
     Target AllCompartments
     Type compartment
