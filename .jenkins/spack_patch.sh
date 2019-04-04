@@ -1,4 +1,7 @@
-[ -n "$SPACK_SETUP_DONE" ] && return || true
+[ -f spack_patched.flag ] && return || log "Patching spack packages source"
+
+PKGS_BASE="${SPACK_ROOT}/var/spack/repos/builtin/packages"
+
 
 # Patch to use a different neurodamus branch
 sed_apply() (
@@ -9,37 +12,55 @@ sed_apply() (
     grep 'version(' "$f"
 )
 
-# NEURODAMUS branch
-sedexp=
-if [ $NEURODAMUS_BRANCH_MASTER ]; then
-    sedexp="/master/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_MASTER')#g"
-fi
-if [ $NEURODAMUS_BRANCH_HIPPOCAMPUS ]; then
-    sedexp="/hippocampus/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_HIPPOCAMPUS')#g"
-fi
-if [ $NEURODAMUS_BRANCH_PLASTICITY ]; then
-    sedexp="/plasticity/ s#branch=[^)]*)#branch='$NEURODAMUS_BRANCH_PLASTICITY')#g"
-fi
 
-[ "$sedexp" ] && sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/neurodamus-base/package.py" "$sedexp"
+# In the original neurodamus repo there were no tags
+# We now have to strip them off as well to avoid using them instead of master
+strip_nd_git_tags() (
+    nd_projects=(core neocortex hippocampus thalamus)
+    for proj in ${nd_projects[@]}; do
+        pkg_file=$PKGS_BASE/neurodamus-$proj/package.py
+        sed -i '/version.*tag=/d' $pkg_file
 
-
-# In synapsetool we replace version develop and delete all tag versions
-if [ $SYNAPSETOOL_BRANCH ]; then
-    sedexp="/version..develop/ s#version.*#version('develop', git=url, branch='$SYNAPSETOOL_BRANCH', submodules=True)#;
-            /git=url, tag=/ d"
-    sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/synapsetool/package.py" "$sedexp"
-fi
+        # change branch if requested
+        BVAR="NEURODAMUS_BRANCH_${proj^^}"
+        if [ "${!BVAR}" ]; then
+            sed_apply $pkg_file 's#branch=[^)]*)#branch='${!BVAR}')#g"'
+        fi
+    done
+)
 
 
-# Coreneuron doesnt typically use branches, we add it.
-sedexp=
-if [ $CORENEURON_BRANCH ]; then
-    sedexp="s#git=url#git=url, branch='$CORENEURON_BRANCH'#g"
-fi
-if [ $CORENEURON_BRANCH_PLASTICITY ]; then
-    sedexp="/plasticity/ s#git=url#git=url, branch='$CORENEURON_BRANCH_PLASTICITY'#g"
-fi
-if [ "$sedexp" ]; then
-    sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/coreneuron/package.py" "$sedexp"
-fi
+check_patch_syntool() (
+    # In synapsetool we replace version develop and delete all tag versions
+    if [ $SYNAPSETOOL_BRANCH ]; then
+        sedexp="/version..develop/ s#version.*#version('develop', git=url, branch='$SYNAPSETOOL_BRANCH', submodules=True)#;
+                /git=url, tag=/ d"
+        sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/synapsetool/package.py" "$sedexp"
+    fi
+)
+
+
+check_patch_coreneuron() (
+    # Coreneuron doesnt typically use branches, we add it.
+    sedexp=
+    if [ $CORENEURON_BRANCH ]; then
+        sedexp="s#git=url#git=url, branch='$CORENEURON_BRANCH'#g"
+    fi
+    if [ $CORENEURON_BRANCH_PLASTICITY ]; then
+        sedexp="/plasticity/ s#git=url#git=url, branch='$CORENEURON_BRANCH_PLASTICITY'#g"
+    fi
+    if [ "$sedexp" ]; then
+        sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/coreneuron/package.py" "$sedexp"
+    fi
+)
+
+
+main()(
+    set -e
+    strip_nd_git_tags
+    check_patch_syntool
+    check_patch_coreneuron
+    touch spack_patched.flag
+)
+
+main
