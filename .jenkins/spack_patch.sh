@@ -19,13 +19,14 @@ strip_nd_git_tags() (
     nd_projects=(core neocortex hippocampus thalamus mousify)
     for proj in ${nd_projects[@]}; do
         pkg_file="$PKGS_BASE/neurodamus-$proj/package.py"
-        sed -i '/version.*tag=/d' $pkg_file
+        sedexp='/version.*tag=/d'
 
         # change branch if requested
         BVAR="NEURODAMUS_BRANCH_${proj^^}"
         if [ "${!BVAR}" ]; then
-            sed_apply "$pkg_file" "s#branch=[^)]*)#branch='${!BVAR}')#g"
+            sedexp="$sedexp; s#branch=[^)]*)#branch='${!BVAR}')#g"
         fi
+        sed_apply "$pkg_file" "$sedexp"
     done
 )
 
