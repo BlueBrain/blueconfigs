@@ -18,13 +18,13 @@ sed_apply() (
 strip_nd_git_tags() (
     nd_projects=(core neocortex hippocampus thalamus mousify)
     for proj in ${nd_projects[@]}; do
-        pkg_file=$PKGS_BASE/neurodamus-$proj/package.py
+        pkg_file="$PKGS_BASE/neurodamus-$proj/package.py"
         sed -i '/version.*tag=/d' $pkg_file
 
         # change branch if requested
         BVAR="NEURODAMUS_BRANCH_${proj^^}"
         if [ "${!BVAR}" ]; then
-            sed_apply $pkg_file 's#branch=[^)]*)#branch='${!BVAR}')#g"'
+            sed_apply "$pkg_file" "s#branch=[^)]*)#branch='${!BVAR}')#g"
         fi
     done
 )
