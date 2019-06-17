@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e
+module load python-dev
+module list
+
 source ../toolbox.sh
 configfile_bk $1
+outputdir=$2
 
-blue_set ModelBuildingSteps 2 $blueconfig  # $ 2 loops with 2 nodes
 blue_set Simulator CORENEURON $blueconfig
-head -n30 $blueconfig
 
 export OMP_NUM_THREADS=1
-
-run_blueconfig $blueconfig
+RUN_PY_TESTS=yes run_blueconfig $blueconfig
 
