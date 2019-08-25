@@ -231,13 +231,13 @@ run_blueconfig() (
     configfile=${1:-"BlueConfig"}
 
     if [[ $RUN_PY_TESTS == "yes" && $NEURODAMUS_PYTHON ]]; then
-        INIT_ARGS=("-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile")
+        INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile")
     else
-        INIT_ARGS=("-c" "{strdef configFile configFile=\"$configfile\"}" "$HOC_LIBRARY_PATH/init.hoc")
+        INIT_ARGS=("-c" "{strdef configFile configFile=\"$configfile\"}" -mpi "$HOC_LIBRARY_PATH/init.hoc")
     fi
 
     N=$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2) \
-    bb5_run special "${INIT_ARGS[@]}" -mpi
+    bb5_run special "${INIT_ARGS[@]}"
 )
 
 
