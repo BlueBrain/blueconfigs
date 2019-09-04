@@ -8,7 +8,6 @@ configfile_bk $1
 outputdir=$2
 
 blue_set Simulator CORENEURON $blueconfig
-blue_comment "Report soma" $blueconfig
 head -n 30 $blueconfig
 
 export OMP_NUM_THREADS=1

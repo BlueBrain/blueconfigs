@@ -29,7 +29,8 @@ Run Default
 
 
 # Setup Reports
-Report soma
+# Soma reports with Neuron seem buggy. Reenable later
+#Report soma
 {
               Target Mosaic
                 Type compartment
