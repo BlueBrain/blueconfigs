@@ -24,6 +24,7 @@ declare ND_VERSIONS=${1:-"$TEST_VERSIONS"}
 
 for version in $ND_VERSIONS; do
     log "Building ${VERSIONS[$version]} $BUILD_OPTIONS  (version=$version)"
+    spack spec -I ${VERSIONS[$version]} $BUILD_OPTIONS
     spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
 done
 
