@@ -89,7 +89,6 @@ _prepare_test() {
             export PYTHONPATH="$BUILD_HOME/pydevpkgs:$PYTHONPATH"
        fi
         spack load $spec
-        module load hpe-mpi
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
