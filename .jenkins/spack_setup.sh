@@ -63,6 +63,18 @@ install_spack() (
     # Avoid clash. Dont autoload
     sed -i 's#hash_length:.*#hash_lengh: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml
     # sed -i -r "s#([[:space:]]*)(.*)(/parallel')#\1\2\3\n\1'^synapsetool': '\/syntool'#" $SPACK_ROOT/etc/spack/modules.yaml
+
+    # Add externally installed spack modules
+    external_pkg_tpl='
+  ${PKG_NAME}:
+    version: [${PKG_VERSION}]
+    paths:
+      ${PKG_NAME}@${PKG_VERSION}${PKG_VARIANT}: ${PKG_PATH}
+    buildable: ${PKG_BUILDABLE}'
+
+    # libsonata+mpi %intel
+    LIBSONATA_DIR=$(spack find -p libsonata+mpi | tail | grep -oh "/gpfs/.*")
+    echo "$external_pkg_tpl" | PKG_NAME=libsonata PKG_VERSION=99 PKG_PATH=${LIBSONATA_DIR} PKG_VARIANT=+mpi%intel PKG_BUILDABLE=False envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
 )
 
 
