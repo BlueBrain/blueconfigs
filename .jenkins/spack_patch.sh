@@ -7,7 +7,7 @@ PKGS_BASE="${SPACK_ROOT}/var/spack/repos/builtin/packages"
 sed_apply() (
     f=$1
     sedexp=$2
-    log "PATCHING $f..."
+    log "PATCHING $f with '$sedexp'"
     (cd $(dirname $f) && git checkout "$(basename $f)") && sed -i "$sedexp" "$f"
     grep 'version(' "$f"
 )
@@ -34,8 +34,9 @@ strip_nd_git_tags() (
 check_patch_syntool() (
     # In synapsetool we replace version develop and delete all tag versions
     if [ $SYNAPSETOOL_BRANCH ]; then
+        echo "Use SYNAPSETOOL branch: $SYNAPSETOOL_BRANCH"
         sedexp="/version..develop/ s#version.*#version('develop', git=url, branch='$SYNAPSETOOL_BRANCH', submodules=True)#;
-                /git=url, tag=/ d"
+                /, tag=/ d"
         sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/synapsetool/package.py" "$sedexp"
     fi
 )
