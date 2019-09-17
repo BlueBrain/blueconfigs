@@ -41,6 +41,16 @@ module use $DATADIR/devel_builds_04-2019/modules/tcl/linux-rhel7-x86_64
 export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
 PYDEPS_PATH=$BUILD_HOME/pydevpkgs
 
+_external_pkg_tpl='
+  ${PKG_NAME}:
+    version: [${PKG_VERSION}]
+    paths:
+      ${PKG_NAME}@${PKG_VERSION}${PKG_VARIANT}: ${PKG_PATH}'
+_external_pkg_module_tpl="$_external_pkg_tpl"'
+    modules:
+      ${PKG_NAME}@${PKG_VERSION}${PKG_VARIANT}: ${PKG_MODULE}'
+
+
 
 ############################# CLONE/SETUP REPOSITORY #############################
 
@@ -58,23 +68,16 @@ install_spack() (
     mkdir -p $SPACK_ROOT/etc/spack/defaults/linux
     cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/*.yaml $SPACK_ROOT/etc/spack/
 
-    # Override configs/upstream with devel
-    cp $DEVEL_DEPLOY/*.yaml $SPACK_ROOT/etc/spack/
+    # Use applications upstream
+    echo "
+  applications:
+    install_tree: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19
+    modules:
+      tcl: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19/modules
+" >> $SPACK_ROOT/etc/spack/upstreams.yaml
+
     # Avoid clash. Dont autoload
     sed -i 's#hash_length:.*#hash_lengh: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml
-    # sed -i -r "s#([[:space:]]*)(.*)(/parallel')#\1\2\3\n\1'^synapsetool': '\/syntool'#" $SPACK_ROOT/etc/spack/modules.yaml
-
-    # Add externally installed spack modules
-    external_pkg_tpl='
-  ${PKG_NAME}:
-    version: [${PKG_VERSION}]
-    paths:
-      ${PKG_NAME}@${PKG_VERSION}${PKG_VARIANT}: ${PKG_PATH}
-    buildable: ${PKG_BUILDABLE}'
-
-    # libsonata+mpi %intel
-    LIBSONATA_DIR=$(spack find -p libsonata+mpi | tail | grep -oh "/gpfs/.*")
-    echo "$external_pkg_tpl" | PKG_NAME=libsonata PKG_VERSION=99 PKG_PATH=${LIBSONATA_DIR} PKG_VARIANT=+mpi%intel PKG_BUILDABLE=False envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
 )
 
 
@@ -86,21 +89,9 @@ config_py_deps() (
     log "Configuring Python dependencies (src: $site_pkgs)"
     ln -sf $site_pkgs $PYDEPS_PATH
 
-   external_pkg_tpl='
-  ${PKG_NAME}:
-    version: [${PKG_VERSION}]
-    paths:
-      ${PKG_NAME}@${PKG_VERSION}${PKG_VARIANT}: ${PKG_PATH}'
-    external_pkg_module_tpl="$external_pkg_tpl"'
-    modules:
-      ${PKG_NAME}@${PKG_VERSION}${PKG_VARIANT}: ${PKG_MODULE}'
-
-    # mpi4py (work w intel stack)
-    echo "$external_pkg_module_tpl" | PKG_NAME=py-mpi4py PKG_VERSION=99 PKG_PATH=. PKG_MODULE=py-mpi4py \
-        envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
-
-    for pkg in numpy h5py lazy-property setuptools; do
-        echo "$external_pkg_tpl" | PKG_NAME=py-$pkg PKG_VERSION=99 PKG_PATH=pydeps envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
+    # Most Python dependencies com from upstream. Those which dont exist we use from a venv
+    for pkg in numpy h5py lazy-property; do
+        echo "$_external_pkg_tpl" | PKG_NAME=py-$pkg PKG_VERSION=99 PKG_PATH=pydeps envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
     done
 )
 
