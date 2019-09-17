@@ -90,12 +90,9 @@ config_py_deps() (
     ln -sf $site_pkgs $PYDEPS_PATH
 
     # Most Python dependencies com from upstream. Those which dont exist we use from a venv
-    for pkg in numpy h5py lazy-property; do
+    for pkg in numpy h5py lazy-property pyyaml; do
         echo "$_external_pkg_tpl" | PKG_NAME=py-$pkg PKG_VERSION=99 PKG_PATH=pydeps envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
 
-#    for pkg in numpy h5py lazy-property setuptools jinja2 pytest sympy pyyaml; do
-
-#    for pkg in numpy h5py lazy-property setuptools pytest sympy pyyaml; do
     done
 )
 
