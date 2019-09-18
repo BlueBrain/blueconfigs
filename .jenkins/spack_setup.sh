@@ -69,12 +69,12 @@ install_spack() (
     cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/*.yaml $SPACK_ROOT/etc/spack/
 
     # Use applications upstream
-    echo "
+    echo "upstreams:
   applications:
     install_tree: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19
     modules:
       tcl: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19/modules
-" >> $SPACK_ROOT/etc/spack/upstreams.yaml
+$(tail -n +2 $SPACK_ROOT/etc/spack/upstreams.yaml)" > $SPACK_ROOT/etc/spack/upstreams.yaml
 
     # Avoid clash. Dont autoload
     sed -i 's#hash_length:.*#hash_lengh: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml
