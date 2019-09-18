@@ -3,16 +3,12 @@ library(identifier: 'bbp@master',
             [$class:'GitSCMSource',
              remote: 'ssh://bbpcode.epfl.ch/hpc/jenkins-pipeline']))
 
-def PACKAGE_COMPILE_OPTIONS ="^neuron+cross-compile+debug"
-def CORENRN_DEP = "^coreneuron+debug"
-def EXTENDED_RESULTS ="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular"
-def PACKAGES_YAML = "/gpfs/bbp.cscs.ch/project/proj12/jenkins/devel_builds/packages.yaml"
 def PARAMS = [
     tests: [
         neocortex:      ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis", "quick-v5-multisplit"],
         ncx_bare:       ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"],
         ncx_plasticity: ["scx-v5-plasticity"],
-        hippocampus:    ["hip-v6", "hip-v6-mcr4"],
+        hippocampus:    ["hip-v6", "hip-v6-mcr4", "quick-hip-sonata"],
         thalamus:       ["thalamus"],
         mousify:        ['mousify']
     ],
@@ -98,7 +94,7 @@ pipeline {
                                 tasks[taskname] = {
                                     stage(taskname) {
                                         sh("""source ${WORKSPACE}/.tests_setup.sh
-                                              run_test ${testname} \${VERSIONS[$v]}
+                                              run_test ${testname} "\${VERSIONS[$v]}"
                                              """
                                         )
                                     }
@@ -111,7 +107,7 @@ pipeline {
                                         stage(taskname2) {
                                             sh("""export ${conf.get('env', '')}
                                                   source ${WORKSPACE}/.tests_setup.sh
-                                                  run_test ${testname} \${VERSIONS[$v2]}
+                                                  run_test ${testname} "\${VERSIONS[$v2]}"
                                                  """
                                             )
                                         }

@@ -24,6 +24,7 @@ REF_RESULTS["mousify"]="$EXTENDED_RESULTS/circuit-mousify/simulation"
 REF_RESULTS["quick-v5-gaps"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simulation_quick"
 REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick"
 REF_RESULTS["quick-v5-multisplit"]="$EXTENDED_RESULTS/circuit-v5-multisplit/simulation"
+REF_RESULTS["quick-hip-sonata"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-sonata"
 
 
 _prepare_test() {
@@ -80,7 +81,7 @@ _prepare_test() {
     set +x
     log "Launching test $testname ($spec) #$hash"
 
-    if [ $spec != "default" ]; then
+    if [ "$spec" != "default" ]; then
         log "COMMANDS: module purge; spack load $spec" "DBG"
         module purge
         if [ $RUN_PY_TESTS = "yes" ]; then
@@ -128,7 +129,7 @@ test_check_results() (
 run_test() (
     set -e
     testname=$1
-    spec=$2
+    spec="$2"
 
     (set +x; log
      log "------------ TEST: $testname ------------"
@@ -203,7 +204,7 @@ run_test() (
 run_test_debug() (
     set -xe
     testname=$1
-    spec=$2
+    spec="$2"
     export OMP_NUM_THREADS=1
 
     # Will set $blueconfigs and an $output associate array
@@ -252,7 +253,7 @@ run_blueconfig() (
 run_debug() (
     set -e
     testname=$1
-    spec=$2
+    spec="$2"
     _prepare_test
 
     bb5_run special $HOC_LIBRARY_PATH/_debug.hoc -mpi
@@ -278,9 +279,9 @@ Running tests
     unset spec
     which special &> /dev/null || LOAD_SPEC=1
     for version in $TEST_VERSIONS; do
-        [ $LOAD_SPEC ] && spec=${VERSIONS[$version]}
+        [ $LOAD_SPEC ] && spec="${VERSIONS[$version]}"
         for testname in ${TESTS[$version]}; do
-            run_test $testname $spec
+            run_test $testname "$spec"
         done
     done
 )
