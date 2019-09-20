@@ -39,7 +39,8 @@ bb5_run() (
     set +x -e
     # default partition is interactive. during night use production
     hour=`date +%H`
-    if [ "$hour" -ge "20" ] || [ "$hour" -lt "8" ]; then export SALLOC_PARTITION="prod"; fi
+    weekday=`date +%u`
+    if [ "$hour" -ge "19" ] || [ "$hour" -lt "8" ] || [ $weekday -gt 5 ]; then export SALLOC_PARTITION="prod"; fi
 
     N=${N:-1}
     if [ -n "$n" ]; then SALLOC_OPTS="$SALLOC_OPTS -n$n"; fi
