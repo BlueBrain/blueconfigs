@@ -25,6 +25,7 @@ REF_RESULTS["quick-v5-gaps"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simu
 REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick"
 REF_RESULTS["quick-v5-multisplit"]="$EXTENDED_RESULTS/circuit-v5-multisplit/simulation"
 REF_RESULTS["quick-hip-sonata"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-sonata"
+REF_RESULTS["quick-hip-projSeed"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-projSeed"
 
 
 _prepare_test() {
