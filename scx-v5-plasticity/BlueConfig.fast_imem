@@ -42,7 +42,7 @@ Run Default
              EndTime 1000
 }
 
-#Report AllCompartmentsIMembrane
+Report AllCompartmentsMembrane
 {
         Target AllCompartments
         Type compartment
