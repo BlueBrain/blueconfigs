@@ -180,7 +180,7 @@ run_test() (
             # Inner -e is not respected if we have '||'. We need to check $?
             set +e
             log "Checking results..."
-            if [[ -f .exception.expected ]]; then
+            if [[ -f ${outputs[$src]}/.exception.expected ]]; then
                 log "Expected exception detected"
             else
                 test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"

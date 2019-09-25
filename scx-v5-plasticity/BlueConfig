@@ -42,6 +42,18 @@ Run Default
              EndTime 1000
 }
 
+Report AllCompartmentsIMembrane
+{
+        Target AllCompartments
+        Type compartment
+        ReportOn i_membrane
+        Unit nA
+        Format Bin
+        Dt 0.1
+        StartTime 0.025
+        EndTime 100
+}
+
 Report compartment
 {
               Target AllCompartments
