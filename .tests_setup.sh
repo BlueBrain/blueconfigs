@@ -15,7 +15,7 @@ DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT+python"
 BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug"}"
 DEFAULT_VARIANT="~plasticity+coreneuron+synapsetool"
-CORENRN_DEP="^coreneuron+debug ^nmodl%gcc"
+CORENRN_DEP="^coreneuron+debug"
 log "DATADIR=$DATADIR; EXTRA_VARIANT=$EXTRA_VARIANT; BUILD_OPTIONS=$BUILD_OPTIONS; DEFAULT_VARIANT=$DEFAULT_VARIANT; CORENRN_DEP=$CORENRN_DEP" DBG
 
 declare -A VERSIONS
@@ -23,9 +23,8 @@ declare -A VERSIONS
 VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION $DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
 VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
 VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
-VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $EXTRA_VARIANT"
-VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $EXTRA_VARIANT"
-VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $EXTRA_VARIANT"
+VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $DEFAULT_VARIANT $EXTRA_VARIANT"
+VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $DEFAULT_VARIANT $EXTRA_VARIANT"
 
 # list of simulations to run
 declare -A TESTS
