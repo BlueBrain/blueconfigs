@@ -6,7 +6,7 @@ Run Default
 	Version    1094 
 
     CircuitPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306
-    nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306/connectome/functional/nrn.h5
+    nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306/connectome/functional
     MorphologyPath /gpfs/bbp.cscs.ch/project/proj42/entities/morphologies/20180417/
     METypePath /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20190402/hoc
     MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20190402/mecombo_emodel.tsv
