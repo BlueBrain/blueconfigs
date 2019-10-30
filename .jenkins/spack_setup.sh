@@ -105,13 +105,6 @@ spack_setup() (
         install_spack
     fi
 
-    # Setup python deps
-    if [ -d "$PYDEPS_PATH" ]; then
-        log_warn "Using existing Python deps dir at $PYDEPS_PATH"
-    else
-        config_py_deps
-    fi
-
     # PATCH SPACK sources
     source "$_THISDIR/spack_patch.sh"
     log_ok "Spack environment setup done"

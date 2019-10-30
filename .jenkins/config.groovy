@@ -10,7 +10,7 @@ def PARAMS = [
         ncx_plasticity: ["scx-v5-plasticity"],
         hippocampus:    ["hip-v6", "hip-v6-mcr4", "quick-hip-sonata", "quick-hip-projSeed"],
         thalamus:       ["thalamus"],
-        mousify:        ['mousify']
+        mousify:        ["quick-mousify-sonata", "mousify"]
     ],
     test_groups: [
         ['ncx_bare'],

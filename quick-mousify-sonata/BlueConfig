@@ -1,0 +1,107 @@
+Run Default
+{
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514
+    nrnPath /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/morphologies
+    METypePath /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/common/emodel_release/hoc
+    #MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/mecombo_emodel.tsv
+    CellLibraryFile /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/sonata/networks/nodes/All/nodes.h5
+    BioName /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/bioname
+
+    Simulator NEURON
+    RNGMode Random123
+    BaseSeed 719775
+
+    CurrentDir .
+    OutputRoot output
+
+    RunMode RR
+    CircuitTarget All
+    Duration 100
+    Dt 0.025
+    Atlas /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/common/atlas
+}
+
+
+Projection A@left
+{
+    #Path /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional/A@left/circuit-aff.syn2
+    Path /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional/A@left/edges-aff.sonata
+    Source A@left
+}
+
+Projection A@right
+{
+    #Path /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional/A@right/circuit-aff.syn2
+    Path /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional/A@right/edges-aff.sonata
+    Source A@right
+}
+
+
+Report compartments
+{
+        Target All
+        Type compartment
+        ReportOn v
+        Unit mV
+        Format Bin
+        Dt 0.25
+        StartTime 0
+        EndTime 1000
+}
+
+
+Connection All
+{
+    Source All
+    Destination All
+    Weight 1.0
+}
+
+
+Connection GABAB_erev
+{
+	Source Inhibitory
+	Destination Mosaic
+	Weight 1.0
+	# K= 2.5mM
+	# SynapseConfigure %s.e_GABAA = -80.0 %s.e_GABAB = -93.6
+	# K = 5.0 mM
+	SynapseConfigure %s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081
+}
+
+Connection scheme_CaUse_ee
+{
+              Source Excitatory
+         Destination Excitatory
+              Weight 1.0
+    SynapseConfigure %s.Use *= 0.0777210800234
+}
+
+Connection scheme_CaUse_Inh_Inh
+{
+              Source Inhibitory
+         Destination Inhibitory
+              Weight 1.0
+    SynapseConfigure %s.Use *= 0.264485052596
+}
+
+# Adjust AMPA_NMDA and GABAA_B ratios
+Connection scheme_nmda_e2e
+{
+             Source Excitatory
+        Destination Excitatory
+             Weight 1.0
+   SynapseConfigure %s.NMDA_ratio = 0.4
+}
+
+Connection scheme_nmda_e2i
+{
+             Source Excitatory
+        Destination Inhibitory
+             Weight 1.0
+   SynapseConfigure %s.NMDA_ratio = 0.8
+}
+
+
+

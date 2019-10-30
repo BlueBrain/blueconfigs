@@ -34,7 +34,7 @@ TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit"
 TESTS[ncx_plasticity]="scx-v5-plasticity"
 TESTS[hippocampus]="hip-v6 hip-v6-mcr4 quick-hip-sonata quick-hip-projSeed"
 TESTS[thalamus]="thalamus"
-TESTS[mousify]="mousify"
+TESTS[mousify]="mousify quick-mousify-sonata"
 
 
 # Prepare spack (install+env)
