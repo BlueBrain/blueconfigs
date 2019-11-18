@@ -88,7 +88,7 @@ _prepare_test() {
         module purge
         if [ $RUN_PY_TESTS = "yes" ]; then
             log "Loading python with deps"
-            module load python
+            module load python python-dev
             export PYTHONPATH="$BUILD_HOME/pydevpkgs:$PYTHONPATH"
        fi
         spack load $spec

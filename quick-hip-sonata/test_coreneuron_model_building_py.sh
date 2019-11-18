@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-module load python-dev
 module list
 
 source ../toolbox.sh
