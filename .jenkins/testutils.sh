@@ -27,6 +27,7 @@ REF_RESULTS["quick-v5-multisplit"]="$EXTENDED_RESULTS/circuit-v5-multisplit/simu
 REF_RESULTS["quick-hip-sonata"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-sonata"
 REF_RESULTS["quick-hip-projSeed"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-projSeed"
 REF_RESULTS["quick-mousify-sonata"]="$EXTENDED_RESULTS/circuit-n34-mousify/simulation"
+REF_RESULTS["quick-v5-plasticity"]="/gpfs/bbp.cscs.ch/home/magkanar/proj16scratch/blueconfigs/quick-v5-plasticity/simulation"
 
 
 _prepare_test() {
@@ -88,7 +89,7 @@ _prepare_test() {
         module purge
         if [ $RUN_PY_TESTS = "yes" ]; then
             log "Loading python with deps"
-            module load python python-dev
+            module load python
             export PYTHONPATH="$BUILD_HOME/pydevpkgs:$PYTHONPATH"
        fi
         spack load $spec
