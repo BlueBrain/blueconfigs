@@ -23,7 +23,7 @@ declare -A VERSIONS
 VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION $DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
 VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
 VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
-VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $EXTRA_VARIANT"
+VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION +coreneuron $EXTRA_VARIANT $CORENRN_DEP"
 VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $EXTRA_VARIANT"
 VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $EXTRA_VARIANT"
 
