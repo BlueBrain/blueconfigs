@@ -8,7 +8,7 @@ def PARAMS = [
         neocortex:      ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions",
                          "scx-v5-bonus-minis", "quick-v5-multisplit"],
         ncx_bare:       ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"],
-        ncx_plasticity: ["scx-v5-plasticity"],
+        ncx_plasticity: ["scx-v5-plasticity", "quick-v5-plasticity"],
         hippocampus:    ["hip-v6", "hip-v6-mcr4", "quick-hip-sonata", "quick-hip-projSeed"],
         thalamus:       ["thalamus"],
         mousify:        ["quick-mousify-sonata", "mousify"]
