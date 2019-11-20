@@ -24,10 +24,10 @@ REF_RESULTS["mousify"]="$EXTENDED_RESULTS/circuit-mousify/simulation"
 REF_RESULTS["quick-v5-gaps"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simulation_quick"
 REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick"
 REF_RESULTS["quick-v5-multisplit"]="$EXTENDED_RESULTS/circuit-v5-multisplit/simulation"
+REF_RESULTS["quick-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation-quick"
 REF_RESULTS["quick-hip-sonata"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-sonata"
 REF_RESULTS["quick-hip-projSeed"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-projSeed"
 REF_RESULTS["quick-mousify-sonata"]="$EXTENDED_RESULTS/circuit-n34-mousify/simulation"
-
 
 _prepare_test() {
     # If test not provided check if curdir has BlueConfig
@@ -306,13 +306,16 @@ run_quick_tests() (
     set -e
     _VERSIONS_BK=$TEST_VERSIONS
     _TESTS_NCX=${TESTS[neocortex]}
-    TEST_VERSIONS="ncx_bare neocortex"
+    _TESTS_NCX_PLAST=${TESTS[ncx_plasticity]}
+    TEST_VERSIONS="ncx_bare neocortex ncx_plasticity"
     TESTS[neocortex]=${TESTS[ncx_bare]}
+    TESTS[ncx_plasticity]="quick-v5-plasticity"
 
     run_all_tests
 
     TEST_VERSIONS=$_VERSIONS_BK
     TESTS[neocortex]=_TESTS_NCX
+    TESTS[ncx_plasticity]=_TESTS_NCX_PLAST
 )
 
 

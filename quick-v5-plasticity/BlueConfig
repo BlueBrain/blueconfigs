@@ -11,7 +11,7 @@ Run Default
         CircuitPath /gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit
         nrnPath /gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit/ncsFunctionalAllRecipePathways
 
-        Simulator CORENEURON
+        Simulator NEURON
         BaseSeed 767740
         RNGMode Random123
 
@@ -22,16 +22,17 @@ Run Default
         TargetFile user.target
 
       	RunMode RR
-        CircuitTarget Column
-        Duration 100
+        CircuitTarget miniColumn
+        Duration 40
         Dt 0.025
 }
 
 
 # Setup Reports
+# Soma reports with Neuron seem buggy. Reenable later
 #Report soma
 {
-              Target Mosaic
+              Target miniCompartments
                 Type compartment
             ReportOn v
                 Unit mV
@@ -41,9 +42,21 @@ Run Default
              EndTime 1000
 }
 
+Report AllCompartmentsIMembrane
+{
+        Target miniCompartments
+        Type compartment
+        ReportOn i_membrane
+        Unit nA
+        Format Bin
+        Dt 0.1
+        StartTime 0.025
+        EndTime 100
+}
+
 Report compartment
 {
-              Target AllCompartments
+              Target miniCompartments
                 Type compartment
             ReportOn v
                 Unit mV
@@ -79,55 +92,21 @@ Report compartment
 
 
 # TC Stimuli
-Stimulus spikeReplay1
+Stimulus spikeReplay
 {
                 Mode Current
                Delay 0
              Duration 30000
              Pattern SynapseReplay
-           SpikeFile many_replay/input_0.dat
+           SpikeFile input.dat
 
 }
 
-Stimulus spikeReplay2
+StimulusInject spikeReplayIntoUniverse
 {
-                Mode Current
-               Delay 0
-             Duration 30000
-             Pattern SynapseReplay
-           SpikeFile many_replay/input_1.dat
-
-}
-
-Stimulus spikeReplay3
-{
-                Mode Current
-               Delay 0
-             Duration 30000
-             Pattern SynapseReplay
-           SpikeFile many_replay/input_2.dat
-
-}
-
-
-StimulusInject spikeReplay1IntoUniverse
-{
-            Stimulus spikeReplay1
+            Stimulus spikeReplay
               Target Mosaic
 }
-
-StimulusInject spikeReplay2IntoUniverse
-{
-            Stimulus spikeReplay2
-              Target Mosaic
-}
-
-StimulusInject spikeReplay3IntoUniverse
-{
-            Stimulus spikeReplay3
-              Target Mosaic
-}
-
 
 
 # Default Stimuli
