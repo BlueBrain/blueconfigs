@@ -17,14 +17,20 @@ if [ -z "$SPACK_ROOT" ]; then
     false
 fi
 
-log "Spack module refresh"
-spack module tcl refresh -y --delete-tree
+if [ ! "$DRY_RUN" ]; then
+    log "Spack module refresh"
+    spack module tcl refresh -y --delete-tree
+fi
 
 declare ND_VERSIONS=${1:-"$TEST_VERSIONS"}
 
 for version in $ND_VERSIONS; do
     log "Building ${VERSIONS[$version]} $BUILD_OPTIONS  (version=$version)"
-    spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
+    if [ "$DRY_RUN" ]; then
+        spack spec -I ${VERSIONS[$version]} $BUILD_OPTIONS
+    else
+        spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
+    fi
 done
 
 log_ok "Environment successfully setup"

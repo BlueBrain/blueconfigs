@@ -1,9 +1,10 @@
 def TESTS = [
-    neocortex: ['quick-v5-gaps', 'quick-v6', 'quick-v5-multisplit'],
+    neocortex: ['scx-v5-gapjunctions', 'scx-2k-v6', 'quick-v5-multisplit'],
     ncx_bare: ['quick-v5-gaps', 'quick-v6'],
-    hippocampus: ['hip-v6'],
+    ncx_plasticity: ['scx-v5-plasticity', 'quick-v5-plasticity'],
+    hippocampus: ['hip-v6', 'quick-hip-projSeed', 'quick-hip-sonata'],
     thalamus: ['thalamus'],
-    mousify: ['mousify']
+    mousify: ['quick-mousify-sonata', 'mousify']
 ]
 
 def run_py_tests() {
@@ -18,16 +19,37 @@ def getModel() {
     return null
 }
 
-def getBlueconfigsBranch() {
-    def parts = GERRIT_CHANGE_COMMIT_MESSAGE.split()
-    def len = parts.length
-    for (i = 0; i < len; i++) {
-        item = parts[i]
-        if (item == "BLUECONFIGS_BRANCH") {
-            BLUECONFIGS_BRANCH = parts[i+2]
-            break
+def setAlternateBranches() {
+    def lines = GERRIT_CHANGE_COMMIT_MESSAGE.split('\n')
+    def alt_branches=""
+    for (line in lines) {
+        if (line.contains("_BRANCH=") && !line.startsWith("#")) {
+            // Merge them. We later can do a single export
+            alt_branches+=line + " "
+            // Also set BLUECONFIGS_BRANCH globaly because it's required in Groovy
+            if (line.startsWith("BLUECONFIGS")) {
+                BLUECONFIGS_BRANCH=line.split("=")[1]
+            }
         }
     }
+    return alt_branches
+}
+
+def findSkipTests() {
+    def skip_tests = []
+    def lines = GERRIT_CHANGE_COMMIT_MESSAGE.split('\n')
+    for (line in lines) {
+        if (line.startsWith("SKIP_TEST=")) {
+            skip_tests.push(line.split("=")[1])
+        }
+    }
+
+    // temp patch since neurodamus-python lacks features
+    if(GERRIT_PROJECT=="sim/neurodamus-py") {
+        skip_tests.push("quick-mousify-sonata")
+    }
+
+    return skip_tests
 }
 
 
@@ -36,12 +58,14 @@ pipeline {
 
     parameters {
         // Needed to build Gerrit projects
-        string(name: 'GERRIT_PROJECT', defaultValue: 'sim/neurodamus-py', description: 'What is the project being changed? (This CI handles all components of neurodamus, inc. neuroamus-core, neurodamus-py and models.	', )
+        string(name: 'GERRIT_PROJECT', defaultValue: 'sim/neurodamus-py', description: 'What is the project being changed? (This CI handles all components of neurodamus, inc. neuroamus-core, neurodamus-py and models.    ', )
         string(name: 'GERRIT_REFSPEC', defaultValue: '', description: 'What refspec to fetch for the build (leave empty for standard manual build)', )
         string(name: 'GERRIT_CHANGE_NUMBER', defaultValue: '', description: 'Gerrit change number', )
         string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '', description: 'Additional environment variables that should be exposed to jenkins', )
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '', description: 'Gerrit commit message to read environment variables to expose to jenkins', )
         string(name: 'BLUECONFIGS_BRANCH', defaultValue: 'master', description: 'Blueconfigs repo branch to use for the tests', )
+        string(name: 'SYNAPSETOOL_BRANCH', defaultValue: '', description: 'Synapsetool repo branch to use for the tests', )
+
     }
 
     environment {
@@ -59,7 +83,7 @@ pipeline {
             steps {
                 script {
                     // Checkout blueconfigs
-                    getBlueconfigsBranch()
+                    alt_branches=setAlternateBranches()
                     checkout(
                         $class: 'GitSCM',
                         userRemoteConfigs: [[
@@ -81,7 +105,10 @@ pipeline {
                     }
 
                     // Init spack
-                    sh "source ./.tests_setup.sh"
+                    sh """
+                        export ${alt_branches};
+                        source ./.tests_setup.sh
+                    """
 
                     // Patch for model or neurodamus core(/py)?
                     def model = getModel()
@@ -90,7 +117,7 @@ pipeline {
                         sedex += "/tag=/d; s#master#change/${GERRIT_CHANGE_NUMBER}#"
                     }
                     def corefile = "${SPACK_ROOT}/var/spack/repos/builtin/packages/neurodamus-${model?:'core'}/package.py"
-                    sh "sed -i '${sedex}' ${corefile} && grep -n3 'git=' ${corefile}"
+                    sh "sed -i '${sedex}' ${corefile} && grep -n3 'version' ${corefile}"
                 }
             }
         }
@@ -101,9 +128,9 @@ pipeline {
                     def model = getModel()
                     def test_pre_init = ""
                     if(GERRIT_PROJECT == "sim/models/common") {
-                        test_pre_init = """export ND_VARIANT=' common_mods=${WORKSPACE}/${GERRIT_PROJECT} '"""
+                        test_pre_init += """export ND_VARIANT=' common_mods=${WORKSPACE}/${GERRIT_PROJECT} ';"""
                     }
-                    test_pre_init += "\nexport TEST_VERSIONS='" + (model?: TESTS.keySet().join(' ')) + "'"
+                    test_pre_init += "export TEST_VERSIONS='" + (model?: TESTS.keySet().join(' ')) + "'"
 
                     sh """
                         ${test_pre_init}
@@ -120,35 +147,28 @@ pipeline {
                     def testmap = TESTS
                     def cmds = [:]
                     def model = getModel()
+                    def skip_tests = findSkipTests()
+
                     if(model != null) {
                         // Replace map to have the single entry that matters
                         testmap = [(model): TESTS[model]]
                     }
+
+                    // Dont run save-restore with python yet
+                    sh "rm scx-v5-plasticity/test_save-restore_coreneuron.sh"
+
                     for (vtests in testmap) {
                         for (testname in vtests.value) {
+                            if (skip_tests.contains(testname)) continue
                             def ver = vtests.key
                             def taskname = ver + '-' + testname
                             cmds[taskname] = """
                                 source ./.tests_setup.sh
-                                run_test ${testname} \${VERSIONS[$ver]}
+                                run_test ${testname} "\${VERSIONS[$ver]}"
                                 """
                         }
                     }
-                    // PLASTICITY - Build and Run independent and in parallel
-                    if (model == null) {
-                        test_pre_init = "export TEST_VERSIONS=ncx_plasticity"
-                        if(GERRIT_PROJECT == "sim/models/common") {
-                            test_pre_init += """\nexport ND_VARIANT=' common_mods=${WORKSPACE}/${GERRIT_PROJECT} '"""
-                        }
-                        cmds['plasticity'] = """
-                            ${test_pre_init}
-                            source ./.tests_setup.sh
-                            install_neurodamus
-                            run_all_tests
-                        """
-                        // Dont run save-restore with python yet
-                        sh "rm scx-v5-plasticity/test_save-restore_coreneuron.sh"
-                    }
+
                     parallel cmds.collectEntries{
                         key, cmd -> return [(key): { stage(key){sh(cmd)} } ] }
                 }

@@ -5,7 +5,8 @@ library(identifier: 'bbp@master',
 
 def PARAMS = [
     tests: [
-        neocortex:      ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions", "scx-v5-bonus-minis", "quick-v5-multisplit"],
+        neocortex:      ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions",
+                         "scx-v5-bonus-minis", "quick-v5-multisplit"],
         ncx_bare:       ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"],
         ncx_plasticity: ["scx-v5-plasticity"],
         hippocampus:    ["hip-v6", "hip-v6-mcr4", "quick-hip-sonata", "quick-hip-projSeed"],
@@ -56,6 +57,7 @@ pipeline {
         SPACK_ROOT = "${HOME}/spack"
         PATH = "${SPACK_ROOT}/bin:${PATH}"
         MODULEPATH="${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
+        DRY_RUN="${env.GERRIT_REFSPEC}"
     }
 
     stages {
@@ -70,7 +72,7 @@ pipeline {
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
                     for (ver in test_versions) {
                         sh("""source ${WORKSPACE}/.tests_setup.sh
-                            install_neurodamus ${ver}
+                              install_neurodamus ${ver}
                             """
                         )
                     }

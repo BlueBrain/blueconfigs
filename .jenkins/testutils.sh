@@ -83,6 +83,10 @@ _prepare_test() {
     set +x
     log "Launching test $testname ($spec) #$hash"
 
+    if [ "$DRY_RUN" ]; then
+        return
+    fi
+
     if [ "$spec" != "default" ]; then
         log "COMMANDS: module purge; spack load $spec" "DBG"
         module purge
@@ -105,6 +109,10 @@ test_check_results() (
     ref_spikes=${3:-out.sorted}
     # Print nice msg on error
     trap "(set +x; log_error \"Results DON'T Match\n\"; exit 1)" ERR
+
+    if [ "$DRY_RUN" ]; then
+        return
+    fi
 
     [ -f $output/spikes.dat ] && mv $output/spikes.dat $output/out.dat
     # Core neuron doesnt have a /scatter (!?)
@@ -153,14 +161,19 @@ run_test() (
             configfile=${blueconfigs[$src]}
             # When using test scripts
             if [ ${src:(-3)} = .sh ]; then
-                (source ./$src $configfile ${outputs[$src]}) &> _$src.log &
+                if [ "$DRY_RUN" ]; then
+                    head ./$src > _$src.log &
+                else
+                    (source ./$src $configfile ${outputs[$src]}) &> _$src.log &
+                fi
             else
+                # run_blueconfig understands $DRY_RUN
                 run_blueconfig $configfile &> _$src.log &
             fi
             pids[$src]=$!
         done
 
-        sleep 10  # Some time to have salloc info
+        sleep $([ "$DRY_RUN" ] && echo 1 || echo 10)  # Some time to have salloc info
         for src in ${configsrc[@]}; do
             log "Simulation $src status:"
             grep 'salloc:' _$src.log | sed 's/^/    /'
@@ -274,7 +287,7 @@ run_debug() (
 run_all_tests() (
     (set +x; echo """
 =====================================================================
-Running tests
+Running tests (DRY="$DRY_RUN")
 =====================================================================
 """)
     set -e
