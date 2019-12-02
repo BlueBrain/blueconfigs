@@ -2,28 +2,28 @@
 source ../toolbox.sh
 configfile_bk $1
 
-echo ">> Test with CORENEURON simulator"
+echo ">> Test with CORENEURON simulator by default"
 blue_set Simulator CORENEURON $blueconfig
 run_blueconfig $blueconfig
 
-# Check if intermediate data exists by default
+# Check if intermediate data is deleted by default
 outputdir=$2
 coreneuron_data=$outputdir/coreneuron_input
 if [ -d $coreneuron_data ]; then
-    echo "Check CORENEURON intermediate data by default : OK"
-else
-    log_error  "$coreneuron_data should not be deleted by default"
+    log_error  "$coreneuron_data should be deleted by default"
     exit -1
+else
+    echo "Check CORENEURON intermediate data by default : OK"
 fi
 
-echo ">> Test with CORENEURON simulator and delete intermediate data"
-blue_set keepModelData False $blueconfig
+echo ">> Test with CORENEURON simulator and keep intermediate data"
+blue_set keepModelData True $blueconfig
 run_blueconfig $blueconfig
 
-# Check if intermediate data is deleted after run
+# Check if intermediate data is kept after run
 if [ -d $coreneuron_data ]; then
-    log_error  "$coreneuron_data is not deleted"
-    exit -1
+    echo "Check CORENEURON intermediate data kept by demand: OK"
 else
-    echo "Check CORENEURON intermediate data deletion : $coreneuron_data is deleted"
+    log_error  "$coreneuron_data is not kept"
+    exit -1
 fi
