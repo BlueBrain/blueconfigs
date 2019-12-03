@@ -82,6 +82,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
+                    // Dont run delmodeldata test yet
+                    sh "rm quick-v5-multisplit/test_coreneuron_delmodeldata.sh"
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
                     for (group in PARAMS.test_groups) {
                         def tasks = [:]
