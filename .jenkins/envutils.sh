@@ -45,7 +45,7 @@ bb5_run() (
     N=${N:-1}
     if [ -n "$n" ]; then SALLOC_OPTS="$SALLOC_OPTS -n$n"; fi
 
-    cmd_base="salloc -N$N $SALLOC_OPTS --ntasks-per-node=36 -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00 srun --pty"
+    cmd_base="srun -N$N $SALLOC_OPTS --ntasks-per-node=36 -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00"
     echo "$cmd_base $@"
     if [ ! "$DRY_RUN"  ]; then
         $cmd_base "$@"
