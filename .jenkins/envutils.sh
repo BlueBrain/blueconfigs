@@ -43,9 +43,13 @@ bb5_run() (
     if [ "$hour" -ge "19" ] || [ "$hour" -lt "8" ] || [ $weekday -gt 5 ]; then export SALLOC_PARTITION="prod"; fi
 
     N=${N:-1}
-    if [ -n "$n" ]; then SALLOC_OPTS="$SALLOC_OPTS -n$n"; fi
+    if [ -n "$n" ]; then
+        SALLOC_OPTS="$SALLOC_OPTS -n$n"
+    else
+        SALLOC_OPTS="$SALLOC_OPTS --ntasks-per-node=36"
+    fi
 
-    cmd_base="srun -N$N $SALLOC_OPTS --ntasks-per-node=36 -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00"
+    cmd_base="salloc -N$N $SALLOC_OPTS -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00 srun "
     echo "$cmd_base $@"
     if [ ! "$DRY_RUN"  ]; then
         $cmd_base "$@"

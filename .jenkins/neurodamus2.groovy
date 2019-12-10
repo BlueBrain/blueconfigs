@@ -156,6 +156,8 @@ pipeline {
 
                     // Dont run save-restore with python yet
                     sh "rm scx-v5-plasticity/test_save-restore_coreneuron.sh"
+                    // Dont run the test for the removal of the coreneuron files
+                    sh "rm quick-v5-multisplit/test_coreneuron_delmodeldata.sh"
 
                     for (vtests in testmap) {
                         for (testname in vtests.value) {
