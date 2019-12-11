@@ -30,18 +30,6 @@ strip_nd_git_tags() (
     done
 )
 
-
-check_patch_syntool() (
-    # In synapsetool we replace version develop and delete all tag versions
-    if [ $SYNAPSETOOL_BRANCH ]; then
-        echo "Use SYNAPSETOOL branch: $SYNAPSETOOL_BRANCH"
-        sedexp="/version..develop/ s#version.*#version('develop', git=url, branch='$SYNAPSETOOL_BRANCH', submodules=True)#;
-                /, tag=/ d"
-        sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/synapsetool/package.py" "$sedexp"
-    fi
-)
-
-
 check_patch_coreneuron() (
     # Coreneuron doesnt typically use branches, we add it.
     sedexp=
@@ -56,12 +44,24 @@ check_patch_coreneuron() (
     fi
 )
 
+check_patch_project() (
+    projname="$1"
+    branch="$2"
+    if [ "$branch" ]; then
+        pkg_file="$PKGS_BASE/$projname/package.py"
+        sedexp='/version.*tag=/d'  # Drop tags
+        sedexp="$sedexp; s#branch=[^)]*)#branch='$branch')#g"  # replace branch
+        sed_apply "$pkg_file" "$sedexp"
+    fi
+)
+
 
 main()(
     set -e
     strip_nd_git_tags
-    check_patch_syntool
     check_patch_coreneuron
+    check_patch_project synapsetool "$SYNAPSETOOL_BRANCH"
+    check_patch_project reportinglib "$REPORTINGLIB_BRANCH"
     touch spack_patched.flag
 )
 
