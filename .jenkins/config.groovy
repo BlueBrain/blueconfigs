@@ -7,7 +7,7 @@ def PARAMS = [
     tests: [
         neocortex:      ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions",
                          "scx-v5-bonus-minis"],
-        ncx_bare:       ["quick-v5-gaps", "quick-v6"],
+        ncx_bare:       ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"],
         ncx_plasticity: ["scx-v5-plasticity", "quick-v5-plasticity"],
         hippocampus:    ["hip-v6", "hip-v6-mcr4", "quick-hip-sonata", "quick-hip-projSeed"],
         thalamus:       ["thalamus"],
@@ -85,7 +85,6 @@ pipeline {
                     // Dont run test for deleting coreneuron_input folder yet, since
                     // the version of neurodamus-core with this change is not deployed
                     sh "rm quick-v5-multisplit/test_coreneuron_delmodeldata.sh"
-                    sh "rm quick-v5-multisplit/test_multisplit.sh"
 
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
                     for (group in PARAMS.test_groups) {
