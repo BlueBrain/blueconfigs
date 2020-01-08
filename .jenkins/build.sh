@@ -32,6 +32,14 @@ for version in $ND_VERSIONS; do
         spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
     fi
 done
+if [ "$RUN_PY_TESTS" ]; then
+    echo "Installing also $NEURODAMUS_PY_VERSION"
+    if [ "$DRY_RUN" ]; then
+        spack spec -I $NEURODAMUS_PY_VERSION
+    else
+        spack install --show-log-on-error $NEURODAMUS_PY_VERSION
+    fi
+fi
 
 log_ok "Environment successfully setup"
 

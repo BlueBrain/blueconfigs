@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-module load python-dev
+module load py-neurodamus
 module list
 
 source ../toolbox.sh

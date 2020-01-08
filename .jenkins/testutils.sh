@@ -92,9 +92,8 @@ _prepare_test() {
         module purge
         if [ $RUN_PY_TESTS = "yes" ]; then
             log "Loading python with deps"
-            module load python
-            export PYTHONPATH="$BUILD_HOME/pydevpkgs:$PYTHONPATH"
-       fi
+            module load py-neurodamus
+        fi
         spack load $spec
     fi
     module list
@@ -251,7 +250,11 @@ run_blueconfig() (
     configfile=${1:-"BlueConfig"}
     shift
 
-    if [[ $RUN_PY_TESTS == "yes" && $NEURODAMUS_PYTHON ]]; then
+    if [[ $RUN_PY_TESTS == "yes" ]]; then
+        if [ -z "$NEURODAMUS_PYTHON" ] && [ -z "$DRY_RUN" ]; then
+            log_error "NEURODAMUS_PYTHON var is not set. Unknown location of init.py"
+            return 1
+        fi
         INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" "$@")
     else
         INIT_ARGS=("-c" "{strdef configFile configFile=\"$configfile\"}" -mpi "$HOC_LIBRARY_PATH/init.hoc" "$@")
