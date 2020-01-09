@@ -85,7 +85,7 @@ pipeline {
                     // Dont run test for deleting coreneuron_input folder yet, since
                     // the version of neurodamus-core with this change is not deployed
                     //sh "rm quick-v5-multisplit/test_coreneuron_delmodeldata.sh"
-                    //sh "rm quick-v5-multisplit/test_multisplit.sh"
+                    sh "rm quick-v5-multisplit/test_multisplit.sh"
 
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
                     for (group in PARAMS.test_groups) {
