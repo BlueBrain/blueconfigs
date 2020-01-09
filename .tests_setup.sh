@@ -22,7 +22,7 @@ log "DATADIR=$DATADIR; EXTRA_VARIANT=$EXTRA_VARIANT; BUILD_OPTIONS=$BUILD_OPTION
 declare -A VERSIONS
 # Master is a plain v5+v6 version
 VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION $DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
-VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity+coreneuron~synapsetool$EXTRA_VARIANT $CORENRN_DEP"
+VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
 VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
 VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $EXTRA_VARIANT"
 VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $EXTRA_VARIANT"
