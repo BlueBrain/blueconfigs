@@ -4,7 +4,7 @@ configfile_bk $1
 
 echo ">> Test with CORENEURON simulator by default"
 blue_set Simulator CORENEURON $blueconfig
-n=2 run_blueconfig $blueconfig
+run_blueconfig $blueconfig
 
 # Check if intermediate data is deleted by default
 outputdir=$2
@@ -18,7 +18,7 @@ fi
 
 echo ">> Test with CORENEURON simulator and keep intermediate data"
 blue_set keepModelData True $blueconfig
-n=2 run_blueconfig $blueconfig
+run_blueconfig $blueconfig
 
 # Check if intermediate data is kept after run
 if [ -d $coreneuron_data ]; then
