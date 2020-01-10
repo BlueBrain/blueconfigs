@@ -5,12 +5,12 @@ Run Default
     gitPath ssh://bbpgit.epfl.ch/sim/neurodamus/bbp
     Version HEAD
 
-    MorphologyPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/morphologies
-    METypePath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/CCells
-    MeshPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/NeuMesh_output
-    CircuitPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/Functionalizer_output
-    nrnPath /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/Functionalizer_output
-    TargetFile /gpfs/bbp.cscs.ch/project/proj20/circuits/simtestdata/circuitBuilding_1000neurons/default_user.target
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-simtestdata/circuitBuilding_1000neurons/morphologies
+    METypePath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-simtestdata/circuitBuilding_1000neurons/CCells
+    MeshPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-simtestdata/circuitBuilding_1000neurons/NeuMesh_output
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-simtestdata/circuitBuilding_1000neurons/Functionalizer_output
+    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-simtestdata/circuitBuilding_1000neurons/Functionalizer_output
+    TargetFile /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-simtestdata/circuitBuilding_1000neurons/default_user.target
 
     CurrentDir   .
     OutputRoot   output
