@@ -14,7 +14,7 @@ log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRA
 BUILD_VERSION="@develop%intel"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
-BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug"}"
+BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+cmake+debug"}"
 DEFAULT_VARIANT="~plasticity+coreneuron+synapsetool"
 CORENRN_DEP="^coreneuron+debug"
 NEURODAMUS_PY_VERSION="py-neurodamus $BUILD_VERSION"
