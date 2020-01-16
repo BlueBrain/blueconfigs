@@ -30,20 +30,6 @@ strip_nd_git_tags() (
     done
 )
 
-check_patch_coreneuron() (
-    # Coreneuron doesnt typically use branches, we add it.
-    sedexp=
-    if [ $CORENEURON_BRANCH ]; then
-        sedexp="s#git=url#git=url, branch='$CORENEURON_BRANCH'#g"
-    fi
-    if [ $CORENEURON_BRANCH_PLASTICITY ]; then
-        sedexp="/plasticity/ s#git=url#git=url, branch='$CORENEURON_BRANCH_PLASTICITY'#g"
-    fi
-    if [ "$sedexp" ]; then
-        sed_apply "${SPACK_ROOT}/var/spack/repos/builtin/packages/coreneuron/package.py" "$sedexp"
-    fi
-)
-
 check_patch_project() (
     projname="$1"
     branch="$2"
@@ -55,11 +41,10 @@ check_patch_project() (
     fi
 )
 
-
 main()(
     set -e
     strip_nd_git_tags
-    check_patch_coreneuron
+    check_patch_project coreneuron "$CORENEURON_BRANCH"
     check_patch_project synapsetool "$SYNAPSETOOL_BRANCH"
     check_patch_project reportinglib "$REPORTINGLIB_BRANCH"
     check_patch_project py-neurodamus "$PYNEURODAMUS_BRANCH"
