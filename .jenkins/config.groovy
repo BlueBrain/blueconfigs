@@ -70,6 +70,9 @@ pipeline {
             steps {
                 script {
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
+                    if( env.ghprbGhRepository == "BlueBrain/CoreNeuron" ) {
+                        test_versions = ['ncx_plasticity']
+                    }
                     for (ver in test_versions) {
                         sh("""source ${WORKSPACE}/.tests_setup.sh
                               install_neurodamus ${ver}
@@ -83,6 +86,9 @@ pipeline {
             steps {
                 script {
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
+                    if( env.ghprbGhRepository == "BlueBrain/CoreNeuron" ) {
+                        test_versions = ['ncx_plasticity']
+                    }
                     for (group in PARAMS.test_groups) {
                         def tasks = [:]
                         for (ver in test_versions) {

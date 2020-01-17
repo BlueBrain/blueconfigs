@@ -36,7 +36,7 @@ check_patch_project() (
     if [ "$branch" ]; then
         pkg_file="$PKGS_BASE/$projname/package.py"
         sedexp='/version.*tag=/d'  # Drop tags
-        sedexp="$sedexp; s#branch=[^)]*)#branch='$branch')#g"  # replace branch
+        sedexp="$sedexp; s#branch=[^)]*)#branch='$branch', preferred=True)#g"  # replace branch
         sed_apply "$pkg_file" "$sedexp"
     fi
 )
@@ -44,7 +44,12 @@ check_patch_project() (
 main()(
     set -e
     strip_nd_git_tags
+
+    if [ "${ghprbGhRepository}" = "BlueBrain/CoreNeuron" ]; then
+        CORENEURON_BRANCH="${sha1}"
+    fi
     check_patch_project coreneuron "$CORENEURON_BRANCH"
+
     check_patch_project synapsetool "$SYNAPSETOOL_BRANCH"
     check_patch_project reportinglib "$REPORTINGLIB_BRANCH"
     check_patch_project py-neurodamus "$PYNEURODAMUS_BRANCH"
