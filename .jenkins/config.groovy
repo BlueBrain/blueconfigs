@@ -82,6 +82,18 @@ pipeline {
                 }
             }
         }
+        stage('DRY_RUN Exec') {
+            when {
+                expression { return env.DRY_RUN }
+            }
+            steps {
+                sh '''unset DRY_RUN
+                      source ${WORKSPACE}/.tests_setup.sh
+                      install_neurodamus ncx_bare
+                      run_test_debug quick-v5-gaps neurodamus-neocortex@develop
+                    '''
+            }
+        }
         stage('Test') {
             steps {
                 script {
