@@ -45,8 +45,8 @@ main()(
     set -e
     strip_nd_git_tags
 
-    if [ "${ghprbGhRepository}" = "BlueBrain/CoreNeuron" ]; then
-        CORENEURON_BRANCH="${sha1}"
+    if [ "${ghprbGhRepository}" = "BlueBrain/CoreNeuron" ] && [ "${GIT_BRANCH}" ]; then
+        CORENEURON_BRANCH="${GIT_BRANCH}"
     fi
     check_patch_project coreneuron "$CORENEURON_BRANCH"
 

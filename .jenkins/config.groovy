@@ -38,6 +38,8 @@ pipeline {
              description: 'Which version of the package to build & test.')
         string(name: 'SPACK_BRANCH', defaultValue: 'develop',
                description: 'Which branch of spack to use for the build.')
+        string(name: 'CORENEURON_BRANCH', defaultValue: '',
+               description: 'Which branch of coreneuron to use for the build.')
         string(name: 'RUN_PY_TESTS', defaultValue: 'no',
                description: 'Run tests with Python Neurodamus, or plain hoc')
         string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '',
