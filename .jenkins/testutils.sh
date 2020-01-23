@@ -98,6 +98,8 @@ _prepare_test() {
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
+    # Loading bluepy for the libsonata readers
+    module load unstable py-bluepy
 }
 
 
@@ -119,9 +121,27 @@ test_check_results() (
     sort -n -k'1,1' -k2 < $output/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $output/out.sorted
     (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out.sorted)
 
+    if [ -f $output/out_SONATA.dat ]; then
+        grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
+	(set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
+    elif [ -f $output/out.h5 ]; then
+        data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $output/out.h5 | tr "," "\n")
+        :>$output/out_SONATA.dat
+        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1)+1 }' >> $output/out_SONATA.dat
+        grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
+        (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
+    fi
+
     # compare reports
     for report in $(cd $output && ls *.bbp); do
         (set -x; cmp "$ref_results/$report" "$output/$report")
+    done
+    # TODO: properly compare sonata reports against reference Bin (or add SONATA reference)
+    for sonata_report in $(cd $output && ls *.h5); do
+        if [ "$sonata_report" != "out.h5" ]; then
+            (set -x; [ -s $output/$sonata_report ] )
+            (set -x; python "$_THISDIR/compare_sonata_reports.py" "$ref_results/$sonata_report" "$output/$sonata_report")
+        fi
     done
     log_ok "Results Match"
 )
@@ -166,7 +186,7 @@ run_test() (
 
     if [ ${#configsrc[@]} -eq 1 ]; then
         run_blueconfig $configsrc
-    	test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
+        test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
     else
         # Otherwise we launch several processes to the background, store output and wait
         # Loop over $blueconfig tests

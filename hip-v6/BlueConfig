@@ -40,6 +40,18 @@ Report soma
     EndTime 1000
 }
 
+Report soma_SONATA
+{
+    Target Mosaic
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format SONATA
+    Dt 0.1
+    StartTime 0
+    EndTime 1000
+}
+
 Report compartment
 {
     Target AllCompartments
