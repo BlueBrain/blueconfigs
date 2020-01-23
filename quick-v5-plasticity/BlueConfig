@@ -66,6 +66,18 @@ Report compartment
              EndTime 1000
 }
 
+Report compartment_SONATA
+{
+              Target miniCompartments
+                Type compartment
+            ReportOn v
+                Unit mV
+              Format SONATA
+                  Dt 0.1
+           StartTime 0.0
+             EndTime 1000
+}
+
 #Report rho
 {
               Target AllCompartments_mc2_Excitatory

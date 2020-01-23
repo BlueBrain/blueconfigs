@@ -41,6 +41,18 @@ Report soma
         EndTime 10000
 }
 
+Report soma_SONATA
+{
+        Target Mosaic
+        Type compartment
+        ReportOn v
+        Unit mV
+        Format SONATA
+        Dt 1.0
+        StartTime 0
+        EndTime 10000
+}
+
 #Report use
 {
         Target AllCompartments_Excitatory
