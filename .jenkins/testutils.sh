@@ -119,10 +119,12 @@ test_check_results() (
     sort -n -k'1,1' -k2 < $output/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $output/out.sorted
     (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out.sorted)
 
-    data=$(h5dump -d /spikes/timestamps -m %.3f -d /spikes/node_ids -y -O $output/out.h5 | tr "," "\n")
-    echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i) }' >> $output/out_SONATA.dat
-    grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
-    (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
+    if [ -f $output/out.h5 ]; then
+        data=$(h5dump -d /spikes/timestamps -m %.3f -d /spikes/node_ids -y -O $output/out.h5 | tr "," "\n")
+        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i) }' >> $output/out_SONATA.dat
+        grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
+        (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
+    fi
 
     # compare reports
     for report in $(cd $output && ls *.bbp); do
