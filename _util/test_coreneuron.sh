@@ -1,14 +1,11 @@
 #!/bin/bash
 set -e
-module load unstable reportinglib
-module list
-
 source ../toolbox.sh
 configfile_bk $1
 outputdir=$2
 
 blue_set Simulator CORENEURON $blueconfig
-head -n 30 $blueconfig
+blue_comment "Report soma" $blueconfig
 
 export OMP_NUM_THREADS=1
-source ../_util/save-restore.sh $blueconfig $outputdir
+run_blueconfig $blueconfig

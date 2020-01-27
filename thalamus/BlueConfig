@@ -9,6 +9,7 @@ Run Default
     MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/mecombo_emodel.tsv
 
     Simulator NEURON
+    RNGMode Random123
     BaseSeed 360820
 
     CurrentDir .
@@ -28,7 +29,7 @@ Projection MedialLemniscus
     Source ML_afferents
 }
 
-Report soma
+Report compartment
 {
     Target All
     Type compartment
@@ -36,8 +37,8 @@ Report soma
     Unit mV
     Format Bin
     Dt 0.1
-    StartTime 0
-    EndTime 7000
+    StartTime 0.1
+    EndTime 1000
 }
 
 Stimulus spikeReplay

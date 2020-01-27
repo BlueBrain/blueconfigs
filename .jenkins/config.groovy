@@ -42,9 +42,12 @@ pipeline {
                description: 'Which branch of coreneuron to use for the build.')
         string(name: 'RUN_PY_TESTS', defaultValue: 'no',
                description: 'Run tests with Python Neurodamus, or plain hoc')
+        string(name: 'DRY_RUN', defaultValue: '',
+               description: 'Will start a DRY_RUN, i.e. dont run sims, mostly to test CI itself')
         string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '',
                description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x')
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '')
+
     }
 
     triggers {
@@ -59,7 +62,6 @@ pipeline {
         SPACK_ROOT = "${HOME}/spack"
         PATH = "${SPACK_ROOT}/bin:${PATH}"
         MODULEPATH = "${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
-        DRY_RUN = "${env.GERRIT_REFSPEC}"
         TMPDIR = "${TMPDIR}/${BUILD_TAG}"
     }
 
