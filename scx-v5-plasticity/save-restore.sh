@@ -45,6 +45,12 @@ check_report_length() (
       return 1
     fi
   done
+
+  for rep in $output/*.h5; do
+     [[ -f "$rep" && "$rep" != $output/out.h5 ]] || continue
+     [ $(set +x; h5ls -r $rep | grep data | awk '{ print $3 }' | tr --delete {,) -eq $length ]
+  done
+
 )
 
 echo " >> Running FIRST PART"
@@ -59,10 +65,24 @@ echo " >> Running THIRD PART"
 run_blueconfig "$config3"
 check_report_length "$output3" $((t_end3 - t_end2))
 
+# Generate ascii format for the spikes in h5 for all directories
+output_directories=( "$output1" "$output2" "$output3" )
+for directory in "${output_directories[@]}"
+do
+    if [ -f $directory/out.h5 ]; then
+        data=$(h5dump -d /spikes/timestamps -m %.3f -d /spikes/node_ids -y -O $directory/out.h5 | tr "," "\n")
+        :>$directory/out_SONATA.dat
+        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i) }' >> $directory/out_SONATA.dat
+    fi
+done
+
 # delete bbp files otherwise the framework will try to compare them
-rm -f "$output1"/*.bbp "$output2"/*.bbp "$output3"/*.bbp
+rm -f $output1/*.bbp $output2/*.bbp $output3/*.bbp
+rm -f $output1/*.h5 $output2/*.h5 $output3/*.h5
 
 # Combine results to be tested against reference results
 cat "$output2/out.dat" | grep -v scatter >> "$output1/out.dat"
 cat "$output3/out.dat" | grep -v scatter >> "$output1/out.dat"
 
+cat $output2/out_SONATA.dat >> $output1/out_SONATA.dat
+cat $output3/out_SONATA.dat >> $output1/out_SONATA.dat

@@ -119,8 +119,13 @@ test_check_results() (
     sort -n -k'1,1' -k2 < $output/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $output/out.sorted
     (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out.sorted)
 
-    if [ -f $output/out.h5 ]; then
+
+    if [ -f $output/out_SONATA.dat ]; then
+        grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
+	(set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
+    elif [ -f $output/out.h5 ]; then
         data=$(h5dump -d /spikes/timestamps -m %.3f -d /spikes/node_ids -y -O $output/out.h5 | tr "," "\n")
+        :>$output/out_SONATA.dat
         echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i) }' >> $output/out_SONATA.dat
         grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
         (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
@@ -130,6 +135,7 @@ test_check_results() (
     for report in $(cd $output && ls *.bbp); do
         (set -x; cmp "$ref_results/$report" "$output/$report")
     done
+    # TODO: properly compare sonata reports against reference Bin (or add SONATA reference)
     for sonata_report in $(cd $output && ls *.h5); do
         (set -x; [ -s $output/$sonata_report ] )
     done
