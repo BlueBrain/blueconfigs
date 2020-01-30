@@ -4,7 +4,7 @@ source .jenkins/envutils.sh
 # Test parameters eventually defined by Jenkins (env vars)
 set +x
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify"}
+export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity thalamus mousify hippocampus"}
 export SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 export DRY_RUN=${DRY_RUN:-""}  # Dont actually run sims. Default is false

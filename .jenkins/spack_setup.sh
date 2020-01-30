@@ -36,7 +36,7 @@ export PATH=$SPACK_ROOT/bin/spack:/usr/bin:$PATH
 # Use spack only modules. Last one is added by changing MODULEPATH since it might not exist yet
 module purge
 unset MODULEPATH
-source /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/modules.sh
+source /gpfs/bbp.cscs.ch/apps/hpc/jenkins/threelled/config/modules.sh
 module use $DATADIR/devel_builds_04-2019/modules/tcl/linux-rhel7-x86_64
 export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
 PYDEPS_PATH=$BUILD_HOME/pydevpkgs
@@ -65,19 +65,22 @@ install_spack() (
     log "Installing SPACK. Cloning $SPACK_REPO $SPACK_ROOT --depth 1 -b $SPACK_BRANCH"
     git clone $SPACK_REPO $SPACK_ROOT --depth 1 -b $SPACK_BRANCH
     # Use BBP configs
-    mkdir -p $SPACK_ROOT/etc/spack/defaults/linux
-    cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/*.yaml $SPACK_ROOT/etc/spack/
+    mkdir -p $HOME/.spack
+    cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/threelled/config/*.yaml $HOME/.spack
+    ls $HOME/.spack
 
     # Use applications upstream
-    echo "upstreams:
-  applications:
-    install_tree: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19
-    modules:
-      tcl: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19/modules
-$(tail -n +2 $SPACK_ROOT/etc/spack/upstreams.yaml)" > $SPACK_ROOT/etc/spack/upstreams.yaml
+#    echo "upstreams:
+#  applications:
+#    install_tree: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19
+#    modules:
+#      tcl: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19/modules
+#$(tail -n +2 $SPACK_ROOT/etc/spack/upstreams.yaml)" > $SPACK_ROOT/etc/spack/upstreams.yaml
 
     # Avoid clash. Dont autoload
-    sed -i 's#hash_length:.*#hash_lengh: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml
+    sed -i 's#hash_length:.*#hash_length: 6#;/autoload/d' $HOME/.spack/modules.yaml
+    sed -i 's#- py-mvdtoo.*#- py-mvdtool#' $HOME/.spack/modules.yaml
+    sed -i 's#spec: intel@19.0.4.*#spec: intel@19.0.4#' $HOME/.spack/compilers.yaml
 )
 
 

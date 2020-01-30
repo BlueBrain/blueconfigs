@@ -90,11 +90,12 @@ _prepare_test() {
     if [ "$spec" != "default" ]; then
         log "COMMANDS: module purge; spack load $spec" "DBG"
         module purge
+        module load unstable
         if [ $RUN_PY_TESTS = "yes" ]; then
             log "Loading python with deps"
             module load py-neurodamus
         fi
-        spack load $spec
+        spack -d load $spec
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
@@ -330,6 +331,7 @@ if [ -z $SPACK_ROOT ]; then
 else
     set +x
     source $SPACK_ROOT/share/spack/setup-env.sh
+    echo "Spack used: " $(which spack)
     log_ok "Tests ready"
     set -$_setbk
 fi

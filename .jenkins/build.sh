@@ -17,11 +17,6 @@ if [ -z "$SPACK_ROOT" ]; then
     false
 fi
 
-if [ ! "$DRY_RUN" ]; then
-    log "Spack module refresh"
-    spack module tcl refresh -y --delete-tree
-fi
-
 declare ND_VERSIONS=${1:-"$TEST_VERSIONS"}
 
 for version in $ND_VERSIONS; do
@@ -39,6 +34,11 @@ if [ "$RUN_PY_TESTS" ]; then
     else
         spack install --show-log-on-error $NEURODAMUS_PY_VERSION
     fi
+fi
+
+if [ ! "$DRY_RUN" ]; then
+    log "Spack module refresh"
+    spack module tcl refresh -y --delete-tree
 fi
 
 log_ok "Environment successfully setup"
