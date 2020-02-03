@@ -43,12 +43,6 @@ def findSkipTests() {
             skip_tests.push(line.split("=")[1])
         }
     }
-
-    // temp patch since neurodamus-python lacks features
-    if(GERRIT_PROJECT=="sim/neurodamus-py") {
-        skip_tests.push("quick-mousify-sonata")
-    }
-
     return skip_tests
 }
 
@@ -65,7 +59,7 @@ pipeline {
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '', description: 'Gerrit commit message to read environment variables to expose to jenkins', )
         string(name: 'BLUECONFIGS_BRANCH', defaultValue: 'master', description: 'Blueconfigs repo branch to use for the tests', )
         string(name: 'SYNAPSETOOL_BRANCH', defaultValue: '', description: 'Synapsetool repo branch to use for the tests', )
-
+        string(name: 'CORENEURON_BRANCH', defaultValue: '', description: 'CoreNeuron repo branch to use for the tests', )
     }
 
     environment {
@@ -111,13 +105,18 @@ pipeline {
                     """
 
                     // Patch for model or neurodamus core(/py)?
-                    def model = getModel()
-                    def sedex = "s#ssh://bbpcode.epfl.ch/${GERRIT_PROJECT}#file://${WORKSPACE}/${GERRIT_PROJECT}#;"
-                    if (model != null || GERRIT_PROJECT == 'sim/neurodamus-core') {
+                    if (GERRIT_PROJECT != "sim/models/common") {
+                        def sedex = "s#ssh://bbpcode.epfl.ch/${GERRIT_PROJECT}#file://${WORKSPACE}/${GERRIT_PROJECT}#;"
                         sedex += "/tag=/d; s#master#change/${GERRIT_CHANGE_NUMBER}#"
+                        def spackfile = "neurodamus-" + (getModel()?: "core")
+                        if(GERRIT_PROJECT == "sim/reportinglib/bbp") {
+                            spackfile = "reportinglib"
+                        } else if(GERRIT_PROJECT == "sim/neurodamus-py") {
+                            spackfile = "py-neurodamus"
+                        }
+                        spackfile = "${SPACK_ROOT}/var/spack/repos/builtin/packages/${spackfile}/package.py"
+                        sh """sed -i '${sedex}' '${spackfile}' && grep -n3 'version' '${spackfile}'"""
                     }
-                    def corefile = "${SPACK_ROOT}/var/spack/repos/builtin/packages/neurodamus-${model?:'core'}/package.py"
-                    sh "sed -i '${sedex}' ${corefile} && grep -n3 'version' ${corefile}"
                 }
             }
         }
@@ -154,10 +153,10 @@ pipeline {
                         testmap = [(model): TESTS[model]]
                     }
 
-                    // Dont run save-restore with python yet
-                    sh "rm scx-v5-plasticity/test_save-restore_coreneuron.sh"
-                    // Dont run the test for the removal of the coreneuron files
-                    sh "rm quick-v5-multisplit/test_coreneuron_delmodeldata.sh"
+                    if(GERRIT_PROJECT == "sim/neurodamus-py") {
+                        // Dont run save-restore with python yet
+                        sh "rm scx-v5-plasticity/test_save-restore_coreneuron.sh"
+                    }
 
                     for (vtests in testmap) {
                         for (testname in vtests.value) {
