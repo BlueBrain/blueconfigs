@@ -37,9 +37,7 @@ export PATH=$SPACK_ROOT/bin/spack:/usr/bin:$PATH
 module purge
 unset MODULEPATH
 source /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/modules.sh
-module use $DATADIR/devel_builds_04-2019/modules/tcl/linux-rhel7-x86_64
 export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
-PYDEPS_PATH=$BUILD_HOME/pydevpkgs
 
 _external_pkg_tpl='
   ${PKG_NAME}:
@@ -60,12 +58,11 @@ install_spack() (
     mkdir -p $BASEDIR && cd $BASEDIR
     rm -rf .spack   # CLEANUP SPACK CONFIGS
     SPACK_REPO=https://github.com/BlueBrain/spack.git
-    SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
+    SPACK_BRANCH=${SPACK_BRANCH:-"support/jan2020"}
 
     log "Installing SPACK. Cloning $SPACK_REPO $SPACK_ROOT --depth 1 -b $SPACK_BRANCH"
     git clone $SPACK_REPO $SPACK_ROOT --depth 1 -b $SPACK_BRANCH
     # Use BBP configs
-    mkdir -p $SPACK_ROOT/etc/spack/defaults/linux
     cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/*.yaml $SPACK_ROOT/etc/spack/
 
     # Use applications upstream
@@ -77,22 +74,7 @@ install_spack() (
 $(tail -n +2 $SPACK_ROOT/etc/spack/upstreams.yaml)" > $SPACK_ROOT/etc/spack/upstreams.yaml
 
     # Avoid clash. Dont autoload
-    sed -i 's#hash_length:.*#hash_lengh: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml
-)
-
-
-# Use centralized python-dev package set
-config_py_deps() (
-    set -e
-    # create a link to centralized site-packages
-    site_pkgs=$($DEVEL_DEPLOY/pyenv/bin/python -m site | grep $DEVEL_DEPLOY | sed "s#[,']##g" )
-    log "Configuring Python dependencies (src: $site_pkgs)"
-    ln -sf $site_pkgs $PYDEPS_PATH
-
-    # Most Python dependencies com from upstream. Those which dont exist we use from a venv
-    for pkg in numpy h5py lazy-property; do
-        echo "$_external_pkg_tpl" | PKG_NAME=py-$pkg PKG_VERSION=99 PKG_PATH=pydeps envsubst >> $SPACK_ROOT/etc/spack/packages.yaml
-    done
+    sed -i 's#hash_length:.*#hash_length: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml
 )
 
 

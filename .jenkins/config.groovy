@@ -36,7 +36,7 @@ pipeline {
         text(name: 'TEST_VERSIONS',
              defaultValue: "neocortex\nncx_bare\nncx_plasticity\nhippocampus\nthalamus\nmousify",
              description: 'Which version of the package to build & test.')
-        string(name: 'SPACK_BRANCH', defaultValue: 'develop',
+        string(name: 'SPACK_BRANCH', defaultValue: '',
                description: 'Which branch of spack to use for the build.')
         string(name: 'CORENEURON_BRANCH', defaultValue: '',
                description: 'Which branch of coreneuron to use for the build.')
