@@ -9,7 +9,7 @@ configfile_bk $1
 #   1. Hoc version. data will be deleted
 #   2. Neurodamus-py. Idem
 #   3. neurodamuspy --keep-data. No deletion
-#   4. Hoc version, Blueconfig setting keepModelData=True. No deletion
+#   4. Hoc version, Blueconfig setting KeepModelData=True. No deletion
 
 outputdir=${2:-output}
 coreneuron_data=$outputdir/coreneuron_input
@@ -18,7 +18,7 @@ coreneuron_data=$outputdir/coreneuron_input
 
 echo ">> Test CoreNeuron data removal with neurodamus (hoc)"
 blue_set Simulator CORENEURON $blueconfig
-run_blueconfig $blueconfig
+RUN_PY_TESTS='' run_blueconfig $blueconfig
 
 if [ -d "$coreneuron_data" ]; then
     log_error "$coreneuron_data should be deleted by default"
@@ -57,8 +57,8 @@ rm -rf "$outputdir"
 
 #######################################################
 
-echo ">> Test CoreNeuron data preserve with neurodamus(Hoc) BueConfig keepModelData"
-blue_set keepModelData True $blueconfig
+echo ">> Test CoreNeuron data preserve with neurodamus(Hoc / Py) BlueConfig KeepModelData"
+blue_set KeepModelData True $blueconfig
 run_blueconfig $blueconfig
 
 # Check if intermediate data is kept after run
