@@ -36,7 +36,7 @@ export PATH=$SPACK_ROOT/bin/spack:/usr/bin:$PATH
 # Use spack only modules. Last one is added by changing MODULEPATH since it might not exist yet
 module purge
 unset MODULEPATH
-source /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/modules.sh
+source /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/2019/modules.sh
 export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
 
 _external_pkg_tpl='
@@ -63,7 +63,7 @@ install_spack() (
     log "Installing SPACK. Cloning $SPACK_REPO $SPACK_ROOT --depth 1 -b $SPACK_BRANCH"
     git clone $SPACK_REPO $SPACK_ROOT --depth 1 -b $SPACK_BRANCH
     # Use BBP configs
-    cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/*.yaml $SPACK_ROOT/etc/spack/
+    cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/2019/*.yaml $SPACK_ROOT/etc/spack/
 
     # Use applications upstream
     echo "upstreams:
