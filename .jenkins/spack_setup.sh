@@ -68,9 +68,9 @@ install_spack() (
     # Use applications upstream
     echo "upstreams:
   applications:
-    install_tree: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19
+    install_tree: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2020-02-01/
     modules:
-      tcl: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19/modules
+      tcl: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2020-02-01/modules
 $(tail -n +2 $SPACK_ROOT/etc/spack/upstreams.yaml)" > $SPACK_ROOT/etc/spack/upstreams.yaml
 
     # Avoid clash. Dont autoload
