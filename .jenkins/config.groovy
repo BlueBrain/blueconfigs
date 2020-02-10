@@ -58,14 +58,17 @@ pipeline {
         SPACK_INSTALL_PREFIX = "${WORKSPACE}/INSTALL_HOME"
         SPACK_ROOT = "${HOME}/spack"
         PATH = "${SPACK_ROOT}/bin:${PATH}"
-        MODULEPATH="${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
-        DRY_RUN="${env.GERRIT_REFSPEC}"
+        MODULEPATH = "${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
+        DRY_RUN = "${env.GERRIT_REFSPEC}"
+        TMPDIR = "${WORKSPACE}/tmpdir"
     }
 
     stages {
         stage("Setup Spack") {
             steps {
-                sh("source ${WORKSPACE}/.tests_setup.sh")
+                sh '''source ${WORKSPACE}/.tests_setup.sh
+                      mkdir ${TMPDIR}
+                   '''
             }
         }
         stage('Build') {
