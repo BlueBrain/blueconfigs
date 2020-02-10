@@ -68,14 +68,17 @@ pipeline {
         SPACK_INSTALL_PREFIX = "${WORKSPACE}/INSTALL_HOME"
         SPACK_ROOT = "${HOME}/spack"
         PATH = "${SPACK_ROOT}/bin:${PATH}"
-        MODULEPATH="${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
-        RUN_PY_TESTS=run_py_tests()
+        MODULEPATH = "${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
+        RUN_PY_TESTS = run_py_tests()
+        TMPDIR = "${WORKSPACE}/tmpdir"
     }
 
     stages {
         stage('Setup Spack') {
             steps {
                 script {
+                    dir(env.TMPDIR) {
+                    }
                     // Checkout blueconfigs
                     alt_branches=setAlternateBranches()
                     checkout(

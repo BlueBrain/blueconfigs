@@ -36,7 +36,8 @@ export PATH=$SPACK_ROOT/bin/spack:/usr/bin:$PATH
 # Use spack only modules. Last one is added by changing MODULEPATH since it might not exist yet
 module purge
 unset MODULEPATH
-source /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/2019/modules.sh
+module use "/gpfs/bbp.cscs.ch/ssd/apps/hpc/jenkins/modules/all"
+module load unstable
 export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
 
 _external_pkg_tpl='
@@ -58,20 +59,26 @@ install_spack() (
     mkdir -p $BASEDIR && cd $BASEDIR
     rm -rf .spack   # CLEANUP SPACK CONFIGS
     SPACK_REPO=https://github.com/BlueBrain/spack.git
-    SPACK_BRANCH=${SPACK_BRANCH:-"support/jan2020"}
+    SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
 
     log "Installing SPACK. Cloning $SPACK_REPO $SPACK_ROOT --depth 1 -b $SPACK_BRANCH"
     git clone $SPACK_REPO $SPACK_ROOT --depth 1 -b $SPACK_BRANCH
     # Use BBP configs
-    cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/2019/*.yaml $SPACK_ROOT/etc/spack/
+    cp /gpfs/bbp.cscs.ch/apps/hpc/jenkins/config/*.yaml $SPACK_ROOT/etc/spack/
 
     # Use applications upstream
-    echo "upstreams:
+    cat << EOF > "$SPACK_ROOT/etc/spack/upstreams.yaml"
+upstreams:
   applications:
-    install_tree: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19
+    install_tree: /gpfs/bbp.cscs.ch/ssd/apps/hpc/jenkins/deploy/applications/latest
     modules:
-      tcl: /gpfs/bbp.cscs.ch/apps/hpc/jenkins/deploy/applications/2018-12-19/modules
-$(tail -n +2 $SPACK_ROOT/etc/spack/upstreams.yaml)" > $SPACK_ROOT/etc/spack/upstreams.yaml
+      tcl: /gpfs/bbp.cscs.ch/ssd/apps/hpc/jenkins/deploy/applications/latest/modules
+  libraries:
+    install_tree: /gpfs/bbp.cscs.ch/ssd/apps/hpc/jenkins/deploy/libraries/latest
+    modules:
+      tcl: /gpfs/bbp.cscs.ch/ssd/apps/hpc/jenkins/deploy/libraries/latest/modules
+EOF
+cat "$SPACK_ROOT/etc/spack/upstreams.yaml"
 
     # Avoid clash. Dont autoload
     sed -i 's#hash_length:.*#hash_length: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml

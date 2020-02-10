@@ -11,7 +11,7 @@ export DRY_RUN=${DRY_RUN:-""}  # Dont actually run sims. Default is false
 log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRANCH; RUN_PY_TESTS=$RUN_PY_TESTS" "DBG"
 
 # Test definitions
-BUILD_VERSION="@develop%intel"
+BUILD_VERSION="@develop%intel@19.0.4"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
 BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug"}"

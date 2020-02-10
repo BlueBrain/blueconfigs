@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-module load reportinglib
+module load unstable reportinglib
 module list
 
 source ../toolbox.sh
