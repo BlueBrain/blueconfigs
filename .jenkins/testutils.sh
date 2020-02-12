@@ -22,6 +22,7 @@ REF_RESULTS["hip-v6"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation_v2"
 REF_RESULTS["hip-v6-mcr4"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-mcr4"
 REF_RESULTS["thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation"
 REF_RESULTS["mousify"]="$EXTENDED_RESULTS/circuit-mousify/simulation"
+REF_RESULTS["point-neuron"]="$EXTENDED_RESULTS/circuit-point/simulation"
 REF_RESULTS["quick-v5-gaps"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simulation_quick"
 REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick"
 REF_RESULTS["quick-v5-multisplit"]="$EXTENDED_RESULTS/circuit-v5-multisplit/simulation"
@@ -36,7 +37,7 @@ REF_RESULTS["quick-1k-v5-nodesets"]="$EXTENDED_RESULTS/circuit-1k/simulation-qui
 _prepare_test() {
     # If test not provided check if curdir has BlueConfig
     if [ -z "$testname" ]; then
-        if [[ -f BlueConfig && -f out.sorted ]]; then
+        if [ -f "BlueConfig" ] && [ -f "out.sorted" ]; then
             testname="${PWD##*/}"
         else
             log_error  "Test name not provided and not found in cur dir"
@@ -54,20 +55,26 @@ _prepare_test() {
         which special # Ensure available
     fi
 
-    # To run in parallel output and BlueConfig must be unique
-    hash=$(echo "$spec" | md5sum | cut -c 1-8)
-    log "Base Blueconfig copy: BlueConfig_$hash"
-    cp BlueConfig "BlueConfig_$hash"
-
-    configsrc=("BlueConfig_$hash")
     declare -gA blueconfigs
     declare -gA outputs
-    blueconfigs["BlueConfig_$hash"]="BlueConfig_$hash"  # Default
+
+    hash=$(echo "$spec" | md5sum | cut -c 1-8)
+    # Check if there is a default BlueConfig
+    if [ -f "BlueConfig" ]; then
+        # To run in parallel output and BlueConfig must be unique
+        log "Base Blueconfig copy: BlueConfig_$hash"
+        cp BlueConfig "BlueConfig_$hash"
+
+        configsrc=("BlueConfig_$hash")
+        blueconfigs["BlueConfig_$hash"]="BlueConfig_$hash"  # Default
+    else
+        log_warn "Base BlueConfig file not found"
+    fi
 
     # to support running both HOC and PY tests and keep backward compatibility
     # we introduce RUN_HOC_TESTS. When not defined the meaning is the old one, i.e.
     # RUN_PY_TESTS defines which test to run. Otherwise, variables only control their test
-    if [[ $RUN_HOC_TESTS == yes && $RUN_PY_TESTS == yes ]]; then
+    if [ $RUN_HOC_TESTS == yes ] && [ $RUN_PY_TESTS == yes ] && [ -f "BlueConfig" ]; then
         # Create an additional blueconfig for a separate hoc execution
         cp BlueConfig "BlueConfig_hoc_$hash"
         configsrc+=( "BlueConfig_hoc_$hash" )
@@ -78,20 +85,31 @@ _prepare_test() {
     # This is specially required for save-resume simulation tests
     for bc_script in test_*.sh; do
         [ -f $bc_script ] || break  # bash will take it literally when does not exist
-        bc_copy="BlueConfig_${bc_script:5:-3}_$hash"
-        log "BlueConfig copy for script $bc_script: $bc_copy"
-        cp BlueConfig $bc_copy
-        configsrc+=( "$bc_script" )
-        blueconfigs[$bc_script]=$bc_copy
+        if [ -f "BlueConfig" ]; then
+            bc_copy="BlueConfig_${bc_script:5:-3}_$hash"
+            log "BlueConfig copy for script $bc_script: $bc_copy"
+            cp BlueConfig $bc_copy
+            configsrc+=( "$bc_script" )
+            blueconfigs[$bc_script]=$bc_copy
+        else
+            configsrc+=( "$bc_script" )
+            blueconfigs[$bc_script]="none"
+        fi
     done
 
     # Patch all Blueconfigs, clean exisiting res
     log "Patching BlueConfigs OutputRoot..."
     for src in ${configsrc[@]}; do
         bc=${blueconfigs[$src]}
-        suffix=${bc:11}
+        if [ $bc != "none" ]; then
+            suffix=${bc:11}
+        else
+            suffix="none"
+        fi
         _output=output_$suffix
-        sed -i "s#OutputRoot.*#OutputRoot $_output#" $bc
+        if [ ${bc} != "none" ]; then
+            sed -i "s#OutputRoot.*#OutputRoot $_output#" $bc
+        fi
         outputs["$src"]=$_output
         rm -rf $_output
     done
@@ -240,8 +258,8 @@ run_test() (
     # Will set $blueconfigs and an $output associate array
     _prepare_test
 
-    # Single BlueConfig will run directly in foreground
-    if [ ${#configsrc[@]} -eq 1 ]; then
+    # Single BlueConfig if it's the default will run directly in foreground
+    if [ ${#configsrc[@]} -eq 1 ] && [ ${blueconfigs[$configsrc]} != "none" ]; then
         run_blueconfig "$configsrc"
         test_check_results "${outputs[$configsrc]}"
         log_ok "Tests $testname successful\n" "PASS"
@@ -276,11 +294,13 @@ run_test() (
     done
 
     local error_detected=  # flag to mark error, so we print all results
-    echo; log "Base BlueConfig launch: $baseconfig"
-    run_blueconfig "$baseconfig" # understands $DRY_RUN
-    log "Simulation Finished: $baseconfig"
-    _test_results "${outputs[$baseconfig]}"
-    echo  # newline
+    if [ ! -z $baseconfig ]; then
+        echo; log "Base BlueConfig launch: $baseconfig"
+        run_blueconfig "$baseconfig" # understands $DRY_RUN
+        log "Simulation Finished: $baseconfig"
+        _test_results "${outputs[$baseconfig]}"
+        echo  # newline
+    fi
 
     for src in ${configsrc[@]}; do
         [ "${pids[$src]}" ] || continue

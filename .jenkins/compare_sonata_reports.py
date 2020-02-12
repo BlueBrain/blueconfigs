@@ -55,5 +55,14 @@ df2 = df2.sort_index(axis=1)
 
 if numpy.allclose(df.values, df2.values):
     exit(0)
-
-exit(-1)
+else:
+    for column_name in df.columns.get_level_values(0):
+        df_values = df[column_name].values.ravel()
+        df2_values = df2[column_name].values.ravel()
+        row_names = df[column_name].index
+        if not numpy.allclose(df_values, df2_values):
+            print("Different values of " + str(column_name) + ": ")
+            for i, value in enumerate(df_values):
+                if not numpy.allclose(value, df2_values[i]):
+                    print("[{:g}(ms)] ref {:.8f} vs output {:.8f}".format(row_names[i], value, df2_values[i]))
+    exit(-1)

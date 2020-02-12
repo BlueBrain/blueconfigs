@@ -1,0 +1,77 @@
+Run Default
+{
+        CircuitPath <NONE>
+
+        Simulator NEURON
+        BaseSeed 75599
+        RNGMode Random123
+
+        CurrentDir .
+        OutputRoot output
+        TargetFile user.target
+
+        RunMode RR
+        CircuitTarget cells2377
+        Duration 1000
+        Dt 0.025
+}
+
+Circuit PointNeurons
+{
+    Engine PointNeuron
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/nodes
+    CellLibraryFile /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/nodes/whole_brain_model_SONATA.h5
+    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/nodes/whole_brain_model_SONATA.h5
+    CircuitTarget cells2377
+}
+
+Projection proj1302
+{
+    Path /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/proj/proj_SONATA.h5
+    Destination default:cells2377
+    Source excite1302
+    Type Point
+}
+
+Report adex
+{
+    Target default:cells2377
+    Type PointType
+    ReportOn AdEx.V_M
+    Unit mV
+    Format SONATA
+    Dt 0.025
+    StartTime 0.0
+    EndTime 2100
+}
+
+Stimulus spikeReplay
+{
+    Mode Current
+    Delay 0
+    Duration 100000000
+    Pattern SynapseReplay
+    SpikeFile stim.dat
+}
+
+StimulusInject spikeReplayIntocells2377
+{
+    Stimulus spikeReplay
+    Source default:excite1302
+    Target default:cells2377
+    Type Point
+}
+
+Connection excite1302tocells2377
+{
+    Source excite1302
+    Destination cells2377
+    Weight 1
+}
+
+Connection cells2377tocells2377
+{
+    Source cells2377
+    Destination cells2377
+    Weight 1
+}
