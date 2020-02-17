@@ -60,7 +60,7 @@ pipeline {
         PATH = "${SPACK_ROOT}/bin:${PATH}"
         MODULEPATH = "${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
         DRY_RUN = "${env.GERRIT_REFSPEC}"
-        TMPDIR = "${WORKSPACE}/tmpdir"
+        TMPDIR = "${TMPDIR}/${BUILD_TAG}"
     }
 
     stages {
@@ -149,6 +149,9 @@ pipeline {
     post {
         always {
             cleanWs()
+            dir(env.TMPDIR) {
+                deleteDir()
+            }
         }
     }
 }
