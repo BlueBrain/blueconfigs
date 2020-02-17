@@ -250,6 +250,8 @@ run_blueconfig() (
     configfile=${1:-"BlueConfig"}
     shift
 
+    cat "$configfile"
+
     if [[ $RUN_PY_TESTS == "yes" ]]; then
         if [ -z "$NEURODAMUS_PYTHON" ] && [ -z "$DRY_RUN" ]; then
             log_error "NEURODAMUS_PYTHON var is not set. Unknown location of init.py"
