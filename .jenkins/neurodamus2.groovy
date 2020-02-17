@@ -60,6 +60,7 @@ pipeline {
         string(name: 'BLUECONFIGS_BRANCH', defaultValue: 'master', description: 'Blueconfigs repo branch to use for the tests', )
         string(name: 'SYNAPSETOOL_BRANCH', defaultValue: '', description: 'Synapsetool repo branch to use for the tests', )
         string(name: 'CORENEURON_BRANCH', defaultValue: '', description: 'CoreNeuron repo branch to use for the tests', )
+        string(name: 'SPACK_BRANCH', defaultValue: '', description: 'The spack branch to use', )
     }
 
     environment {
