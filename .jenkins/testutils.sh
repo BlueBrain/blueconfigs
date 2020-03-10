@@ -260,8 +260,27 @@ run_blueconfig() (
         INIT_ARGS=("-c" "{strdef configFile configFile=\"$configfile\"}" -mpi "$HOC_LIBRARY_PATH/init.hoc" "$@")
     fi
 
-    N=$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2) \
+    N=${N:-$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2)} \
     bb5_run special "${INIT_ARGS[@]}"
+)
+
+#
+# Run a test script. It will also read the BlueConfig to get the OutputRoot
+# and test it with test_check_results
+#
+# @param configFile: (optional) The BlueConfig for the simulation
+#
+run_test_script() (
+    set -e
+    [ "$1" ] || (log_error "Please provide a test script" && return 1)
+    script_file="$1"
+    configfile=${2:-"BlueConfig"}
+    output_root=$(blue_get OutputRoot $configfile)
+
+    # Run by sourcing in subshell (Whatever is defined can be discarded)
+    (. $script_file $configfile $output_root)
+
+    test_check_results $output_root
 )
 
 
