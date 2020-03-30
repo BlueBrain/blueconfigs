@@ -127,6 +127,22 @@ test_check_results() (
 )
 
 
+check_prints(){
+  [ "$DRY_RUN" ] && return 0
+  set +x
+  local expected="$1"
+  local stopper="$2"
+  local line
+  local ret=1
+  while read line; do
+      echo "$line"
+      if [[ "$line" =~ "$expected" ]]; then ret=0; fi
+      if [ "$stopper" ] && [[ "$line" =~ "$stopper" ]]; then break; fi
+  done
+  return $ret
+}
+
+
 #
 # Main function to start a test given its directory name.
 # _prepare_test will additionally search for test_*.sh files and call them with a copy
@@ -248,6 +264,7 @@ run_test_debug() (
 run_blueconfig() (
     set -e
     configfile=${1:-"BlueConfig"}
+    testname=${testname:-$(basename $PWD)}
     shift
 
     if [[ $RUN_PY_TESTS == "yes" ]]; then
@@ -255,7 +272,7 @@ run_blueconfig() (
             log_error "NEURODAMUS_PYTHON var is not set. Unknown location of init.py"
             return 1
         fi
-        INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" "$@")
+        INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" --verbose "$@")
     else
         INIT_ARGS=("-c" "{strdef configFile configFile=\"$configfile\"}" -mpi "$HOC_LIBRARY_PATH/init.hoc" "$@")
     fi
