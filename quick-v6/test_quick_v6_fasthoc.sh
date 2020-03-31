@@ -2,8 +2,10 @@
 source ../toolbox.sh
 configfile_bk $1
 
-rm -rf output
+rm -rf output #used for local testing
 
+# Whenever we update simulation outputs driven by neuron changes
+# _fasthoc folder must be regenerated with hocify from neurodamus-py
 morpho_path=$(blue_get MorphologyPath $blueconfig)/_fasthoc
 blue_set MorphologyPath $morpho_path $blueconfig
 blue_set MorphologyType hoc $blueconfig
