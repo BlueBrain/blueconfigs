@@ -78,7 +78,6 @@ upstreams:
     modules:
       tcl: /gpfs/bbp.cscs.ch/ssd/apps/hpc/jenkins/deploy/libraries/latest/modules
 EOF
-cat "$SPACK_ROOT/etc/spack/upstreams.yaml"
 
     # Avoid clash. Dont autoload
     sed -i 's#hash_length:.*#hash_length: 6#;/autoload/d' $SPACK_ROOT/etc/spack/modules.yaml
