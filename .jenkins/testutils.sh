@@ -126,7 +126,7 @@ test_check_results() (
     elif [ -f $output/out.h5 ]; then
         data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $output/out.h5 | tr "," "\n")
         :>$output/out_SONATA.dat
-        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i) }' >> $output/out_SONATA.dat
+        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1) }' >> $output/out_SONATA.dat
         grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
         (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
     fi

@@ -77,7 +77,7 @@ do
     if [ -f $directory/out.h5 ]; then
         data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $directory/out.h5 | tr "," "\n")
         :>$directory/out_SONATA.dat
-        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i) }' >> $directory/out_SONATA.dat
+        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1) }' >> $directory/out_SONATA.dat
     fi
 done
 
@@ -88,7 +88,7 @@ do
     if [ -f $directory/out.h5 ]; then
         data=$(h5dump -d /spikes/timestamps -m %.3f -d /spikes/node_ids -y -O $directory/out.h5 | tr "," "\n")
         :>$directory/out_SONATA.dat
-        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i) }' >> $directory/out_SONATA.dat
+        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1) }' >> $directory/out_SONATA.dat
     fi
 done
 
