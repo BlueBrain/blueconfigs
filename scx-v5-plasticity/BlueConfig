@@ -73,7 +73,7 @@ Report compartment_SONATA
             ReportOn v
                 Unit mV
               Format SONATA
-                  Dt 0.1
+                  Dt 1
            StartTime 0.0
              EndTime 1000
 }
