@@ -33,7 +33,9 @@ _get_line() {
 blue_comment() {
     local line="$1"
     local blueconf="${2:-BlueConfig}"
-    local section="$3"
+    # NOTE the var expansion is {3-Run} so that it wont expand the empty string
+    # With an empty section name it will comment matching sections
+    local section="${3-Run}"
     if [ $section ]; then
         sed -i "/^$section /,/}/s#$line #\#$line #" "$blueconf"
     else
@@ -44,7 +46,7 @@ blue_comment() {
 blue_uncomment() {
     local line="$1"
     local blueconf="${2:-BlueConfig}"
-    local section="$3"
+    local section="${3-Run}"
     if [ $section ]; then
         sed -i "/^$section /,/}/s#\#$line #$line #" "$blueconf"
     else
