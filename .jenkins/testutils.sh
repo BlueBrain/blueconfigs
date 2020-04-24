@@ -140,8 +140,7 @@ test_check_results() (
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
             (set -x; [ -s $output/$sonata_report ] )
-            (set -x; mkdir -p /gpfs/bbp.cscs.ch/data/scratch/proj16/jblanco/workspace/$testname/$output )
-            (set -x; cp $output/$sonata_report /gpfs/bbp.cscs.ch/data/scratch/proj16/jblanco/workspace/$testname/$output )
+            (set -x; h5diff -c "$ref_results/$sonata_report" "$output/$sonata_report")
         fi
     done
     log_ok "Results Match"
