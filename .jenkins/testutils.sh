@@ -105,7 +105,8 @@ test_check_results() (
     set -e
     output=$1
     ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
-    ref_spikes=${3:-out.sorted}
+    ref_spikes="out.sorted"
+    testname=$3
     # Print nice msg on error
     trap "(set +x; log_error \"Results DON'T Match\n\"; exit 1)" ERR
 
@@ -137,7 +138,11 @@ test_check_results() (
     done
     # TODO: properly compare sonata reports against reference Bin (or add SONATA reference)
     for sonata_report in $(cd $output && ls *.h5); do
-        (set -x; [ -s $output/$sonata_report ] )
+        if [ "$sonata_report" != "out.h5" ]; then
+            (set -x; [ -s $output/$sonata_report ] )
+            (set -x; mkdir /gpfs/bbp.cscs.ch/data/scratch/proj16/jblanco/workspace/$testname )
+            (set -x; cp $output/$sonata_report /gpfs/bbp.cscs.ch/data/scratch/proj16/jblanco/workspace/$testname )
+        fi
     done
     log_ok "Results Match"
 )
@@ -182,7 +187,7 @@ run_test() (
 
     if [ ${#configsrc[@]} -eq 1 ]; then
         run_blueconfig $configsrc
-    	test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
+        test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}" "$testname"
     else
         # Otherwise we launch several processes to the background, store output and wait
         # Loop over $blueconfig tests
@@ -228,7 +233,7 @@ run_test() (
             if [[ -f ${outputs[$src]}/.exception.expected ]]; then
                 log "Expected exception detected"
             else
-                test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
+                test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}" "$testname"
                 [ $? -eq 0 ] || ERR=y
             fi
             set -e
@@ -266,7 +271,7 @@ run_test_debug() (
         else
             run_blueconfig $configfile
         fi
-        test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
+        test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}" "$testname"
     done
     log_ok "Tests $testname successfull\n" "PASS"
 )
