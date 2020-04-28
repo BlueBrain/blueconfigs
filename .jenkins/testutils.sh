@@ -105,8 +105,7 @@ test_check_results() (
     set -e
     output=$1
     ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
-    ref_spikes="out.sorted"
-    testname=$3
+    ref_spikes=${3:-out.sorted}
     # Print nice msg on error
     trap "(set +x; log_error \"Results DON'T Match\n\"; exit 1)" ERR
 
@@ -119,7 +118,6 @@ test_check_results() (
     grep '/scatter' $output/out.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out.dat
     sort -n -k'1,1' -k2 < $output/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $output/out.sorted
     (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out.sorted)
-
 
     if [ -f $output/out_SONATA.dat ]; then
         grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
@@ -186,7 +184,7 @@ run_test() (
 
     if [ ${#configsrc[@]} -eq 1 ]; then
         run_blueconfig $configsrc
-        test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}" "$testname"
+        test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
     else
         # Otherwise we launch several processes to the background, store output and wait
         # Loop over $blueconfig tests
@@ -232,7 +230,7 @@ run_test() (
             if [[ -f ${outputs[$src]}/.exception.expected ]]; then
                 log "Expected exception detected"
             else
-                test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}" "$testname"
+                test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
                 [ $? -eq 0 ] || ERR=y
             fi
             set -e
@@ -270,7 +268,7 @@ run_test_debug() (
         else
             run_blueconfig $configfile
         fi
-        test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}" "$testname"
+        test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
     done
     log_ok "Tests $testname successfull\n" "PASS"
 )
