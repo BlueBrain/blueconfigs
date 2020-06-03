@@ -22,7 +22,7 @@ strip_nd_git_tags() (
         sedexp='/version.*tag=/d'
 
         # change branch if requested
-        BVAR="NEURODAMUS_BRANCH_${proj^^}"
+        BVAR="NEURODAMUS_${proj^^}_BRANCH"
         if [ "${!BVAR}" ]; then
             sedexp="$sedexp; s#branch=[^)]*)#branch='${!BVAR}')#g"
         fi
