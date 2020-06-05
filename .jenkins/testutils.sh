@@ -98,6 +98,8 @@ _prepare_test() {
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
+    # Loading bluepy for the libsonata readers
+    module load unstable py-bluepy
 }
 
 
@@ -138,7 +140,7 @@ test_check_results() (
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
             (set -x; [ -s $output/$sonata_report ] )
-            (set -x; h5diff -c "$ref_results/$sonata_report" "$output/$sonata_report")
+            (set -x; python "$_THISDIR/compare_sonata_reports.py" "$ref_results/$sonata_report" "$output/$sonata_report")
         fi
     done
     log_ok "Results Match"
