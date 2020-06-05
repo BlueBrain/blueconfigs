@@ -1,9 +1,9 @@
 Run Default
 {
-	Date    27:8:19
-	Time    11:10:42
+    Date    27:8:19
+    Time    11:10:42
     svnPath https://bbpteam.epfl.ch/svn/bluebrain
-	Version    1094 
+    Version    1094
 
     CircuitPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306
     nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306/connectome/functional
@@ -16,19 +16,16 @@ Run Default
     Atlas /gpfs/bbp.cscs.ch/project/proj42/entities/dev/atlas/20181206-atlas/
 
     TargetFile user.target
-	CurrentDir    .
+    CurrentDir    .
     OutputRoot output
 
     RNGMode UpdatedMCell
     #RNGMode Random123
     BaseSeed 10
 
+    RunMode RR
     #CircuitTarget mc2_Column
-    #CircuitTarget Mosaic
     CircuitTarget selection
-    #CircuitTarget cylinder448631r200
-    #CircuitTarget cylinder382944r300
-    #CircuitTarget 2x300rCylinders
 
     Duration 100
     Dt 0.025
@@ -140,11 +137,12 @@ Connection Exc-Inh
 }
 
 Connection AMPA_NMDA
-{ 
-   Source Excitatory 
+{
+   Source Excitatory
    Destination Mosaic
    SynapseConfigure %s.NMDA_ratio = 1.22 tau_r_NMDA_ProbAMPANMDA_EMS = 3.9 tau_d_NMDA_ProbAMPANMDA_EMS = 35.6
 }
+
 Connection GABA_AB
 {
    Source Inhibitory
@@ -158,5 +156,4 @@ Connection MGGate
    Destination Mosaic
    SynapseConfigure %s.mg = 1.0
 }
-
 

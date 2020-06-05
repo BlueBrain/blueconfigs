@@ -21,9 +21,23 @@ def PARAMS = [
     alternate: [
         // Run again some tests with diff configs
         ncx_bare: [version:'neocortex', env:'RUN_PY_TESTS=yes', tag:'PYTHON']
+    ],
+    long_run_tests: [
+        ncx_plasticity: [testname:'scx-v5-plasticity', target:'mc0_Column'],
+        hippocampus: [testname: 'hip-v6', target: 'Inhibitory']
     ]
 ]
 
+def run_long_test() {
+    if (env.LONG_RUN) {
+        return env.LONG_RUN
+    } else {
+        def buildCause = currentBuild.getBuildCauses()[0].shortDescription
+        Calendar myDate = Calendar.getInstance()
+        def isSunday = myDate.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+        return (isSunday && buildCause.contains("Started by timer")) ? "yes" : "no"
+    }
+}
 
 pipeline {
     agent { label 'bb5' }
@@ -42,9 +56,14 @@ pipeline {
                description: 'Which branch of coreneuron to use for the build.')
         string(name: 'RUN_PY_TESTS', defaultValue: 'no',
                description: 'Run tests with Python Neurodamus, or plain hoc')
+        string(name: 'DRY_RUN', defaultValue: '',
+               description: 'Will start a DRY_RUN, i.e. dont run sims, mostly to test CI itself')
         string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '',
                description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x')
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '')
+        string(name: 'LONG_RUN', defaultValue: '',
+               description: 'RUN weekly large simulation tests with Python Neuromdamus')
+
     }
 
     triggers {
@@ -59,8 +78,8 @@ pipeline {
         SPACK_ROOT = "${HOME}/spack"
         PATH = "${SPACK_ROOT}/bin:${PATH}"
         MODULEPATH = "${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
-        DRY_RUN = "${env.GERRIT_REFSPEC}"
         TMPDIR = "${TMPDIR}/${BUILD_TAG}"
+        LONG_RUN = run_long_test()
     }
 
     stages {
@@ -68,6 +87,7 @@ pipeline {
             steps {
                 sh '''source ${WORKSPACE}/.tests_setup.sh
                       mkdir ${TMPDIR}
+                      echo "LONG_RUN="$LONG_RUN
                    '''
             }
         }
@@ -142,6 +162,33 @@ pipeline {
                         }
                         parallel tasks
                     }
+                }
+            }
+        }
+        stage('LONG_RUN') {
+            when {
+                expression { env.LONG_RUN == 'yes' }
+            }
+            steps {
+                script{
+                    def tasks = [:]
+                    for (version in PARAMS.long_run_tests.keySet()) {
+                        def conf = PARAMS.long_run_tests[version]
+                        def testname = conf.testname
+                        def taskname = version + '-' + testname
+                        def target = conf.target
+                        def v = version
+                        tasks[taskname] = {
+                            stage(taskname) {
+                                sh("""source ${WORKSPACE}/.tests_setup.sh
+                                      source ${WORKSPACE}/.jenkins/longrun.sh
+                                      RUN_PY_TESTS=yes run_long_test ${testname} "\${VERSIONS[$v]}" ${target}
+                                    """
+                                )
+                            }
+                        }
+                    }
+                    parallel tasks
                 }
             }
         }

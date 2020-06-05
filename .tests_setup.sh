@@ -15,19 +15,21 @@ BUILD_VERSION="@develop%intel@19.0.4"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
 BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug"}"
-DEFAULT_VARIANT="~plasticity+coreneuron+synapsetool"
+DEFAULT_VARIANT="+coreneuron+synapsetool"
 CORENRN_DEP="^coreneuron+debug"
 NEURODAMUS_PY_VERSION="py-neurodamus $BUILD_VERSION"
-log "DATADIR=$DATADIR; EXTRA_VARIANT=$EXTRA_VARIANT; BUILD_OPTIONS=$BUILD_OPTIONS; DEFAULT_VARIANT=$DEFAULT_VARIANT; CORENRN_DEP=$CORENRN_DEP" DBG
+_BASE_OPTIONS="$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
+
+log "DATADIR=$DATADIR; BASE_OPTIONS=$_BASE_OPTIONS; BUILD_OPTIONS=$BUILD_OPTIONS" DBG
 
 declare -A VERSIONS
 # Master is a plain v5+v6 version
-VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION $DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
+VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION ~plasticity$_BASE_OPTIONS"
 VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
-VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity+coreneuron+synapsetool$EXTRA_VARIANT $CORENRN_DEP"
-VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $EXTRA_VARIANT"
-VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $EXTRA_VARIANT"
-VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $EXTRA_VARIANT"
+VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity$_BASE_OPTIONS"
+VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $_BASE_OPTIONS"
+VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $_BASE_OPTIONS"
+VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $_BASE_OPTIONS"
 
 # list of simulations to run
 declare -A TESTS
