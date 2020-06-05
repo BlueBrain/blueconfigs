@@ -51,11 +51,6 @@ check_report_length() (
      [ $(set +x; h5ls -r $rep | grep data | awk '{ print $3 }' | tr --delete {,) -eq $length ]
   done
 
-  for rep in $output/*.h5; do
-     [[ -f "$rep" && "$rep" != $output/out.h5 ]] || continue
-     [ $(set +x; h5ls -r $rep | grep data | awk '{ print $3 }' | tr --delete {,) -eq $length ]
-  done
-
 )
 
 echo " >> Running FIRST PART"
@@ -77,18 +72,7 @@ do
     if [ -f $directory/out.h5 ]; then
         data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $directory/out.h5 | tr "," "\n")
         :>$directory/out_SONATA.dat
-        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1) }' >> $directory/out_SONATA.dat
-    fi
-done
-
-# Generate ascii format for the spikes in h5 for all directories
-output_directories=( "$output1" "$output2" "$output3" )
-for directory in "${output_directories[@]}"
-do
-    if [ -f $directory/out.h5 ]; then
-        data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $directory/out.h5 | tr "," "\n")
-        :>$directory/out_SONATA.dat
-        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1) }' >> $directory/out_SONATA.dat
+        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1)+1 }' >> $directory/out_SONATA.dat
     fi
 done
 
