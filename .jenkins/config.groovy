@@ -96,7 +96,7 @@ pipeline {
                 script {
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
                     if( env.ghprbGhRepository == "BlueBrain/CoreNeuron" ) {
-                        test_versions = ['ncx_plasticity']
+                        test_versions = ['ncx_plasticity', 'hippocampus', 'thalamus']
                     }
                     for (ver in test_versions) {
                         sh("""source ${WORKSPACE}/.tests_setup.sh
@@ -124,7 +124,7 @@ pipeline {
                 script {
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
                     if( env.ghprbGhRepository == "BlueBrain/CoreNeuron" ) {
-                        test_versions = ['ncx_plasticity']
+                        test_versions = ['ncx_plasticity', 'hippocampus', 'thalamus']
                     }
                     for (group in PARAMS.test_groups) {
                         def tasks = [:]
