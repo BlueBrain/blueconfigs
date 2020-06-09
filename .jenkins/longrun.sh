@@ -7,6 +7,7 @@ RUN_PY_TESTS="${RUN_PY_TESTS:-no}"
 declare -A REF_RESULTS_LONGRUN
 REF_RESULTS_LONGRUN["scx-v5-plasticity"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-plasticity/simulation-long"
 REF_RESULTS_LONGRUN["hip-v6"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-hip-v6/simulation-long"
+DATADIR="/gpfs/bbp.cscs.ch/data/scratch/proj12/bbprelman/cellular/"
 
 run_long_test() (
     set -e
@@ -14,7 +15,15 @@ run_long_test() (
     spec="$2"
     target=$3
     configfile="BlueConfig_longrun"
-    outputdir="output_longrun"
+    resultdir=$DATADIR$testname
+    outputdir=$resultdir"/output_longrun"
+    if [ $RUN_PY_TESTS != "yes" ]; then
+        outputdir=$outputdir"_hoc"
+        configfile=$configfile"_hoc"
+    else
+        outputdir=$outputdir"_py"
+        configfile=$configfile"_py"
+    fi
     (set +x; log
      log "------------ LONG TEST: $testname ------------"
      log "spec: $spec"
@@ -24,10 +33,11 @@ run_long_test() (
     # prepare test
     cd $BLUECONFIG_DIR/$testname
     cp BlueConfig $configfile
+    mkdir -p $outputdir
     blue_set OutputRoot $outputdir $configfile
     blue_set CircuitTarget $target $configfile
-    blue_set Duration 500 $configfile
-
+    blue_set Duration 100 $configfile
+    cp $configfile $resultdir/
     set +x
     log "Launching test $testname ($spec)"
 
@@ -52,7 +62,16 @@ run_long_test() (
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
 
     # run test
-    SALLOC_PARTITION="prod" N=16 run_blueconfig $configfile
-    test_check_results "output_longrun" "${REF_RESULTS_LONGRUN[$testname]}" "${REF_RESULTS_LONGRUN[$testname]}/out.sorted"
-
+    date
+    SALLOC_PARTITION="phase2_all" N=100 run_blueconfig $configfile
+    date
+    if [ $RUN_PY_TESTS = "no" ]; then
+        REF_RESULTS_LONGRUN[$testname]=$resultdir"/output_longrun_py"
+        test_check_results $outputdir "${REF_RESULTS_LONGRUN[$testname]}" "${REF_RESULTS_LONGRUN[$testname]}/out.sorted"
+        cd $resultdir
+        rm -rf output_longrun_hoc
+        rm -rf output_longrun_py
+    else
+        sort -n -k'1,1' -k2 < $outputdir/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $outputdir/out.sorted
+    fi
 )

@@ -24,7 +24,6 @@ Run Default
     BaseSeed 10
 
     RunMode RR
-    #CircuitTarget mc2_Column
     CircuitTarget selection
 
     Duration 100

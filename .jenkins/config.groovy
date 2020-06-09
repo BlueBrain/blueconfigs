@@ -23,8 +23,28 @@ def PARAMS = [
         ncx_bare: [version:'neocortex', env:'RUN_PY_TESTS=yes', tag:'PYTHON']
     ],
     long_run_tests: [
-        ncx_plasticity: [testname:'scx-v5-plasticity', target:'mc0_Column'],
-        hippocampus: [testname: 'hip-v6', target: 'Inhibitory']
+        neocortex:[
+//             [testname:'scx-v5', target: 'Mosaic'],
+            [testname:'scx-v6', target: 'Mosaic'],
+            [testname:'scx-v5-gapjunctions', target: 'Mosaic'],
+            [testname:'scx-v5-bonus-minis', target: 'Mosaic'],
+//             [testname:'quick-v5-multisplit',target: 'Mosaic']
+        ],
+//         ncx_plasticity: [
+//             [testname:'scx-v5-plasticity', target:'Mosaic']
+//         ],
+        hippocampus: [
+//             [testname:'hip-v6', target:'Mosaic'],
+            [testname:'hip-v6-mcr4', target:'Mosaic']
+//             [testname:'quick-hip-sonata', target:'Mosaic'],
+//             [testname:'quick-hip-projSeed', target:'Mosaic']
+        ],
+        thalamus:[
+            [testname:'thalamus', target:'Mosaic']
+        ]
+//         mousify: [
+//             [testname:'mousify', target:'Mosaic']
+//         ]
     ]
 ]
 
@@ -66,9 +86,9 @@ pipeline {
 
     }
 
-    triggers {
-        cron('H H(0-6) * * *')
-    }
+//     triggers {
+//         cron('H H(0-6) * * *')
+//     }
 
     environment {
         DATADIR = "/gpfs/bbp.cscs.ch/project/proj12/jenkins"
@@ -120,6 +140,9 @@ pipeline {
             }
         }
         stage('Test') {
+            when {
+                expression { env.LONG_RUN != 'yes' }
+            }
             steps {
                 script {
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
@@ -173,18 +196,21 @@ pipeline {
                 script{
                     def tasks = [:]
                     for (version in PARAMS.long_run_tests.keySet()) {
-                        def conf = PARAMS.long_run_tests[version]
-                        def testname = conf.testname
-                        def taskname = version + '-' + testname
-                        def target = conf.target
-                        def v = version
-                        tasks[taskname] = {
-                            stage(taskname) {
-                                sh("""source ${WORKSPACE}/.tests_setup.sh
-                                      source ${WORKSPACE}/.jenkins/longrun.sh
-                                      RUN_PY_TESTS=yes run_long_test ${testname} "\${VERSIONS[$v]}" ${target}
-                                    """
-                                )
+                        for (conf in PARAMS.long_run_tests[version]) {
+                            def testname = conf.testname
+                            def taskname = version + '-' + testname
+                            def target = conf.target
+                            def v = version
+                            tasks[taskname] = {
+                                stage(taskname) {
+                                    sh("""source ${WORKSPACE}/.tests_setup.sh
+                                          source ${WORKSPACE}/.jenkins/longrun.sh
+                                          RUN_PY_TESTS=yes run_long_test ${testname} "\${VERSIONS[$v]}" ${target}
+                                          RUN_PY_TESTS=no run_long_test ${testname} "\${VERSIONS[$v]}" ${target}
+
+                                        """
+                                    )
+                                }
                             }
                         }
                     }
