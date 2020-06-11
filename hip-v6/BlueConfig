@@ -7,7 +7,7 @@ Run Default
 
     MorphologyPath /gpfs/bbp.cscs.ch/project/proj42/entities/morphologies/20180215/
     METypePath /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20180216/hoc
-    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20180216/mecombo_emodel.tsv
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-hip-v6/mecombo_emodel.fix.tsv
     CellLibraryFile circuit.mvd3
     CircuitPath /gpfs/bbp.cscs.ch/project/proj42/circuits/rat.CA1/20180309/
     nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/rat.CA1/20180309/connectome/functional/
