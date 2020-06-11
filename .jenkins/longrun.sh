@@ -50,6 +50,8 @@ run_long_test() (
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
+    # Loading bluepy for the libsonata readers
+    module load unstable py-bluepy
 
     # run test
     SALLOC_PARTITION="prod" N=16 run_blueconfig $configfile

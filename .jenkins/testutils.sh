@@ -239,7 +239,11 @@ run_test() (
             if [[ -f ${outputs[$src]}/.exception.expected ]]; then
                 log "Expected exception detected"
             else
-                test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
+                unset REF_SPIKES
+                if [[ -f ${outputs[$src]}/ref_spikes.txt ]]; then
+                    REF_SPIKES=$(cat ${outputs[$src]}/ref_spikes.txt)
+                fi
+                test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}" "${REF_SPIKES}"
                 [ $? -eq 0 ] || ERR=y
             fi
             set -e
