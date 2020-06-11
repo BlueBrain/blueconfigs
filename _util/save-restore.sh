@@ -18,6 +18,10 @@ t_end1=40
 t_end2=70
 t_end3=100
 
+seed1=${3:-0}
+seed2=${4:-0}
+seed3=${5:-0}
+
 blue_set Duration $t_end1 "$config1"
 blue_set SpikeFile input.dat "$config1"
 blue_set Save "$output1/checkpoint" "$config1"
@@ -30,6 +34,15 @@ blue_set Save "$output2/checkpoint" "$config2"
 blue_set OutputRoot "$output3" "$config3"
 blue_set Restore "$output2/checkpoint" "$config3"
 
+if [ $seed1 -gt 0 ]; then
+    blue_set BaseSeed $seed1 "$config1"
+fi
+if [ $seed2 -gt 0 ]; then
+    blue_set BaseSeed $seed2 "$config2"
+fi
+if [ $seed3 -gt 0 ]; then
+    blue_set BaseSeed $seed3 "$config3"
+fi
 
 check_report_length() (
   output="$1"
