@@ -47,8 +47,8 @@ check_report_length() (
   done
 
   for rep in $output/*.h5; do
-     [[ -f "$rep" && "$rep" != $output/out.h5 ]] || continue
-     [ $(set +x; h5ls -r $rep | grep data | awk '{ print $3 }' | tr --delete {,) -eq $length ]
+    [[ -f $rep && $rep != $output/out.h5 ]] || continue
+    [ $(set +x; h5ls -r $rep | grep data | awk '{ print $3 }' | tr --delete {,) -eq $length ]
   done
 
 )
@@ -66,14 +66,12 @@ run_blueconfig "$config3"
 check_report_length "$output3" $((t_end3 - t_end2))
 
 # Generate ascii format for the spikes in h5 for all directories
-output_directories=( "$output1" "$output2" "$output3" )
-for directory in "${output_directories[@]}"
-do
-    if [ -f $directory/out.h5 ]; then
-        data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $directory/out.h5 | tr "," "\n")
-        :>$directory/out_SONATA.dat
-        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1)+1 }' >> $directory/out_SONATA.dat
-    fi
+for directory in "$output1" "$output2" "$output3"; do
+  if [ -f "$directory/out.h5" ]; then
+    data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $directory/out.h5 | tr "," "\n")
+    :>$directory/out_SONATA.dat
+    echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1)+1 }' >> $directory/out_SONATA.dat
+  fi
 done
 
 # delete bbp files otherwise the framework will try to compare them
@@ -84,5 +82,8 @@ rm -f $output1/*.h5 $output2/*.h5 $output3/*.h5
 cat "$output2/out.dat" | grep -v scatter >> "$output1/out.dat"
 cat "$output3/out.dat" | grep -v scatter >> "$output1/out.dat"
 
-cat $output2/out_SONATA.dat >> $output1/out_SONATA.dat
-cat $output3/out_SONATA.dat >> $output1/out_SONATA.dat
+if [ -f "$output2/out_SONATA.dat" ]; then
+  cat $output2/out_SONATA.dat >> $output1/out_SONATA.dat; fi
+if [ -f "$output3/out_SONATA.dat" ]; then
+  cat $output3/out_SONATA.dat >> $output1/out_SONATA.dat; fi
+
