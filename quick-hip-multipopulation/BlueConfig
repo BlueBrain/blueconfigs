@@ -1,0 +1,83 @@
+Run Default
+{
+  Date    14:2:13
+  Time    11:32:35
+  svnPath https://bbpteam.epfl.ch/svn/bluebrain
+  Version    1094
+
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/morphologies/swc
+    MorphologyType swc
+    METypePath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/emodels/hoc
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/emodels/mecombo_emodel.tsv
+    CellLibraryFile /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/nodes/nodes.h5
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/
+    nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/edges/edges.h5:hippocampus_neurons__hippocampus_neurons__chemical
+    CurrentDir .
+    OutputRoot output
+    TargetFile /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/user.target
+
+    NumSynapseFiles 2048
+    RNGMode Random123
+    Simulator NEURON
+    BaseSeed 264118
+    RunMode RR
+    CircuitTarget hippocampus_neurons:most_central_50_SP_PC
+    Duration 100
+    Dt 0.025
+    ForwardSkip 5000
+}
+
+Projection SC
+{
+    Path /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/edges/edges.h5:hippocampus_projections__hippocampus_neurons__chemical
+    Source CA3_PC
+}
+
+Report soma
+{
+    Target Mosaic
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format Bin
+    Dt 0.1
+    StartTime 0
+    EndTime 1000
+}
+
+Connection All-All
+{
+    Source Mosaic
+    Destination Mosaic
+    Weight 1.0
+    SpontMinis 0.01
+}
+
+Connection SC-All
+{
+    Source CA3_PC
+    Destination Mosaic
+    Weight 1.0
+    SpontMinis 0.01
+}
+
+Connection AMPA_NMDA
+{
+    Source Excitatory
+    Destination Mosaic
+    SynapseConfigure %s.NMDA_ratio = 1.22 tau_r_NMDA_ProbAMPANMDA_EMS = 3.9 tau_d_NMDA_ProbAMPANMDA_EMS = 148.5
+} # NMDA ratio from Myme et al. 2003
+
+#Connection GABA_AB
+{
+   Source Inhibitory
+   Destination Mosaic
+   SynapseConfigure %s.e_GABAA = -80.0 %s.GABAB_ratio = 0
+} # no GABA_B (so far)
+
+Connection MGGate
+{
+   Source Excitatory
+   Destination Mosaic
+   SynapseConfigure %s.mg = 1.0
+}

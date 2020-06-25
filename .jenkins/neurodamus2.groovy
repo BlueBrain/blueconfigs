@@ -1,8 +1,9 @@
 def TESTS = [
-    neocortex: ['scx-v5-gapjunctions', 'scx-2k-v6', 'quick-v5-multisplit', 'scx-1k-v5'],
+    neocortex: ['scx-v5-gapjunctions', 'scx-2k-v6', 'quick-v5-multisplit', 'scx-1k-v5',
+                'scx-1k-v5-newparams'],
     ncx_bare: ['quick-v5-gaps', 'quick-v6'],
     ncx_plasticity: ['scx-v5-plasticity', 'quick-v5-plasticity'],
-    hippocampus: ['hip-v6', 'quick-hip-projSeed', 'quick-hip-sonata'],
+    hippocampus: ['hip-v6', 'quick-hip-projSeed', 'quick-hip-sonata', 'quick_hip_multipopulation'],
     thalamus: ['thalamus'],
     mousify: ['quick-mousify-sonata', 'mousify']
 ]

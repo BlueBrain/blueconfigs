@@ -13,6 +13,7 @@ declare -A REF_RESULTS
 REF_RESULTS["scx-v5"]="$EXTENDED_RESULTS/circuit-scx-v5/simulation"
 REF_RESULTS["scx-v6"]="$EXTENDED_RESULTS/circuit-scx-v6/simulation"
 REF_RESULTS["scx-1k-v5"]="$EXTENDED_RESULTS/circuit-1k/simulation"
+REF_RESULTS["scx-1k-v5-newparams"]="$EXTENDED_RESULTS/circuit-1k/simulation-newparams"
 REF_RESULTS["scx-2k-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation"
 REF_RESULTS["scx-v5-gapjunctions"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simulation"
 REF_RESULTS["scx-v5-bonus-minis"]="$EXTENDED_RESULTS/circuit-scx-v5-bonus-minis/simulation"
@@ -27,6 +28,7 @@ REF_RESULTS["quick-v5-multisplit"]="$EXTENDED_RESULTS/circuit-v5-multisplit/simu
 REF_RESULTS["quick-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation-quick"
 REF_RESULTS["quick-hip-sonata"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-sonata"
 REF_RESULTS["quick-hip-projSeed"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-projSeed"
+REF_RESULTS["quick-hip-multipopulation"]="$EXTENDED_RESULTS/circuit-hip-mooc/simulation-multipopulation"
 REF_RESULTS["quick-mousify-sonata"]="$EXTENDED_RESULTS/circuit-n34-mousify/simulation"
 
 _prepare_test() {
@@ -180,6 +182,13 @@ run_test() (
      log "------------ TEST: $testname ------------"
      log "spec: $spec"
     )
+
+    # check if this test should run with py-neurodamus only, as set in PY_ONLY_TESTS
+    for value in ${PY_ONLY_TESTS[@]}; do
+        if [ $value = $testname ]; then
+            export RUN_PY_TESTS=yes
+        fi
+    done
 
     # Will set $blueconfigs and an $output associate array
     _prepare_test

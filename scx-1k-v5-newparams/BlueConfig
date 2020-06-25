@@ -1,0 +1,120 @@
+Run Default
+{
+    Date    9:1:14
+    Time    16:43:10
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/morphologies
+    METypePath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/ccells
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional
+    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional/newparams
+    gitPath ssh://bbpgit.epfl.ch/sim/neurodamus/bbp
+    Version HEAD
+
+    CurrentDir   .
+    OutputRoot   output
+
+    TargetFile user.target
+    CircuitTarget Column
+    Simulator NEURON
+    RNGMode Random123
+    RunMode RR
+
+    Duration 500
+    Dt 0.025
+    ExtracellularCalcium 1.25
+}
+
+# Setup Reports
+Report soma
+{
+        Target Column
+        Type compartment
+        ReportOn v
+        Unit mV
+        Format Bin
+        Dt 0.1
+        StartTime 15.0
+        EndTime 30000
+}
+
+Report compartments
+{
+        Target AllCompartments
+        Type compartment
+        ReportOn v
+        Unit mV
+        Format Bin
+        Dt 1.5
+        StartTime 400
+        EndTime 490
+}
+
+#Report currents
+{
+        Target allmini50
+          Type Summation
+      ReportOn i_membrane
+          Unit nA
+        Format Bin
+            Dt 0.1
+     StartTime 0
+       EndTime 100
+}
+
+#Report areas
+{
+        Target allmini50
+          Type compartment
+      ReportOn area
+          Unit um
+        Format Bin
+            Dt 0.1
+     StartTime 0
+       EndTime 0.1
+}
+
+
+
+Stimulus hypamp
+{
+    Mode Current
+    Pattern Hyperpolarizing
+    Delay 0
+    Duration 1000
+}
+
+StimulusInject hypampIntoMosaic
+{
+    Target   Column
+    Stimulus hypamp
+}
+
+Stimulus depolarize
+{
+    Mode         Current
+    Pattern      RelativeLinear
+    PercentStart 80
+    Delay        0
+    Duration     1000
+}
+
+StimulusInject depIntoMosaic
+{
+    Target Column
+  Stimulus depolarize
+}
+
+Stimulus noise1
+{
+          Mode Current
+       Pattern Noise
+   MeanPercent 50
+      Variance 2.5
+         Delay 0.000000
+      Duration 100.000000
+}
+
+StimulusInject pInj2
+{
+  Stimulus   noise1
+    Target   Column
+}

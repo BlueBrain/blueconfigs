@@ -1,0 +1,15 @@
+# Subset of Target Cell MiniColumn_1
+Target Cell Small
+{
+  a1 a11 a21 a31 a41 a51 a61 a71 a81 a91 a101 a111
+}
+
+Target Cell verySmall
+{
+  a1 a11 a21 a31 a41 a51
+}
+
+Target Compartment AllCompartments
+{
+  Column
+}
