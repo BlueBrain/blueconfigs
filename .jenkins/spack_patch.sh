@@ -24,7 +24,8 @@ strip_nd_git_tags() (
         # change branch if requested
         BVAR="NEURODAMUS_${proj^^}_BRANCH"
         if [ "${!BVAR}" ]; then
-            sedexp="$sedexp; s#branch=[^)]*)#branch='${!BVAR}')#g"
+            sedexp="$sedexp; s#branch=[^,]*,#branch='${!BVAR}', preferred=True,#g"
+            sedexp="$sedexp; s#branch=[^,)]*)#branch='${!BVAR}', preferred=True)#g"
         fi
         sed_apply "$pkg_file" "$sedexp"
     done
