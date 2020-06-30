@@ -111,7 +111,7 @@ pipeline {
                     // Patch for model or neurodamus core(/py)?
                     if (GERRIT_PROJECT != "sim/models/common") {
                         def sedex = "s#ssh://bbpcode.epfl.ch/${GERRIT_PROJECT}#file://${WORKSPACE}/${GERRIT_PROJECT}#;"
-                        sedex += "/tag=/d; s#master#change/${GERRIT_CHANGE_NUMBER}#"
+                        sedex += "/tag=/d; s# branch=[^,]*,##g"
                         def spackfile = "neurodamus-" + (getModel()?: "core")
                         if(GERRIT_PROJECT == "sim/reportinglib/bbp") {
                             spackfile = "reportinglib"
