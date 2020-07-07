@@ -44,6 +44,9 @@ def setAlternateBranches() {
         if (line.contains("_BRANCH=") && !line.startsWith("#")) {
             // Merge them. We later can do a single export
             alt_branches+=line + " "
+            if (line.startsWith("MODELS_COMMON")) {
+                MODELS_COMMON_BRANCH=line.split("=")[1]
+            }
         }
     }
     if (ghprbGhRepository == "BlueBrain/CoreNeuron" && ghprbSourceBranch != "" && ghprbPullLongDescription != "") {
@@ -76,8 +79,10 @@ pipeline {
                description: 'Which branch of spack to use for the build.')
         string(name: 'CORENEURON_BRANCH', defaultValue: '',
                description: 'Which branch of coreneuron to use for the build.')
-       string(name: 'NEURON_BRANCH', defaultValue: '',
+        string(name: 'NEURON_BRANCH', defaultValue: '',
                description: 'Which branch of neuron to use for the build.')
+        string(name: 'MODELS_COMMON_BRANCH', defaultValue: '',
+               description: 'The common mods branch to use', )
         string(name: 'RUN_PY_TESTS', defaultValue: 'yes',
                description: 'Run tests with Python Neurodamus')
         string(name: 'RUN_HOC_TESTS', defaultValue: 'yes',
@@ -135,10 +140,27 @@ pipeline {
                     if( env.ghprbGhRepository == "BlueBrain/CoreNeuron" ) {
                         test_versions = ['ncx_plasticity', 'hippocampus', 'thalamus']
                     }
+                    def test_pre_init = ""
+                    if(MODELS_COMMON_BRANCH != '') {
+                        // Clone and use certain common models branch for neurodamus-models
+                        def common_mods_dir = "${TMPDIR}/common"
+                        dir(common_mods_dir) {
+                            checkout(
+                                $class: 'GitSCM',
+                                userRemoteConfigs: [[
+                                    url: "ssh://bbpcode.epfl.ch/sim/models/common",
+                                    refspec: "+refs/heads/*:refs/remotes/origin/*"
+                                ]],
+                                branches: [[name: "${MODELS_COMMON_BRANCH}" ]]
+                            )
+                        }
+                        test_pre_init += """export ND_VARIANT=' common_mods=${common_mods_dir} ';"""
+                    }
                     for (ver in test_versions) {
-                        sh("""source ${WORKSPACE}/.tests_setup.sh
+                        sh("""${test_pre_init}
+                              source ${WORKSPACE}/.tests_setup.sh
                               install_neurodamus ${ver}
-                            """
+                           """
                         )
                     }
                 }

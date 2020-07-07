@@ -43,6 +43,15 @@ check_patch_project() (
     fi
 )
 
+patch_models_common() (
+    branch="$1"
+    if [ "$branch" ]; then
+      # Patch neurodamus-core in case it's installed with "+common" variant
+      sedexp="s#git=\'ssh:\/\/bbpcode.epfl.ch\/sim\/models\/common\',#git=\'ssh:\/\/bbpcode.epfl.ch\/sim\/models\/common\',\ branch='$branch',#g"
+      sed_apply "$PKGS_BASE/neurodamus-core/package.py" "$sedexp"
+    fi
+)
+
 main()(
     set -e
     strip_nd_git_tags
@@ -62,6 +71,9 @@ main()(
     check_patch_project synapsetool "$SYNAPSETOOL_BRANCH"
     check_patch_project reportinglib "$REPORTINGLIB_BRANCH"
     check_patch_project py-neurodamus "$PYNEURODAMUS_BRANCH"
+
+    patch_models_common "$MODELS_COMMON_BRANCH"
+
     touch spack_patched.flag
 )
 

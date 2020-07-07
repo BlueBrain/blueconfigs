@@ -1,10 +1,8 @@
 def TESTS = [
-    neocortex: ['scx-v5-gapjunctions', 'scx-2k-v6', 'quick-v5-multisplit', 'scx-1k-v5',
-                'scx-1k-v5-newparams'],
+    neocortex: ['scx-v5-gapjunctions', 'scx-2k-v6', 'quick-v5-multisplit', 'scx-1k-v5', 'scx-1k-v5-newparams', 'scx-v5-bonus-minis'],
     ncx_bare: ['quick-v5-gaps', 'quick-v6'],
     ncx_plasticity: ['scx-v5-plasticity', 'quick-v5-plasticity'],
-    hippocampus: ['hip-v6', 'quick-hip-projSeed2', 'quick-hip-multipopulation',
-                  'quick-hip-delayconn'],
+    hippocampus: ['hip-v6', 'quick-hip-multipopulation', 'quick-hip-delayconn'],
     thalamus: ['thalamus'],
     mousify: ['quick-mousify-sonata', 'mousify']
 ]
@@ -31,6 +29,9 @@ def setAlternateBranches() {
             // Also set BLUECONFIGS_BRANCH globaly because it's required in Groovy
             if (line.startsWith("BLUECONFIGS")) {
                 BLUECONFIGS_BRANCH=line.split("=")[1]
+            }
+            if (line.startsWith("MODELS_COMMON")) {
+                MODELS_COMMON_BRANCH=line.split("=")[1]
             }
         }
     }
@@ -63,25 +64,27 @@ pipeline {
         string(name: 'SYNAPSETOOL_BRANCH', defaultValue: '', description: 'Synapsetool repo branch to use for the tests', )
         string(name: 'CORENEURON_BRANCH', defaultValue: '', description: 'CoreNeuron repo branch to use for the tests', )
         string(name: 'SPACK_BRANCH', defaultValue: '', description: 'The spack branch to use', )
+        string(name: 'MODELS_COMMON_BRANCH', defaultValue: '', description: 'The common mods branch to use', )
     }
 
     environment {
         HOME = "${WORKSPACE}/BUILD_HOME"
-        SOFTS_DIR_PATH = "${WORKSPACE}/INSTALL_HOME"
-        SPACK_INSTALL_PREFIX = "${WORKSPACE}/INSTALL_HOME"
-        SPACK_ROOT = "${HOME}/spack"
-        PATH = "${SPACK_ROOT}/bin:${PATH}"
-        MODULEPATH = "${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
+        PROJECT_DIR = "${WORKSPACE}/${GERRIT_PROJECT}"
         RUN_PY_TESTS = run_py_tests()
+        SPACK_ROOT = "${WORKSPACE}/BUILD_HOME/spack"
         TMPDIR = "${TMPDIR}/${BUILD_TAG}"
     }
 
     stages {
+
         stage('Setup Spack') {
             steps {
                 script {
                     dir(env.TMPDIR) {
+                        sh """echo "TMPDIR:"; pwd"""
                     }
+                    sh """echo "Current directory:"; pwd; df -h"""
+
                     // Checkout blueconfigs
                     alt_branches=setAlternateBranches()
                     checkout(
@@ -109,11 +112,28 @@ pipeline {
                         export ${alt_branches};
                         source ./.tests_setup.sh
                     """
+                    // Use neurodamus upstream to avoid rebuilding core
+                    if (GERRIT_PROJECT == "sim/neurodamus-py") {
+                        sh  """
+                            set -x
+                            echo "Using Upstream spack neurodamus"
+                            upstreams_f="${SPACK_ROOT}/etc/spack/upstreams.yaml"
+                            cur_upstreams=\$(tail -n+2 \$upstreams_f)
+                            echo "
+upstreams:
+  neurodamus_spack:
+    install_tree: /gpfs/bbp.cscs.ch/project/proj12/builds/neurodamus_spack/opt/spack
+    modules:
+      tcl: /gpfs/bbp.cscs.ch/project/proj12/builds/neurodamus_spack/share/spack/modules
+\$cur_upstreams
+" > "\$upstreams_f"
+"""
+                    }
 
                     // Patch for model or neurodamus core(/py)?
                     if (GERRIT_PROJECT != "sim/models/common") {
-                        def sedex = "s#ssh://bbpcode.epfl.ch/${GERRIT_PROJECT}#file://${WORKSPACE}/${GERRIT_PROJECT}#;"
-                        sedex += "/tag=/d; s# branch=[^,]*,##g; s#, branch=[^)]*)#)#g"
+                        def sedex = "s#ssh://bbpcode.epfl.ch/${GERRIT_PROJECT}#file://${PROJECT_DIR}#;"
+                        sedex += "/tag=/d; s#master#change/${GERRIT_CHANGE_NUMBER}#"
                         def spackfile = "neurodamus-" + (getModel()?: "core")
                         if(GERRIT_PROJECT == "sim/reportinglib/bbp") {
                             spackfile = "reportinglib"
@@ -127,24 +147,67 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                script {
-                    def model = getModel()
-                    def test_pre_init = ""
-                    if(GERRIT_PROJECT == "sim/models/common") {
-                        test_pre_init += """export ND_VARIANT=' common_mods=${WORKSPACE}/${GERRIT_PROJECT} ';"""
+        stage('Build & Self Tests') {
+        parallel {
+            stage('Self Tests') {
+                when { expression { fileExists "${PROJECT_DIR}/.jenkins" } }
+                steps {
+                    script {
+                        def cmds = [:]
+                        def files = sh(returnStdout: true, script: """find $PROJECT_DIR/.jenkins -type f -name 'test_*.sh'""").split()
+                        for (f in files) {
+                            def name = '' + f.split("/")[-1].replaceAll(/^test_/, "").replaceAll(/\.sh$/, "")
+                            cmds[name] = """unset \$(env|awk -F= '/^(PMI|SLURM)_/ {if (match(\$1, "_(ACCOUNT|PARTITION)\$")==0) print \$1}')
+                                            cd "$PROJECT_DIR"
+                                            sh ${f}
+                                          """;
+                        }
+                        parallel cmds.collectEntries{
+                            key, cmd -> return [(key): { stage(key){sh(cmd)} } ] }
                     }
-                    test_pre_init += "export TEST_VERSIONS='" + (model?: TESTS.keySet().join(' ')) + "'"
-
-                    sh """
-                        ${test_pre_init}
-                        source ./.tests_setup.sh
-                        install_neurodamus
-                        """
                 }
             }
-        }
+
+            stage('Build') {
+                steps {
+                    script {
+                        def model = getModel()
+                        def test_pre_init = ""
+                        if(GERRIT_PROJECT == "sim/models/common") {
+                            test_pre_init += """export ND_VARIANT=' common_mods=${WORKSPACE}/${GERRIT_PROJECT} ';"""
+                        }
+                        if(MODELS_COMMON_BRANCH != '') {
+                            // Clone and use certain common models branch for neurodamus-models
+                            def common_mods_dir = "${TMPDIR}/common"
+                            dir(common_mods_dir) {
+                                checkout(
+                                    $class: 'GitSCM',
+                                    userRemoteConfigs: [[
+                                        url: "ssh://bbpcode.epfl.ch/sim/models/common",
+                                        refspec: "+refs/heads/*:refs/remotes/origin/*"
+                                    ]],
+                                    branches: [[name: "${MODELS_COMMON_BRANCH}" ]]
+                                )
+                            }
+                            test_pre_init += """export ND_VARIANT=' common_mods=${common_mods_dir} ';"""
+                        }
+                        test_pre_init += "export TEST_VERSIONS='" + (model?: TESTS.keySet().join(' ')) + "'"
+                        if (GERRIT_PROJECT == "sim/neurodamus-py") {
+                            sh """
+                                source ./.tests_setup.sh
+                                spack install py-neurodamus
+                            """
+                        } else {
+                            sh """
+                                ${test_pre_init}
+                                source ./.tests_setup.sh
+                                install_neurodamus
+                            """
+                        }
+                    }
+                }
+            }
+        }}
 
         stage('Test') {
             steps {
@@ -157,11 +220,6 @@ pipeline {
                     if(model != null) {
                         // Replace map to have the single entry that matters
                         testmap = [(model): TESTS[model]]
-                    }
-
-                    if(GERRIT_PROJECT == "sim/neurodamus-py") {
-                        // Dont run save-restore with python yet
-                        sh "rm scx-v5-plasticity/test_save-restore_coreneuron.sh"
                     }
 
                     for (vtests in testmap) {
