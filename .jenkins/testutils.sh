@@ -127,9 +127,8 @@ test_check_results() (
         grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
 	(set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
     elif [ -f $output/out.h5 ]; then
-        data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $output/out.h5 | tr "," "\n")
-        :>$output/out_SONATA.dat
-        echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1)+1 }' >> $output/out_SONATA.dat
+        (set -x; python "$_THISDIR/generate_sonata_out.py" "$output/out.h5")
+        mv 'out_SONATA.dat' $output
         grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
         (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
     fi
@@ -138,7 +137,6 @@ test_check_results() (
     for report in $(cd $output && ls *.bbp); do
         (set -x; cmp "$ref_results/$report" "$output/$report")
     done
-    # TODO: properly compare sonata reports against reference Bin (or add SONATA reference)
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
             (set -x; [ -s $output/$sonata_report ] )

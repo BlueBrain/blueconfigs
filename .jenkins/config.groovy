@@ -40,6 +40,18 @@ def run_long_test() {
     }
 }
 
+def setAlternateBranches() {
+    def lines = GERRIT_CHANGE_COMMIT_MESSAGE.split('\n')
+    def alt_branches=""
+    for (line in lines) {
+        if (line.contains("_BRANCH=") && !line.startsWith("#")) {
+            // Merge them. We later can do a single export
+            alt_branches+=line + " "
+        }
+    }
+    return alt_branches
+}
+
 pipeline {
     agent { label 'bb5' }
 
@@ -86,10 +98,15 @@ pipeline {
     stages {
         stage("Setup Spack") {
             steps {
-                sh '''source ${WORKSPACE}/.tests_setup.sh
-                      mkdir ${TMPDIR}
-                      echo "LONG_RUN="$LONG_RUN
-                   '''
+                script {
+                    alt_branches=setAlternateBranches()
+                    sh("""export ${alt_branches};
+                          source ${WORKSPACE}/.tests_setup.sh
+                          mkdir ${TMPDIR}
+                          echo "LONG_RUN="$LONG_RUN
+                       """
+                    )
+                }
             }
         }
         stage('Build') {

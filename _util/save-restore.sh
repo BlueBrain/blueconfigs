@@ -68,9 +68,8 @@ check_report_length "$output3" $((t_end3 - t_end2))
 # Generate ascii format for the spikes in h5 for all directories
 for directory in "$output1" "$output2" "$output3"; do
   if [ -f "$directory/out.h5" ]; then
-    data=$(h5dump -d /spikes/All/timestamps -m %.3f -d /spikes/All/node_ids -y -O $directory/out.h5 | tr "," "\n")
-    :>$directory/out_SONATA.dat
-    echo $data | awk '{n=NF/2; for (i=1;i<=n;i++) print $i "\t" $(n+i+1)+1 }' >> $directory/out_SONATA.dat
+    (set -x; python "$_THISDIR/../.jenkins/generate_sonata_out.py" "$directory/out.h5")
+    mv 'out_SONATA.dat' $directory
   fi
 done
 
