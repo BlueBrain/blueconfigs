@@ -18,7 +18,7 @@ Run Default
     RNGMode Random123
     RunMode RR
 
-    Duration 500
+    Duration 100
     Dt 0.025
     ExtracellularCalcium 1.25
 }
@@ -32,20 +32,20 @@ Report soma
         Unit mV
         Format Bin
         Dt 0.1
-        StartTime 15.0
-        EndTime 30000
+        StartTime 0
+        EndTime 50
 }
 
 Report compartments
 {
-        Target AllCompartments
+        Target SelectedCompartments
         Type compartment
         ReportOn v
         Unit mV
         Format Bin
-        Dt 1.5
-        StartTime 400
-        EndTime 490
+        Dt 1
+        StartTime 0
+        EndTime 50
 }
 
 #Report currents

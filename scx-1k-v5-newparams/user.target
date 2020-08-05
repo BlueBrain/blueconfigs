@@ -13,3 +13,9 @@ Target Compartment AllCompartments
 {
   Column
 }
+
+Target Compartment SelectedCompartments
+{
+  Small
+}
+
