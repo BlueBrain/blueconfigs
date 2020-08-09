@@ -31,12 +31,11 @@ if [[ -z "$ADDITIONAL_ENV_VARS" && -n "$GERRIT_CHANGE_COMMIT_MESSAGE" ]]; then
     ADDITIONAL_ENV_VARS=$(set +x; echo "$GERRIT_CHANGE_COMMIT_MESSAGE" | sed -n "s/^ENV_VARS://p")
 fi
 log "Checking for override hooks (ADDITIONAL_ENV_VARS or gerrit 'ENV_VARS:')..."
-set -$_setbk
 [ "$ADDITIONAL_ENV_VARS" ] && eval $ADDITIONAL_ENV_VARS
 
 
 bb5_run() (
-    set +x -e
+    set -e
     # default partition is interactive. during night use production
     hour=`date +%H`
     weekday=`date +%u`

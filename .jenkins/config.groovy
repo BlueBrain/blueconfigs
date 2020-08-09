@@ -19,10 +19,6 @@ def PARAMS = [
         ['neocortex'],
         ['ncx_plasticity', 'hippocampus', 'thalamus', 'mousify']
     ],
-    alternate: [
-        // Run again some tests with diff configs
-        ncx_bare: [version:'neocortex', env:'RUN_PY_TESTS=yes', tag:'PYTHON']
-    ],
     long_run_tests: [
         ncx_plasticity: [testname:'scx-v5-plasticity', target:'mc0_Column'],
         hippocampus: [testname: 'hip-v6', target: 'Inhibitory']
@@ -67,8 +63,10 @@ pipeline {
                description: 'Which branch of spack to use for the build.')
         string(name: 'CORENEURON_BRANCH', defaultValue: '',
                description: 'Which branch of coreneuron to use for the build.')
-        string(name: 'RUN_PY_TESTS', defaultValue: 'no',
-               description: 'Run tests with Python Neurodamus, or plain hoc')
+        string(name: 'RUN_PY_TESTS', defaultValue: 'yes',
+               description: 'Run tests with Python Neurodamus')
+        string(name: 'RUN_HOC_TESTS', defaultValue: 'yes',
+               description: 'Run tests with HOC Neurodamus')
         string(name: 'DRY_RUN', defaultValue: '',
                description: 'Will start a DRY_RUN, i.e. dont run sims, mostly to test CI itself')
         string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '',
@@ -76,7 +74,8 @@ pipeline {
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '')
         string(name: 'LONG_RUN', defaultValue: '',
                description: 'RUN weekly large simulation tests with Python Neuromdamus')
-
+        string(name: 'BASH_TRACE', defaultValue: 'no',
+               description: 'Activate Bash trace for debugging')
     }
 
     triggers {
@@ -162,20 +161,6 @@ pipeline {
                                         )
                                     }
                                 }
-                                if(PARAMS.alternate.containsKey(ver)) {
-                                    def conf=PARAMS.alternate[ver]
-                                    def v2 = conf.version
-                                    def taskname2 = conf.tag + '_' + v2 + '-' + name
-                                    tasks[taskname2] = {
-                                        stage(taskname2) {
-                                            sh("""export ${conf.get('env', '')}
-                                                  source ${WORKSPACE}/.tests_setup.sh
-                                                  run_test ${testname} "\${VERSIONS[$v2]}"
-                                                 """
-                                            )
-                                        }
-                                    }
-                                }
                             }
                         }
                         parallel tasks
@@ -200,7 +185,7 @@ pipeline {
                             stage(taskname) {
                                 sh("""source ${WORKSPACE}/.tests_setup.sh
                                       source ${WORKSPACE}/.jenkins/longrun.sh
-                                      RUN_PY_TESTS=yes run_long_test ${testname} "\${VERSIONS[$v]}" ${target}
+                                      run_long_test ${testname} "\${VERSIONS[$v]}" ${target}
                                     """
                                 )
                             }

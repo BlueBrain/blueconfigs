@@ -51,5 +51,3 @@ source .jenkins/build.sh
 # load test/check routines
 source .jenkins/testutils.sh
 
-set -$_setbk
-

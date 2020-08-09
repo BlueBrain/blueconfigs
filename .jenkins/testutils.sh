@@ -44,6 +44,8 @@ _prepare_test() {
         cd $BLUECONFIG_DIR/$testname
     fi
 
+    log "[TEST SETUP] $testname from $PWD"
+
     # If neurodamus spec not given, check cur loaded
     if [ -z "$spec" ]; then
         spec=default
@@ -52,26 +54,37 @@ _prepare_test() {
 
     # To run in parallel output and BlueConfig must be unique
     hash=$(echo "$spec" | md5sum | cut -c 1-8)
+    log "Base Blueconfig copy: BlueConfig_$hash"
     cp BlueConfig "BlueConfig_$hash"
 
     configsrc=("BlueConfig_$hash")
     declare -gA blueconfigs
     declare -gA outputs
+    blueconfigs["BlueConfig_$hash"]="BlueConfig_$hash"  # Default
 
-    # Default
-    blueconfigs["BlueConfig_$hash"]="BlueConfig_$hash"
+    # to support running both HOC and PY tests and keep backward compatibility
+    # we introduce RUN_HOC_TESTS. When not defined the meaning is the old one, i.e.
+    # RUN_PY_TESTS defines which test to run. Otherwise, variables only control their test
+    if [[ $RUN_HOC_TESTS == yes && $RUN_PY_TESTS == yes ]]; then
+        # Create an additional blueconfig for a separate hoc execution
+        cp BlueConfig "BlueConfig_hoc_$hash"
+        configsrc+=( "BlueConfig_hoc_$hash" )
+        blueconfigs["BlueConfig_hoc_$hash"]="BlueConfig_hoc_$hash"
+    fi
 
     # Try find test_*.sh scripts, which can do all sort of stuff and launch the sim
     # This is specially required for save-resume simulation tests
     for bc_script in test_*.sh; do
         [ -f $bc_script ] || break  # bash will take it literally when does not exist
         bc_copy="BlueConfig_${bc_script:5:-3}_$hash"
+        log "BlueConfig copy for script $bc_script: $bc_copy"
         cp BlueConfig $bc_copy
         configsrc+=( "$bc_script" )
         blueconfigs[$bc_script]=$bc_copy
     done
 
     # Patch all Blueconfigs, clean exisiting res
+    log "Patching BlueConfigs OutputRoot..."
     for src in ${configsrc[@]}; do
         bc=${blueconfigs[$src]}
         suffix=${bc:11}
@@ -81,13 +94,17 @@ _prepare_test() {
         rm -rf $_output
     done
 
-    # load env modules
-    set +x
-    log "Launching test $testname ($spec) #$hash"
-
     if [ "$DRY_RUN" ]; then
+        log "[SKIP] DRY-RUN test $testname ($spec) #$hash."
         return
     fi
+    log "[TEST RUN] Launching test $testname ($spec) #$hash"
+
+    # load env modules
+    # ----------------
+
+    local _tsetbk=$-
+    set +x  # Never trace for module load
 
     if [ "$spec" != "default" ]; then
         log "COMMANDS: module purge; spack load $spec" "DBG"
@@ -102,6 +119,8 @@ _prepare_test() {
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
     # Loading bluepy for the libsonata readers
     module load unstable py-bluepy
+
+    set -$_tsetbk  # reenable disabled flags
 }
 
 
@@ -125,7 +144,7 @@ test_check_results() (
 
     if [ -f $output/out_SONATA.dat ]; then
         grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
-	(set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
+        (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
     elif [ -f $output/out.h5 ]; then
         (set -x; python "$_THISDIR/generate_sonata_out.py" "$output/out.h5")
         mv 'out_SONATA.dat' $output
@@ -181,13 +200,6 @@ run_test() (
      log "spec: $spec"
     )
 
-    # check if this test should run with py-neurodamus only, as set in PY_ONLY_TESTS
-    for value in ${PY_ONLY_TESTS[@]}; do
-        if [ $value = $testname ]; then
-            export RUN_PY_TESTS=yes
-        fi
-    done
-
     # Will set $blueconfigs and an $output associate array
     _prepare_test
 
@@ -201,7 +213,8 @@ run_test() (
         for src in ${configsrc[@]}; do
             log "Starting simulation from $src in parallel"
             configfile=${blueconfigs[$src]}
-            # When using test scripts
+
+            # When using test scripts, handle DRY_RUN
             if [ ${src:(-3)} = .sh ]; then
                 if [ "$DRY_RUN" ]; then
                     head ./$src > _$src.log &
@@ -298,13 +311,32 @@ run_blueconfig() (
     testname=${testname:-$(basename $PWD)}
     shift
 
-    if [[ $RUN_PY_TESTS == "yes" ]]; then
+    # If the blueconfig starts with BlueConfig_hoc and RUN_HOC_TESTS is yes then
+    # we will run this test with HOC, independently of RUN_PY_TESTS
+    if [[ $RUN_HOC_TESTS == yes && $configfile == BlueConfig_hoc* ]]; then
+        RUN_PY_TESTS=no
+    fi
+
+    if [ $RUN_PY_TESTS == "yes" ]; then
         if [ -z "$NEURODAMUS_PYTHON" ] && [ -z "$DRY_RUN" ]; then
             log_error "NEURODAMUS_PYTHON var is not set. Unknown location of init.py"
             return 1
         fi
         INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" --verbose "$@")
     else
+        # Check if Hoc supports
+        for value in ${PY_ONLY_TESTS[@]}; do
+            if [[ $value = $testname ]]; then
+                log_warn "[SKIP] TEST $testname is only supported by neurodamus-py"
+                # if called from run_test it will have outputs[$src] defined
+                if [ "${outputs[$src]}" ]; then
+                    mkdir -p "${outputs[$src]}"
+                    touch "${outputs[$src]}/.exception.expected"
+                fi
+                return 0
+            fi
+        done
+
         INIT_ARGS=("-c" "{strdef configFile configFile=\"$configfile\"}" -mpi "$HOC_LIBRARY_PATH/init.hoc" "$@")
     fi
 
@@ -394,10 +426,14 @@ run_quick_tests() (
 if [ -z $SPACK_ROOT ]; then
     log_warn "No SPACK_ROOT. Please setup spack before launching tests. Consider sourcing '.tests_setup.sh' instead"
     return 1
-else
-    set +x
-    source $SPACK_ROOT/share/spack/setup-env.sh
-    log_ok "Tests ready"
-    set -$_setbk
 fi
 
+set +x
+source $SPACK_ROOT/share/spack/setup-env.sh
+log_ok "Tests ready"
+
+if [ ! $BASH_TRACE ]; then
+    set -$_setbk
+elif [ $BASH_TRACE = yes ]; then
+    set -x
+fi
