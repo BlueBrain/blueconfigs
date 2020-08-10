@@ -203,9 +203,14 @@ run_test() (
     # Will set $blueconfigs and an $output associate array
     _prepare_test
 
+    # Single BlueConfig will run directly in foreground
     if [ ${#configsrc[@]} -eq 1 ]; then
         run_blueconfig $configsrc
-        test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
+        if [ -f "${outputs[$configsrc]}/.exception.expected" ]; then
+            log "Expected exception detected"
+        else
+            test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
+        fi
     else
         # Otherwise we launch several processes to the background, store output and wait
         # Loop over $blueconfig tests
