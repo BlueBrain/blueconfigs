@@ -1,4 +1,6 @@
 import libsonata
+import numpy
+import pandas
 import sys
 
 """
@@ -21,13 +23,20 @@ elements  = libsonata.ElementReportReader(report1)
 elements2 = libsonata.ElementReportReader(report2)
 
 # open population
-population_elements = elements[elements.get_populations_names()[0]]
-population_elements2 = elements2[elements2.get_populations_names()[0]]
+population_elements = elements[elements.get_population_names()[0]]
+population_elements2 = elements2[elements2.get_population_names()[0]]
 
 data_frame = population_elements.get()
 data_frame2 = population_elements2.get()
 
-if data_frame.data == data_frame2.data:
+df = pandas.DataFrame(data_frame.data, columns=pandas.MultiIndex.from_tuples(data_frame.ids), index=data_frame.times)
+df2 = pandas.DataFrame(data_frame2.data, columns=pandas.MultiIndex.from_tuples(data_frame2.ids), index=data_frame2.times)
+
+# Sort the dataFrame according to the node_ids
+df = df.sort_index(axis=1)
+df2 = df2.sort_index(axis=1)
+
+if numpy.allclose(df.values, df2.values):
     exit(0)
 
 exit(-1)

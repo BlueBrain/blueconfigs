@@ -17,7 +17,7 @@ report = str(sys.argv[1])
 spikes = libsonata.SpikeReader(report)
 
 # open population
-population_spikes = spikes[spikes.get_populations_names()[0]]
+population_spikes = spikes[spikes.get_population_names()[0]]
 data = population_spikes.get()
 
 # create out_SONATA file
