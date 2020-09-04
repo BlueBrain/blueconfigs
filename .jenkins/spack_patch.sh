@@ -37,6 +37,7 @@ check_patch_project() (
     if [ "$branch" ]; then
         pkg_file="$PKGS_BASE/$projname/package.py"
         sedexp='/version.*tag=/d'  # Drop tags
+        sedexp="$sedexp; /version.*commit=/d"  # Drop commits
         sedexp="$sedexp; s#branch=[^)]*)#branch='$branch', preferred=True)#g"  # replace branch
         sed_apply "$pkg_file" "$sedexp"
     fi
