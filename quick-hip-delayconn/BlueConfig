@@ -1,0 +1,124 @@
+Run Default
+{
+    Date    27:8:19
+    Time    11:10:42
+    svnPath https://bbpteam.epfl.ch/svn/bluebrain
+    Version    1094
+
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306
+    nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306/connectome/functional
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj42/entities/morphologies/20180417/
+    METypePath /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20190402/hoc
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20190402/mecombo_emodel.tsv
+    CellLibraryFile circuit.mvd3
+
+    BioName /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306/bioname
+    Atlas /gpfs/bbp.cscs.ch/project/proj42/entities/dev/atlas/20181206-atlas/
+
+    TargetFile user.target
+    CurrentDir    .
+    OutputRoot output
+
+    RNGMode Random123
+    BaseSeed 10
+
+    RunMode RR
+    #CircuitTarget mc2_Column
+    #CircuitTarget single
+    CircuitTarget selection
+    prCellGid 36771
+
+    Duration 200
+    Dt 0.025
+}
+
+Projection SC
+{
+    Path /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1/20190306/projections/singlefile/v3.2k/full_ca1_20190306_v3_2k.sonata
+    PopulationID 1
+}
+
+Report soma
+{
+    Target Mosaic
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format Bin
+    Dt 0.5
+    StartTime 0
+    EndTime 1000
+}
+
+Stimulus pulse1
+{
+              Mode Current
+           Pattern Pulse
+         Frequency 80
+          AmpStart 2.0
+             Width 1
+             Delay 10
+          Duration 80
+}
+
+StimulusInject pulseIntoI
+{
+        Stimulus pulse1
+          Target a445876
+}
+
+StimulusInject pulseIntoE
+{
+        Stimulus pulse1
+          Target a36771
+}
+
+Stimulus ThresholdExc
+{
+
+              Mode Current
+           Pattern Noise
+       MeanPercent 100.457136089
+          Variance 0.001
+             Delay 0.000000
+          Duration 40000.000000
+}
+
+Stimulus ThresholdInh
+{
+
+              Mode Current
+           Pattern Noise
+       MeanPercent 100.457136089
+          Variance 0.001
+             Delay 0.000000
+          Duration 40000.000000
+}
+
+StimulusInject ThresholdIntoExc
+{
+        Stimulus ThresholdExc
+        Target Excitatory
+}
+
+StimulusInject ThresholdIntoInh
+{
+        Stimulus ThresholdInh
+        Target Inhibitory
+}
+
+Connection All-All
+{
+         Source Mosaic
+    Destination Mosaic
+         Weight 1.0
+}
+
+Connection reduceAll-All
+{
+         Source Mosaic
+    Destination Mosaic
+         Weight 0.5
+          Delay 15.0
+}
+
