@@ -31,6 +31,7 @@ Projection SC
 {
     Path /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/edges/edges.h5:hippocampus_projections__hippocampus_neurons__chemical
     Source CA3_PC
+    AppendBasePopulation 1
 }
 
 Report soma
