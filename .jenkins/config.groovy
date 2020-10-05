@@ -21,7 +21,9 @@ def PARAMS = [
     ],
     long_run_tests: [
         ncx_plasticity: [testname:'scx-v5-plasticity', target:'mc0_Column'],
-        hippocampus: [testname: 'hip-v6', target: 'Inhibitory']
+        hippocampus: [testname: 'quick-hip-multipopulation', target: 'hippocampus_neurons:Mosaic'],
+        mousify: [testname: 'mousify', target: 'Layer45'],
+        thalamus: [testname: 'thalamus', target: 'Mosaic']
     ]
 ]
 

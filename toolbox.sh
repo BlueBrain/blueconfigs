@@ -23,7 +23,7 @@ _get_line() {
     # find $1 in file $2 within section $3
     local blueconf="${2:-BlueConfig}"
     local section="${3:-Run}"
-    sed -n "/^$section /,/}/p" "$blueconf" | grep "$1 "
+    sed -n "/^$section\b/,/}/p" "$blueconf" | grep "$1 "
 }
 
 
@@ -36,10 +36,10 @@ blue_comment() {
     # NOTE the var expansion is {3-Run} so that it wont expand the empty string
     # With an empty section name it will comment matching sections
     local section="${3-Run}"
-    if [ $section ]; then
-        sed -i "/^$section /,/}/s#$line #\#$line #" "$blueconf"
+    if [ "$section" ]; then
+        sed -i "/^$section\b/,/}/s#$line #\#$line #" "$blueconf"
     else
-        sed -i "s#^$line #\#$line #" "$blueconf"
+        sed -i "s#^$line\b#\#$line#" "$blueconf"
     fi
 }
 
@@ -47,10 +47,10 @@ blue_uncomment() {
     local line="$1"
     local blueconf="${2:-BlueConfig}"
     local section="${3-Run}"
-    if [ $section ]; then
-        sed -i "/^$section /,/}/s#\#$line #$line #" "$blueconf"
+    if [ "$section" ]; then
+        sed -i "/^$section\b/,/}/s#\#$line #$line #" "$blueconf"
     else
-        sed -i "s#^\#$line #$line #" "$blueconf"
+        sed -i "s#^\#$line\b#$line#" "$blueconf"
     fi
 }
 
@@ -61,7 +61,7 @@ blue_change() {
     local newval="$2"
     local blueconf="${3:-BlueConfig}"
     local section="${4:-Run}"
-    sed -i "/^$section /,/}/s#$entry .*#$entry $newval#" "$blueconf"
+    sed -i "/^$section\b/,/}/s#$entry .*#$entry $newval#" "$blueconf"
 }
 
 #
@@ -77,7 +77,7 @@ blue_set() (
         blue_change $entry $newval "$blueconf" "$section"
     else
         # add before first closing tag
-        sed -i "/^$section /,/}/s#}#    $entry $newval\n}#" "$blueconf"
+        sed -i "/^$section\b/,/}/s#}#    $entry $newval\n}#" "$blueconf"
     fi
 )
 

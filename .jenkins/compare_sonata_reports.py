@@ -26,8 +26,17 @@ elements2 = libsonata.ElementReportReader(report2)
 population_elements = elements[elements.get_population_names()[0]]
 population_elements2 = elements2[elements2.get_population_names()[0]]
 
-data_frame = population_elements.get()
-data_frame2 = population_elements2.get()
+if len(sys.argv) > 3:  # only compare part of the report
+    part = float(sys.argv[3])
+    node_ids = population_elements.get_node_ids()
+    n_sample = int(len(node_ids) * part)
+    print("partially compare %s nodes" % n_sample)
+    ids = node_ids[:n_sample]
+    data_frame = population_elements.get(ids)
+    data_frame2 = population_elements.get(ids)
+else:
+    data_frame = population_elements.get()
+    data_frame2 = population_elements2.get()
 
 df = pandas.DataFrame(data_frame.data, columns=pandas.MultiIndex.from_tuples(data_frame.ids), index=data_frame.times)
 df2 = pandas.DataFrame(data_frame2.data, columns=pandas.MultiIndex.from_tuples(data_frame2.ids), index=data_frame2.times)

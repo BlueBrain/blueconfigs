@@ -6,13 +6,15 @@ BLUECONFIG_DIR=`pwd`
 RUN_PY_TESTS="${RUN_PY_TESTS:-no}"
 declare -A REF_RESULTS_LONGRUN
 REF_RESULTS_LONGRUN["scx-v5-plasticity"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-plasticity/simulation-long"
-REF_RESULTS_LONGRUN["hip-v6"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-hip-v6/simulation-long"
+REF_RESULTS_LONGRUN["quick-hip-multipopulation"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-hip-mooc/simulation-long"
+REF_RESULTS_LONGRUN["mousify"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-mousify/simulation-long"
+REF_RESULTS_LONGRUN["thalamus"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/simulation-long"
 
 run_long_test() (
     set -e
     testname=$1
     spec="$2"
-    target=$3
+    target="$3"
     configfile="BlueConfig_longrun"
     outputdir="output_longrun"
     (set +x; log
@@ -22,18 +24,26 @@ run_long_test() (
     )
 
     # prepare test
-    cd $BLUECONFIG_DIR/$testname
-    cp BlueConfig $configfile
-    blue_set OutputRoot $outputdir $configfile
-    blue_set CircuitTarget $target $configfile
-    blue_set Duration 500 $configfile
+    cd "$BLUECONFIG_DIR/$testname"
+    cp BlueConfig "$configfile"
+    blue_set OutputRoot "$outputdir" "$configfile"
+    blue_set CircuitTarget "$target" "$configfile"
+    blue_set Duration 500 "$configfile"
+    blue_set RunMode WholeCell "$configfile"
+
+    if [ $testname = "quick-hip-multipopulation" ]; then
+        blue_set Simulator CORENEURON "$configfile"
+        blue_set SpontMinis 0.01 "$configfile" 'Connection SC-All'
+        blue_uncomment 'Report soma' "$configfile" ''
+    fi
+    if [ $testname = "scx-v5-plasticity" ]; then
+        blue_set Dt 5 "$configfile" 'Report'  # No need for very dense reports
+    fi
 
     set +x
-    log "Launching test $testname ($spec)"
+    head -n 40 "$configfile"
 
-    if [ "$DRY_RUN" ]; then
-        return
-    fi
+    log "Launching test $testname ($spec)"
 
     # If neurodamus spec not given, check loaded
     if [ -z "$spec" ]; then
@@ -50,11 +60,13 @@ run_long_test() (
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
-    # Loading bluepy for the libsonata readers
-    module load unstable py-bluepy
+    module load unstable py-bluepy  # req. for the libsonata readers
 
-    # run test
-    SALLOC_PARTITION="prod" N=16 run_blueconfig $configfile
-    test_check_results "output_longrun" "${REF_RESULTS_LONGRUN[$testname]}" "${REF_RESULTS_LONGRUN[$testname]}/out.sorted"
+    nodes=64
+    if [ $testname = "thalamus" ]; then
+        nodes=16  # thalamus cell count is slightly lower and mods are really fast
+    fi
+    SALLOC_PARTITION=pre_prod N=${nodes} n=$(expr "$nodes" '*' 40) run_blueconfig $configfile
+    test_check_results "output_longrun" "${REF_RESULTS_LONGRUN[$testname]}" "${REF_RESULTS_LONGRUN[$testname]}/out.sorted" 0.1
 
 )

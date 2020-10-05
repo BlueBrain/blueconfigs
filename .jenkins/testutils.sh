@@ -130,6 +130,7 @@ test_check_results() (
     output=$1
     ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
     ref_spikes=${3:-out.sorted}
+    fraction_sonata_report_compare=${4}
     # Print nice msg on error
     trap "(set +x; log_error \"Results DON'T Match\n\"; exit 1)" ERR
 
@@ -160,7 +161,7 @@ test_check_results() (
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
             (set -x; [ -s $output/$sonata_report ] )
-            (set -x; python "$_THISDIR/compare_sonata_reports.py" "$ref_results/$sonata_report" "$output/$sonata_report")
+            (set -x; python "$_THISDIR/compare_sonata_reports.py" "$ref_results/$sonata_report" "$output/$sonata_report" $fraction_sonata_report_compare)
         fi
     done
     log_ok "Results Match"

@@ -39,7 +39,7 @@ bb5_run() (
     # default partition is interactive. during night use production
     hour=`date +%H`
     weekday=`date +%u`
-    if [ "$hour" -ge "19" ] || [ "$hour" -lt "8" ] || [ $weekday -gt 5 ]; then export SALLOC_PARTITION="prod"; fi
+    if [ -z "$SALLOC_PARTITION" ] && ([ "$hour" -ge "19" ] || [ "$hour" -lt "8" ] || [ $weekday -gt 5 ]); then export SALLOC_PARTITION="prod"; fi
 
     N=${N:-1}
     if [ -n "$n" ]; then
@@ -49,6 +49,7 @@ bb5_run() (
     fi
 
     cmd_base="time salloc -N$N $SALLOC_OPTS -Aproj16 --hint=compute_bound -Ccpu|nvme --time 1:00:00 srun dplace "
+
     echo "$cmd_base $@"
     if [ ! "$DRY_RUN"  ]; then
         $cmd_base "$@"
