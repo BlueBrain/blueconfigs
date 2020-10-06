@@ -14,14 +14,14 @@ Run Default
     nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/edges/edges.h5:hippocampus_neurons__hippocampus_neurons__chemical
     CurrentDir .
     OutputRoot output
-    TargetFile /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/user.target
+    TargetFile /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/user_no_CA3_PC.target
 
     NumSynapseFiles 2048
     RNGMode Random123
     Simulator NEURON
     BaseSeed 264118
     RunMode RR
-    CircuitTarget hippocampus_neurons:most_central_50_SP_PC
+    CircuitTarget hippocampus_neurons:most_central_100_SP_PC
     Duration 100
     Dt 0.025
     ForwardSkip 5000
@@ -30,11 +30,9 @@ Run Default
 Projection SC
 {
     Path /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/edges/edges.h5:hippocampus_projections__hippocampus_neurons__chemical
-    Source CA3_PC
-    AppendBasePopulation 1
 }
 
-Report soma
+#Report soma
 {
     Target Mosaic
     Type compartment
@@ -56,10 +54,10 @@ Connection All-All
 
 Connection SC-All
 {
-    Source CA3_PC
+    Source hippocampus_projections:
     Destination Mosaic
     Weight 1.0
-    SpontMinis 0.01
+    SpontMinis 0.2
 }
 
 Connection AMPA_NMDA
