@@ -114,7 +114,7 @@ Connection All-All
          Weight 1.0
 }
 
-Connection reduceAll-All
+Connection reduceAll-All-delay1
 {
          Source Mosaic
     Destination Mosaic
@@ -122,3 +122,18 @@ Connection reduceAll-All
           Delay 15.0
 }
 
+Connection reduceAll-All-delay2
+{
+        Source Mosaic
+    Destination Mosaic
+        Weight 0.3
+        Delay  12.5
+}
+
+#Connection reduceAll-All-delay3
+{
+        Source Mosaic
+    Destination Mosaic
+        Weight 0.4
+        Delay  10.0
+}
