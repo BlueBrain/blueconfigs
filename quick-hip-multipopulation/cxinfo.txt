@@ -1,0 +1,2 @@
+/gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/edges/edges.h5:hippocampus_neurons__hippocampus_neurons__chemical
+hippocampus_neurons_Mosaic

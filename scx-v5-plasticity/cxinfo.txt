@@ -1,0 +1,2 @@
+/gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit/ncsFunctionalAllRecipePathways
+mc0_Column

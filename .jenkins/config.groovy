@@ -74,6 +74,8 @@ pipeline {
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '')
         string(name: 'LONG_RUN', defaultValue: '',
                description: 'RUN weekly large simulation tests with Python Neuromdamus')
+        string(name: 'SKIP_DAILY_TESTS', defaultValue: 'no',
+               description: 'Skip daily tests (mostly for debugging long tests)')
         string(name: 'BASH_TRACE', defaultValue: 'no',
                description: 'Activate Bash trace for debugging')
     }
@@ -136,7 +138,10 @@ pipeline {
                     '''
             }
         }
-        stage('Test') {
+        stage('Tests') {
+            when {
+                expression { return env.SKIP_DAILY_TESTS == 'no' }
+            }
             steps {
                 script {
                     def test_versions = env.TEST_VERSIONS.tokenize('\n')
@@ -168,7 +173,7 @@ pipeline {
                 }
             }
         }
-        stage('LONG_RUN') {
+        stage('Long Tests') {
             when {
                 expression { env.LONG_RUN == 'yes' }
             }

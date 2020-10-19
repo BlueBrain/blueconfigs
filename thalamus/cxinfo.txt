@@ -1,0 +1,2 @@
+/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/functional
+Mosaic
