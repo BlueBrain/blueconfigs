@@ -30,6 +30,9 @@ run_long_test() (
     blue_set CircuitTarget "$target" "$configfile"
     blue_set Duration 500 "$configfile"
     blue_set RunMode WholeCell "$configfile"
+    if [ $testname != "mousify" ]; then
+        blue_set Simulator CORENEURON "$configfile"
+    fi
 
     if [ $testname = "quick-hip-multipopulation" ]; then
         blue_set Simulator CORENEURON "$configfile"
