@@ -47,6 +47,15 @@ def setAlternateBranches() {
             alt_branches+=line + " "
         }
     }
+    if (ghprbGhRepository == "BlueBrain/CoreNeuron" && ghprbSourceBranch != "" && ghprbPullLongDescription != "") {
+        lines = ghprbPullLongDescription.split('\n')
+        for (line in lines) {
+            if (line.contains("_BRANCH=") && !line.startsWith("#")) {
+                // Merge them. We later can do a single export
+                alt_branches+=line + " "
+            }
+        }
+    }
     return alt_branches
 }
 
@@ -65,6 +74,8 @@ pipeline {
                description: 'Which branch of spack to use for the build.')
         string(name: 'CORENEURON_BRANCH', defaultValue: '',
                description: 'Which branch of coreneuron to use for the build.')
+       string(name: 'NEURON_BRANCH', defaultValue: '',
+               description: 'Which branch of neuron to use for the build.')
         string(name: 'RUN_PY_TESTS', defaultValue: 'yes',
                description: 'Run tests with Python Neurodamus')
         string(name: 'RUN_HOC_TESTS', defaultValue: 'yes',
@@ -74,6 +85,9 @@ pipeline {
         string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '',
                description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x')
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '')
+        string(name: 'ghprbGhRepository', defaultValue: '')
+        string(name: 'ghprbSourceBranch', defaultValue: '')
+        string(name: 'ghprbPullLongDescription', defaultValue: '')
         string(name: 'LONG_RUN', defaultValue: '',
                description: 'RUN weekly large simulation tests with Python Neuromdamus')
         string(name: 'SKIP_DAILY_TESTS', defaultValue: 'no',
