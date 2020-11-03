@@ -14,7 +14,11 @@ log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRA
 BUILD_VERSION="@develop%intel@19.0.4"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
-BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug"}"
+if [ "$NEURON_BRANCH" ]; then
+  BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug@develop"}"
+else
+  BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug"}"
+fi
 DEFAULT_VARIANT="+coreneuron+synapsetool"
 CORENRN_DEP="^coreneuron+debug"
 NEURODAMUS_PY_VERSION="py-neurodamus $BUILD_VERSION"
