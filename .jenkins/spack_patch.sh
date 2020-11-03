@@ -49,8 +49,10 @@ main()(
 
     if [ "${ghprbGhRepository}" = "BlueBrain/CoreNeuron" ] && [ "${ghprbSourceBranch}" ]; then
         CORENEURON_BRANCH="${ghprbSourceBranch}"
+        NEURON_BRANCH="master"
     fi
     check_patch_project coreneuron "$CORENEURON_BRANCH"
+    check_patch_project neuron "$NEURON_BRANCH"
 
     check_patch_project synapsetool "$SYNAPSETOOL_BRANCH"
     check_patch_project reportinglib "$REPORTINGLIB_BRANCH"
