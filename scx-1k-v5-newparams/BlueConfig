@@ -21,6 +21,10 @@ Run Default
     Duration 100
     Dt 0.025
     ExtracellularCalcium 1.25
+    V_Init -80
+    Celsius 36
+    SpikeLocation AIS
+    SpikeThreshold -35
 }
 
 # Setup Reports
