@@ -47,6 +47,18 @@ Report compartments
         EndTime 1000
 }
 
+Report compartments_SONATA
+{
+        Target Visualization_target
+        Type compartment
+        ReportOn v
+        Unit mV
+        Format SONATA
+        Dt 0.25
+        StartTime 0
+        EndTime 1000
+}
+
 #Report compartments_cell
 {
         Target Visualization_target_cell
