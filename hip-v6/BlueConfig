@@ -64,6 +64,30 @@ Report compartment
     EndTime 1000
 }
 
+Report section_axon_SONATA
+{
+    Target axon_Mosaic
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format SONATA
+    Dt 0.1
+    StartTime 0
+    EndTime 1000
+}
+
+Report section_axon_comp_SONATA
+{
+    Target axon_comp_Mosaic
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format SONATA
+    Dt 0.1
+    StartTime 0
+    EndTime 1000
+}
+
 Connection ConUni-Uni
 {
     Source Mosaic
