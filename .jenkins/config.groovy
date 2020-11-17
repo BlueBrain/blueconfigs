@@ -48,11 +48,12 @@ def setAlternateBranches() {
         }
     }
     if (ghprbGhRepository == "BlueBrain/CoreNeuron" && ghprbSourceBranch != "" && ghprbPullLongDescription != "") {
-        lines = ghprbPullLongDescription.split('\n')
-        for (line in lines) {
-            if (line.contains("_BRANCH=") && !line.startsWith("#")) {
+        ci_branches = ghprbPullLongDescription.split('CI_BRANCHES:')
+        branches = ci_branches[1].split(',')
+        for (branch in branches) {
+            if (branch.contains("_BRANCH=")) {
                 // Merge them. We later can do a single export
-                alt_branches+=line + " "
+                alt_branches+=branch + " "
             }
         }
     }
