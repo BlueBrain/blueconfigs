@@ -19,7 +19,7 @@ strip_nd_git_tags() (
     nd_projects=(core neocortex hippocampus thalamus mousify)
     for proj in ${nd_projects[@]}; do
         pkg_file="$PKGS_BASE/neurodamus-$proj/package.py"
-        sedexp='/version.*tag=/d'
+        sedexp='/version.*tag=/d; /version_from_model_core_deps(/d'
 
         # change branch if requested
         BVAR="NEURODAMUS_${proj^^}_BRANCH"
