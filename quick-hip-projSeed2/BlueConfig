@@ -1,0 +1,107 @@
+Run Default
+{
+    svnPath https://bbpteam.epfl.ch/svn/bluebrain
+	Version    1094
+
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj42/entities/morphologies/20180417
+    METypePath /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20190402/prepare_combos/output/emodels_hoc
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj42/entities/emodels/20190402/mecombo_emodel.tsv
+    CellLibraryFile circuit.mvd3
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj112/circuits/CA1.O1/20200424
+    nrnPath /gpfs/bbp.cscs.ch/project/proj112/circuits/CA1.O1/20200424/sonata/networks/edges/functional/All/edges.h5
+    CurrentDir .
+    OutputRoot ./output/
+    TargetFile user.target
+
+    BaseSeed 10
+    RNGMode Random123
+    CircuitTarget most_central_100_SP_PC
+    Simulator NEURON
+    Duration 100
+    Dt 0.025
+    ForwardSkip 5000
+}
+
+
+Report compartment
+{
+    Target most_central_100_compart
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format Bin
+    Dt 1
+    StartTime 0
+    EndTime 200
+}
+
+
+Projection SC
+{
+    Path /gpfs/bbp.cscs.ch/project/proj112/circuits/CA1.O1/20200424/projections/SC/v3/CA1_20200424_SC_v3_edges.sonata
+    PopulationID 1
+}
+
+Connection SC_INT
+{
+    Source SC
+    Destination INT
+    SynapseConfigure %s.Use = 0.212 %s.tau_r_NMDA = 0.4 %s.tau_d_NMDA = 1.5
+    Weight 1.0
+    SpontMinis 0.1
+}
+
+Connection SC_PC
+{
+    Source SC
+    Destination SP_PC
+    SynapseConfigure %s.Use = 0.212 %s.tau_r_NMDA = 0.4 %s.tau_d_NMDA = 1.5
+    Weight 1.0
+    SpontMinis 0.1
+}
+
+
+# ------------------------------------------------ Internal Connections ------------------------------------------------------
+
+Connection All-All
+{
+    Source Mosaic
+    Destination Mosaic
+    Weight 1.0
+    SpontMinis 0.1
+}
+
+Connection NMDA_EE
+{
+    Source SP_PC
+    Destination SP_PC
+    SynapseConfigure %s.NMDA_ratio = 1.22 %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5
+}
+
+Connection NMDA_MGE
+{
+    Source SP_PC
+    Destination nonCCK
+    SynapseConfigure %s.NMDA_ratio = 0.28 %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5
+}
+
+Connection NMDA_CGE
+{
+    Source SP_PC
+    Destination CCK
+    SynapseConfigure %s.NMDA_ratio = 0.86 %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 298.75
+}
+
+Connection GABA_B
+{
+    Source Inhibitory
+    Destination Mosaic
+    SynapseConfigure %s.GABAB_ratio = 0
+}
+
+Connection MGGate
+{
+   Source SP_PC
+   Destination Mosaic
+   SynapseConfigure %s.mg = 1.0
+}

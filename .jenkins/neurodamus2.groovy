@@ -3,7 +3,7 @@ def TESTS = [
                 'scx-1k-v5-newparams'],
     ncx_bare: ['quick-v5-gaps', 'quick-v6'],
     ncx_plasticity: ['scx-v5-plasticity', 'quick-v5-plasticity'],
-    hippocampus: ['hip-v6', 'quick-hip-projSeed', 'quick-hip-sonata', 'quick-hip-multipopulation',
+    hippocampus: ['hip-v6', 'quick-hip-projSeed2', 'quick-hip-multipopulation',
                   'quick-hip-delayconn'],
     thalamus: ['thalamus'],
     mousify: ['quick-mousify-sonata', 'mousify']

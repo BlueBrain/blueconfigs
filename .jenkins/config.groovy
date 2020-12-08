@@ -9,8 +9,7 @@ def PARAMS = [
                          "scx-v5-bonus-minis", "quick-v5-multisplit", "scx-1k-v5-newparams"],
         ncx_bare:       ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit"],
         ncx_plasticity: ["scx-v5-plasticity", "quick-v5-plasticity"],
-        hippocampus:    ["hip-v6", "hip-v6-mcr4", "quick-hip-sonata", "quick-hip-projSeed",
-                         "quick-hip-multipopulation", "quick-hip-delayconn"],
+        hippocampus:    ["hip-v6", "hip-v6-mcr4", "quick-hip-projSeed2", "quick-hip-multipopulation", "quick-hip-delayconn"],
         thalamus:       ["thalamus"],
         mousify:        ["quick-mousify-sonata", "mousify"]
     ],

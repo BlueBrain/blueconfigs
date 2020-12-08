@@ -56,6 +56,7 @@ Connection SC-All
 {
     Source hippocampus_projections:
     Destination Mosaic
+    SynapseConfigure %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5
     Weight 1.0
     SpontMinis 0.2
 }
@@ -64,7 +65,7 @@ Connection AMPA_NMDA
 {
     Source Excitatory
     Destination Mosaic
-    SynapseConfigure %s.NMDA_ratio = 1.22 tau_r_NMDA_ProbAMPANMDA_EMS = 3.9 tau_d_NMDA_ProbAMPANMDA_EMS = 148.5
+    SynapseConfigure %s.NMDA_ratio = 1.22 %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5
 } # NMDA ratio from Myme et al. 2003
 
 #Connection GABA_AB
