@@ -27,11 +27,6 @@ echo "
 Building required Neurodamus versions
 ====================================================================="
 
-if [ ! "$DRY_RUN" ]; then
-    log "Spack module refresh"
-    spack module tcl refresh -y --delete-tree
-fi
-
 
 for version in $ND_VERSIONS; do
     log "Building ${VERSIONS[$version]} $BUILD_OPTIONS  (version=$version)"
@@ -41,6 +36,7 @@ for version in $ND_VERSIONS; do
         spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
     fi
 done
+
 if [ "$RUN_PY_TESTS" ]; then
     echo "Installing also $NEURODAMUS_PY_VERSION"
     if [ "$DRY_RUN" ]; then

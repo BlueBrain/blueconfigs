@@ -27,6 +27,9 @@ Run Default
         Dt 0.025
 }
 
+Conditions Default
+{
+}
 
 # Setup Reports
 # Soma reports with Neuron seem buggy. Reenable later

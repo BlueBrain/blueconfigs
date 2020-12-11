@@ -34,7 +34,7 @@ run_long_test() (
     if [ $testname = "quick-hip-multipopulation" ]; then
         blue_set Simulator CORENEURON "$configfile"
         blue_set SpontMinis 0.01 "$configfile" 'Connection SC-All'
-        blue_uncomment 'Report soma' "$configfile" ''
+        blue_uncomment_section 'Report soma' "$configfile"
     fi
     if [ $testname = "scx-v5-plasticity" ]; then
         blue_set Dt 5 "$configfile" 'Report'  # No need for very dense reports

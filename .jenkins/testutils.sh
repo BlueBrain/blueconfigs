@@ -125,12 +125,28 @@ _prepare_test() {
 }
 
 
+check_spike_files() {
+    local spike_file="$1"
+    local ref_spikes="${2:-out.sorted}"
+    local _output="$(dirname $1)"
+    local _basename="$(basename $1)"
+    # Some outputs (CoreNeuron) dont have a /scatter
+    grep '/scatter' "$spike_file" > /dev/null || sed -i '1s#^#/scatter\n#' "$spike_file"
+    # Sort Neuron output
+    if [ "$_basename" = "out.dat" ]; then
+        sort -n -k'1,1' -k2 < "$spike_file" | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > "$_output/out.sorted"
+        spike_file="$_output/out.sorted"
+    fi
+    (set -x; diff -wy --suppress-common-lines $ref_spikes $spike_file)
+}
+
+
 test_check_results() (
     set -e
-    output=$1
-    ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
-    ref_spikes=${3:-out.sorted}
-    fraction_sonata_report_compare=${4}
+    local output="$1"
+    local ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
+    local ref_spikes="${3:-out.sorted}"
+    local fraction_sonata_report_compare=${4}
     # Print nice msg on error
     trap "(set +x; log_error \"Results DON'T Match\n\"; exit 1)" ERR
 
@@ -138,20 +154,14 @@ test_check_results() (
         return
     fi
 
-    [ -f $output/spikes.dat ] && mv $output/spikes.dat $output/out.dat
-    # Core neuron doesnt have a /scatter (!?)
-    grep '/scatter' $output/out.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out.dat
-    sort -n -k'1,1' -k2 < $output/out.dat | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > $output/out.sorted
-    (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out.sorted)
+    check_spike_files $output/out.dat "$ref_spikes"
 
     if [ -f $output/out_SONATA.dat ]; then
-        grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
-        (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
+        check_spike_files $output/out_SONATA.dat "$ref_spikes"
     elif [ -f $output/out.h5 ]; then
         (set -x; python "$_THISDIR/generate_sonata_out.py" "$output/out.h5")
-        mv 'out_SONATA.dat' $output
-        grep '/scatter' $output/out_SONATA.dat > /dev/null || sed -i '1s#^#/scatter\n#' $output/out_SONATA.dat
-        (set -x; diff -wy --suppress-common-lines $ref_spikes $output/out_SONATA.dat)
+        mv out_SONATA.dat $output
+        check_spike_files $output/out_SONATA.dat "$ref_spikes"
     fi
 
     # compare reports
