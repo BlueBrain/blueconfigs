@@ -18,7 +18,7 @@ blue_set Duration 10 $blueconfig
 
 echo "
 >> Setting Target to MiniColumn_1"
-rm -rf cx* mcomplex.dat
+rm -rf sim_conf/cx* mcomplex.dat
 blue_set CircuitTarget MiniColumn_1 $blueconfig
 run_blueconfig $blueconfig | check_prints "Could not reuse load balance data" "INSTANTIATING"
 
@@ -37,7 +37,7 @@ echo "
 >> Recreating loadBalance info for target Small with MultiSplit and ProspectiveHosts"
 blue_set RunMode LoadBalance $blueconfig
 blue_set ProspectiveHosts 50 $blueconfig
-rm -rf cx*
+rm -rf sim_conf/cx*
 run_blueconfig $blueconfig | check_prints "at least one cell is broken into" "INSTANTIATING"
 
 echo "
