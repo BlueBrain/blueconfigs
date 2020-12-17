@@ -17,6 +17,11 @@ configfile_bk $1
 blue_comment_section Report $blueconfig
 blue_set randomize_Gaba_risetime False $blueconfig Conditions
 RUN_PY_TESTS=yes run_blueconfig $blueconfig
+check_spike_files $outputdir/out.dat out.GABARisetime.sorted
 
+echo ">> Test SYNAPSES__init_depleted on from Conditions block"
+blue_comment_section Report $blueconfig
+blue_set SYNAPSES__init_depleted 1 $blueconfig Conditions
+RUN_PY_TESTS=yes run_blueconfig $blueconfig
 # Let the framework check against different reference spikes
-echo "out.GABARisetime.sorted" > $outputdir/ref_spikes.txt
+echo "out.initdepleted.sorted" > $outputdir/ref_spikes.txt
