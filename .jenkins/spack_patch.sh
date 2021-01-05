@@ -52,7 +52,9 @@ main()(
         # Temporary fix because current deployed module for NEURON is incompatible with master
         # CoreNEURON
         # TODO: revert back when NEURON is updated to a compatible version with master CoreNEURON
-        NEURON_BRANCH="master"
+        if [ -z "$NEURON_BRANCH" ]; then
+            NEURON_BRANCH="master"
+        fi
     fi
     check_patch_project coreneuron "$CORENEURON_BRANCH"
     check_patch_project neuron "$NEURON_BRANCH"

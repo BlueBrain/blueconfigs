@@ -47,12 +47,14 @@ def setAlternateBranches() {
         }
     }
     if (ghprbGhRepository == "BlueBrain/CoreNeuron" && ghprbSourceBranch != "" && ghprbPullLongDescription != "") {
-        ci_branches = ghprbPullLongDescription.split('CI_BRANCHES:')
-        branches = ci_branches[1].split(',')
-        for (branch in branches) {
-            if (branch.contains("_BRANCH=")) {
-                // Merge them. We later can do a single export
-                alt_branches+=branch + " "
+        if (ghprbPullLongDescription.contains('CI_BRANCHES:')) {
+            ci_branches = ghprbPullLongDescription.split('CI_BRANCHES:')
+            branches = ci_branches[1].split(',')
+            for (branch in branches) {
+                if (branch.contains("_BRANCH=")) {
+                    // Merge them. We later can do a single export
+                    alt_branches+=branch + " "
+                }
             }
         }
     }
