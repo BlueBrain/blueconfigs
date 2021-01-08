@@ -20,6 +20,7 @@ RUN_PY_TESTS=yes run_blueconfig $blueconfig
 check_spike_files $outputdir/out.dat out.GABARisetime.sorted
 
 echo ">> Test SYNAPSES__init_depleted on from Conditions block"
+configfile_bk $1
 blue_comment_section Report $blueconfig
 blue_set SYNAPSES__init_depleted 1 $blueconfig Conditions
 RUN_PY_TESTS=yes run_blueconfig $blueconfig

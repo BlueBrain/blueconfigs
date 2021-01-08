@@ -28,6 +28,10 @@ Run Default
     #ForwardSkip 5000
 }
 
+Conditions Default
+{
+}
+
 Report soma
 {
     Target Mosaic
