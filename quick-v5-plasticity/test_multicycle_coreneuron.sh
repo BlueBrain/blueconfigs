@@ -17,8 +17,6 @@ export OMP_NUM_THREADS=1
 
 # Test the multicycle execution with Neurodamus HOC
 
-cp "$blueconfig" "${blueconfig}_py"
-
 blue_set ModelBuildingSteps 2 $blueconfig  # Build the model for CoreNeuron in 2 steps
 blue_set Simulator CORENEURON $blueconfig
 blue_set OutputRoot "${outputdir}_bc" $blueconfig # Save output in different folder to compare later
@@ -31,8 +29,9 @@ test_check_results "${outputdir}_bc" "${REF_RESULTS["quick-v5-plasticity"]}"
 
 
 # Test the multicycle execution with Neurodamus-py and CLI opt, n_steps=20
+# No.(cells/cycle) << No.(ranks), test the creation of dummy cells for coreneuron data
 
 module load py-neurodamus
 
-RUN_PY_TESTS=yes run_blueconfig "${blueconfig}_py" "--modelbuilding-steps=20"
+RUN_PY_TESTS=yes run_blueconfig "${blueconfig}" "--modelbuilding-steps=20"
 
