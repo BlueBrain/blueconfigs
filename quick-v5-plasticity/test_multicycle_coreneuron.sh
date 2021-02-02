@@ -30,11 +30,14 @@ run_blueconfig $blueconfig
 test_check_results "${outputdir}_bc" "${REF_RESULTS["quick-v5-plasticity"]}"
 
 
-# Test the multicycle execution with Neurodamus-py and CLI opt, n_steps=12
-# No.(cells/cycle) << No.(ranks), test the creation of dummy cells for coreneuron data
-
+# Test the multicycle execution with Neurodamus-py and CLI opt, n_steps=3
+# Change CircuitTarget to 50 cells so that No.(cells/cycle) << No.(ranks) to
+# test the creation of dummy cells for coreneuron data
 module load py-neurodamus
 
 blue_set Simulator CORENEURON ${blueconfig}_py
-RUN_PY_TESTS=yes run_blueconfig "${blueconfig}_py" "--modelbuilding-steps=12"
+blue_set CircuitTarget mini50 ${blueconfig}_py
+RUN_PY_TESTS=yes run_blueconfig "${blueconfig}_py" "--modelbuilding-steps=3"
+# Skip result check as CircuitTarget is changed
+touch $outputdir/.exception.expected
 
