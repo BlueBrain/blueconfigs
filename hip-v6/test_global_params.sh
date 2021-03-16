@@ -3,26 +3,28 @@ source ../toolbox.sh
 configfile_bk $1
 outputdir=${2:-output}
 
-echo ">> Test GABA rise time randomize off"
+# We require neurodamus-py
+if [ "$RUN_PY_TESTS" != "yes" ]; then
+    echo "Skipping test: Neurodamus-py only"
+    touch $outputdir/.exception.expected
+    return 1
+fi
 
+#General changes
 blue_comment_section Report $blueconfig
-blue_set RandomizeGabaRiseTime False $blueconfig
-run_blueconfig $blueconfig
+blue_set CircuitTarget mini420 $blueconfig
+blue_set Duration 40 $blueconfig
 
+echo ">> Test GABA rise time randomize off"
+cp $blueconfig "$blueconfig"_p1
+blue_set RandomizeGabaRiseTime False "$blueconfig"_p1
+run_blueconfig "$blueconfig"_p1
 check_spike_files $outputdir/out.dat out.GABARisetime.sorted
 
 echo ">> Test GABA rise time randomize off from Conditions block"
-module load py-neurodamus
-configfile_bk $1
-blue_comment_section Report $blueconfig
-blue_set randomize_Gaba_risetime False $blueconfig Conditions
-RUN_PY_TESTS=yes run_blueconfig $blueconfig
-check_spike_files $outputdir/out.dat out.GABARisetime.sorted
+cp $blueconfig "$blueconfig"_p2
+blue_set randomize_Gaba_risetime False "$blueconfig"_p2 Conditions
+run_blueconfig "$blueconfig"_p2
 
-echo ">> Test SYNAPSES__init_depleted on from Conditions block"
-configfile_bk $1
-blue_comment_section Report $blueconfig
-blue_set SYNAPSES__init_depleted 1 $blueconfig Conditions
-RUN_PY_TESTS=yes run_blueconfig $blueconfig
 # Let the framework check against different reference spikes
-echo "out.initdepleted.sorted" > $outputdir/ref_spikes.txt
+echo "out.GABARisetime.sorted" > $outputdir/ref_spikes.txt

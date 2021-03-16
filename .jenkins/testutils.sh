@@ -112,7 +112,7 @@ _prepare_test() {
         module purge
         if [ $RUN_PY_TESTS = "yes" ]; then
             log "Loading python with deps"
-            which neurodamus || module load py-neurodamus
+            which neurodamus &> /dev/null || module load py-neurodamus
         fi
         spack load $spec
     fi
@@ -194,6 +194,22 @@ check_prints(){
 }
 
 
+_test_results() {
+    outdir=$1
+    log "Checking results..."
+    if [ -f "$outdir/.exception.expected" ]; then
+        log "Expected exception detected"
+        return 0
+    fi
+    REF_SPIKES=""
+    if [ -f "$outdir/ref_spikes.txt" ]; then
+        # ref_spikes.txt contains the filename of the spikes file
+        REF_SPIKES=$(<"$outdir/ref_spikes.txt")
+    fi
+    test_check_results "$outdir" "${REF_RESULTS[$testname]}" "${REF_SPIKES}"
+    [ $? -eq 0 ] || ERR=y
+}
+
 #
 # Main function to start a test given its directory name.
 # _prepare_test will additionally search for test_*.sh files and call them with a copy
@@ -206,6 +222,8 @@ run_test() (
     set -e
     testname=$1
     spec="$2"
+    # Dont leave hanging processes
+    trap 'echo "Killing..."; pkill -f "srun dplace special -mpi -python"; killall grep' ERR
 
     (set +x; log
      log "------------ TEST: $testname ------------"
@@ -218,73 +236,64 @@ run_test() (
     # Single BlueConfig will run directly in foreground
     if [ ${#configsrc[@]} -eq 1 ]; then
         run_blueconfig $configsrc
-        if [ -f "${outputs[$configsrc]}/.exception.expected" ]; then
-            log "Expected exception detected"
-        else
-            test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
-        fi
-    else
-        # Otherwise we launch several processes to the background, store output and wait
-        # Loop over $blueconfig tests
-        declare -A pids
-        for src in ${configsrc[@]}; do
-            log "Starting simulation from $src in parallel"
-            configfile=${blueconfigs[$src]}
-
-            # When using test scripts, handle DRY_RUN
-            if [ ${src:(-3)} = .sh ]; then
-                if [ "$DRY_RUN" ]; then
-                    head ./$src > _$src.log &
-                else
-                    (source ./$src $configfile ${outputs[$src]}) &> _$src.log &
-                fi
-            else
-                # run_blueconfig understands $DRY_RUN
-                run_blueconfig $configfile &> _$src.log &
-            fi
-            pids[$src]=$!
-        done
-
-        sleep $([ "$DRY_RUN" ] && echo 1 || echo 10)  # Some time to have salloc info
-        for src in ${configsrc[@]}; do
-            log "Simulation $src status:"
-            grep 'salloc:' _$src.log | sed 's/^/    /'
-        done
-
-        # Run checks in fg
-        ERR=
-        echo
-        for src in ${configsrc[@]}; do
-           log "Waiting for simulation $src results..."
-            wait ${pids[$src]} || {
-                log_error "Failed to run simulation. Log:"; cat _$src.log; ERR=y
-                continue
-            }
-
-            log "Finished. Simulation log:"; cat _$src.log
-
-            # Inner -e is not respected if we have '||'. We need to check $?
-            set +e
-            log "Checking results..."
-            if [[ -f ${outputs[$src]}/.exception.expected ]]; then
-                log "Expected exception detected"
-            else
-                unset REF_SPIKES
-                if [[ -f ${outputs[$src]}/ref_spikes.txt ]]; then
-                    REF_SPIKES=$(cat ${outputs[$src]}/ref_spikes.txt)
-                fi
-                test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}" "${REF_SPIKES}"
-                [ $? -eq 0 ] || ERR=y
-            fi
-            set -e
-        done
-
-        if [ $ERR ]; then
-            log_error "Tests $testname failed\n"
-            return 1
-        fi
+        _test_results "${outputs[$configsrc]}"
+        return 0
     fi
 
+    # Otherwise we launch several processes to the background, store output and wait
+    # Loop over $blueconfig tests
+    declare -A pids
+    declare baseconfig
+    for src in ${configsrc[@]}; do
+        log "Starting simulation from $src in parallel"
+        configfile=${blueconfigs[$src]}
+
+        # When using test scripts, handle DRY_RUN
+        if [ ${src:(-3)} = .sh ]; then
+            if [ "$DRY_RUN" ]; then
+                head ./$src > _$src.log &
+            else
+                (source ./$src $configfile ${outputs[$src]}) &> _$src.log &
+            fi
+            pids[$src]=$!
+        else
+            # For BlueConfig files, we only run in fg the first one
+            if [ -z "$baseconfig" ]; then
+                baseconfig="$src"
+            else
+                run_blueconfig $configfile &> _$src.log &
+                pids[$src]=$!
+            fi
+        fi
+    done
+
+    echo; echo "Base BlueConfig launch:" "$baseconfig"
+    run_blueconfig "$baseconfig"  # understands $DRY_RUN
+    echo "Simulation Finished!"
+    _test_results "${outputs[$baseconfig]}"
+
+    # Run checks in fg
+    ERR=
+    echo
+    for src in ${configsrc[@]}; do
+        [ "${pids[$src]}" ] || continue
+        tail -f _$src.log &
+        tail_pid=$!
+        wait ${pids[$src]} || {
+            log_error "Failed to run simulation. FULL LOG:"; cat _$src.log; ERR=y
+            continue
+        }
+        echo "Simulation Finished!"
+        kill $tail_pid  # stop the corresponding process
+
+        set +e
+        _test_results "${outputs[$src]}"
+        set -e
+    done
+    if [ $ERR ]; then
+        log_error "Tests $testname failed\n"
+        return 1
+    fi
     log_ok "Tests $testname successfull\n" "PASS"
 )
 
@@ -328,9 +337,8 @@ run_blueconfig() (
     testname=${testname:-$(basename $PWD)}
     shift
 
-    # If the blueconfig starts with BlueConfig_hoc and RUN_HOC_TESTS is yes then
-    # we will run this test with HOC, independently of RUN_PY_TESTS
-    if [[ $RUN_HOC_TESTS == yes && $configfile == BlueConfig_hoc* ]]; then
+    # If the blueconfig starts with BlueConfig_hoc we need to set RUN_PY_TESTS to 'no'
+    if [[ $configfile == BlueConfig_hoc* ]]; then
         RUN_PY_TESTS=no
     fi
 
@@ -347,6 +355,7 @@ run_blueconfig() (
                 log_warn "[SKIP] TEST $testname is only supported by neurodamus-py"
                 # if called from run_test it will have outputs[$src] defined
                 if [ "${outputs[$src]}" ]; then
+                    echo "Creating .exception.expected"
                     mkdir -p "${outputs[$src]}"
                     touch "${outputs[$src]}/.exception.expected"
                 fi
@@ -377,7 +386,7 @@ run_test_script() (
     # Run by sourcing in subshell (Whatever is defined can be discarded)
     (. $script_file $configfile $output_root)
 
-    test_check_results $output_root
+    _test_results $output_root
 )
 
 
