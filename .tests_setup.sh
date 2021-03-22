@@ -20,7 +20,7 @@ else
   BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug"}"
 fi
 DEFAULT_VARIANT="+coreneuron+synapsetool"
-CORENRN_DEP="^coreneuron+debug"
+CORENRN_DEP="^coreneuron build_type=Debug"
 NEURODAMUS_PY_VERSION="py-neurodamus $BUILD_VERSION"
 _BASE_OPTIONS="$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
 
