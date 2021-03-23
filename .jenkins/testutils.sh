@@ -197,17 +197,17 @@ check_prints(){
 
 _test_results() {
     local outputdir="$1"
-    log "Checking results..."
+    log "Checking results in $outputdir"
     if [ -f "$outputdir/.exception.expected" ]; then
         log "Expected exception detected"
         return 0
     fi
-    REF_SPIKES=""
+    REF_SPIKE_FILE=""
     if [ -f "$outputdir/ref_spikes.txt" ]; then
         # ref_spikes.txt contains the filename of the spikes file
-        REF_SPIKES=$(<"$outputdir/ref_spikes.txt")
+        REF_SPIKE_FILE=$(<"$outputdir/ref_spikes.txt")
     fi
-    test_check_results "$outputdir" "${REF_RESULTS[$testname]}" "${REF_SPIKES}"
+    test_check_results "$outputdir" "${REF_RESULTS[$testname]}" "${REF_SPIKE_FILE}"
     [ $? -eq 0 ] || ERR=y
 }
 
@@ -268,9 +268,9 @@ run_test() (
         fi
     done
 
-    echo; echo "Base BlueConfig launch:" "$baseconfig"
+    echo; log "Base BlueConfig launch:" "$baseconfig"
     run_blueconfig "$baseconfig"  # understands $DRY_RUN
-    echo "Simulation Finished!"
+    log_ok "Simulation Finished!"
     _test_results "${outputs[$baseconfig]}"
 
     # Run checks in fg
@@ -284,8 +284,8 @@ run_test() (
             log_error "Failed to run simulation. FULL LOG:"; cat _$src.log; ERR=y
             continue
         }
-        echo "Simulation Finished!"
-        kill $tail_pid  # stop the corresponding process
+        log_ok "Simulation Finished!"
+        kill $tail_pid  # stop the corresponding tail process
 
         set +e
         _test_results "${outputs[$src]}"
@@ -356,7 +356,7 @@ run_blueconfig() (
                 log_warn "[SKIP] TEST $testname is only supported by neurodamus-py"
                 # if called from run_test it will have outputs[$src] defined
                 if [ "${outputs[$src]}" ]; then
-                    echo "Creating .exception.expected"
+                    log "Creating ${outputs[$src]}/.exception.expected"
                     mkdir -p "${outputs[$src]}"
                     touch "${outputs[$src]}/.exception.expected"
                 fi

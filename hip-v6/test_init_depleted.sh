@@ -7,7 +7,7 @@ if [ "$RUN_PY_TESTS" != "yes" ]; then
     echo "Skipping test: Neurodamus-py only"
     mkdir -p "$outputdir"
     touch "$outputdir/.exception.expected"
-    return 1
+    return 0
 fi
 blue_comment_section Report $blueconfig
 blue_set CircuitTarget mini420 $blueconfig
