@@ -7,4 +7,4 @@ outputdir=$2
 blue_set Simulator CORENEURON $blueconfig
 
 export OMP_NUM_THREADS=1
-run_blueconfig $blueconfig
+run_blueconfig "$blueconfig"

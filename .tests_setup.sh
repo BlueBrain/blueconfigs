@@ -1,5 +1,6 @@
 #!/bin/bash
 source .jenkins/envutils.sh
+source ./toolbox.sh
 
 # Test parameters eventually defined by Jenkins (env vars)
 set +x

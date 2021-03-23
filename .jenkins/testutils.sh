@@ -236,7 +236,7 @@ run_test() (
 
     # Single BlueConfig will run directly in foreground
     if [ ${#configsrc[@]} -eq 1 ]; then
-        run_blueconfig "$configsrc" "${outputs[$configsrc]}"
+        run_blueconfig "$configsrc"
         _test_results "${outputs[$configsrc]}"
         return 0
     fi
@@ -262,14 +262,14 @@ run_test() (
             if [ -z "$baseconfig" ]; then
                 baseconfig="$src"
             else
-                run_blueconfig "$configfile" "${outputs[$src]}" &> _$src.log &
+                run_blueconfig "$configfile" &> _$src.log &
                 pids[$src]=$!
             fi
         fi
     done
 
     echo; log "Base BlueConfig launch:" "$baseconfig"
-    run_blueconfig "$baseconfig" "${outputs[$baseconfig]}" # understands $DRY_RUN
+    run_blueconfig "$baseconfig" # understands $DRY_RUN
     log_ok "Simulation Finished!"
     _test_results "${outputs[$baseconfig]}"
 
@@ -320,7 +320,7 @@ run_test_debug() (
         if [ ${src:(-3)} = .sh ]; then
             (source ./$src "$configfile" "${outputs[$src]}")
         else
-            run_blueconfig "$configfile" "${outputs[$src]}"
+            run_blueconfig "$configfile"
         fi
         test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
     done
@@ -336,7 +336,7 @@ run_test_debug() (
 run_blueconfig() (
     set -e
     configfile=${1:-"BlueConfig"}
-    outputdir=$2
+    outputdir=$(blue_get OutputRoot $configfile)
     testname=${testname:-$(basename $PWD)}
     shift
 
