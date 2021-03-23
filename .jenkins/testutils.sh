@@ -236,7 +236,7 @@ run_test() (
 
     # Single BlueConfig will run directly in foreground
     if [ ${#configsrc[@]} -eq 1 ]; then
-        run_blueconfig $configsrc
+        run_blueconfig "$configsrc" "${outputs[$configsrc]}"
         _test_results "${outputs[$configsrc]}"
         return 0
     fi
@@ -254,7 +254,7 @@ run_test() (
             if [ "$DRY_RUN" ]; then
                 head ./$src > _$src.log &
             else
-                (source ./$src $configfile ${outputs[$src]}) &> _$src.log &
+                (source ./$src "$configfile" "${outputs[$src]}") &> _$src.log &
             fi
             pids[$src]=$!
         else
@@ -262,14 +262,14 @@ run_test() (
             if [ -z "$baseconfig" ]; then
                 baseconfig="$src"
             else
-                run_blueconfig $configfile &> _$src.log &
+                run_blueconfig "$configfile" "${outputs[$src]}" &> _$src.log &
                 pids[$src]=$!
             fi
         fi
     done
 
     echo; log "Base BlueConfig launch:" "$baseconfig"
-    run_blueconfig "$baseconfig"  # understands $DRY_RUN
+    run_blueconfig "$baseconfig" "${outputs[$baseconfig]}" # understands $DRY_RUN
     log_ok "Simulation Finished!"
     _test_results "${outputs[$baseconfig]}"
 
@@ -295,7 +295,7 @@ run_test() (
         log_error "Tests $testname failed\n"
         return 1
     fi
-    log_ok "Tests $testname successfull\n" "PASS"
+    log_ok "Tests $testname successful\n" "PASS"
 )
 
 #
@@ -317,13 +317,13 @@ run_test_debug() (
 
         # When using test scripts
         if [ ${src:(-3)} = .sh ]; then
-            (source ./$src $configfile ${outputs[$src]})
+            (source ./$src "$configfile" "${outputs[$src]}")
         else
-            run_blueconfig $configfile
+            run_blueconfig "$configfile" "${outputs[$src]}"
         fi
         test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
     done
-    log_ok "Tests $testname successfull\n" "PASS"
+    log_ok "Tests $testname successful\n" "PASS"
 )
 
 
@@ -335,6 +335,7 @@ run_test_debug() (
 run_blueconfig() (
     set -e
     configfile=${1:-"BlueConfig"}
+    outputdir=$2
     testname=${testname:-$(basename $PWD)}
     shift
 
@@ -355,10 +356,10 @@ run_blueconfig() (
             if [[ $value = $testname ]]; then
                 log_warn "[SKIP] TEST $testname is only supported by neurodamus-py"
                 # if called from run_test it will have outputs[$src] defined
-                if [ "${outputs[$src]}" ]; then
-                    log "Creating ${outputs[$src]}/.exception.expected"
-                    mkdir -p "${outputs[$src]}"
-                    touch "${outputs[$src]}/.exception.expected"
+                if [ "$outputdir" ]; then
+                    log "Creating $outputdir/.exception.expected"
+                    mkdir -p "$outputdir"
+                    touch "$outputdir/.exception.expected"
                 fi
                 return 0
             fi
