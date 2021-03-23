@@ -208,7 +208,7 @@ _test_results() {
         REF_SPIKE_FILE=$(<"$outputdir/ref_spikes.txt")
     fi
     test_check_results "$outputdir" "${REF_RESULTS[$testname]}" "${REF_SPIKE_FILE}"
-    [ $? -eq 0 ] || ERR=y
+    [ $? -eq 0 ] || error_detected=y
 }
 
 #
@@ -274,14 +274,15 @@ run_test() (
     _test_results "${outputs[$baseconfig]}"
 
     # Run checks in fg
-    ERR=
+    error_detected=
     echo
     for src in ${configsrc[@]}; do
         [ "${pids[$src]}" ] || continue
         tail -f _$src.log &
         tail_pid=$!
         wait ${pids[$src]} || {
-            log_error "Failed to run simulation. FULL LOG:"; cat _$src.log; ERR=y
+            log_error "Failed to run simulation. FULL LOG:"; cat _$src.log;
+            error_detected=y
             continue
         }
         log_ok "Simulation Finished!"
@@ -291,7 +292,7 @@ run_test() (
         _test_results "${outputs[$src]}"
         set -e
     done
-    if [ $ERR ]; then
+    if [ $error_detected ]; then
         log_error "Tests $testname failed\n"
         return 1
     fi
