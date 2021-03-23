@@ -1,11 +1,12 @@
 source ../toolbox.sh
-outputdir=${2:-output}
+outputdir="${2:-output}"
 configfile_bk $1
 
 # We require neurodamus-py
 if [ "$RUN_PY_TESTS" != "yes" ]; then
     echo "Skipping test: Neurodamus-py only"
-    touch $outputdir/.exception.expected
+    mkdir -p "$outputdir"
+    touch "$outputdir/.exception.expected"
     return 1
 fi
 blue_comment_section Report $blueconfig

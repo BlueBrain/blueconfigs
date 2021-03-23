@@ -46,5 +46,6 @@ blue_set CircuitTarget verySmall $blueconfig
 run_blueconfig $blueconfig | check_prints "at least one cell is broken into" "INSTANTIATING"
 
 #skip result check
-touch $outputdir/.exception.expected
+mkdir -p "$outputdir"
+touch "$outputdir/.exception.expected"
 

@@ -159,8 +159,9 @@ test_check_results() (
     if [ -f $output/out_SONATA.dat ]; then
         check_spike_files $output/out_SONATA.dat "$ref_spikes"
     elif [ -f $output/out.h5 ]; then
-        (set -x; python "$_THISDIR/generate_sonata_out.py" "$output/out.h5")
-        mv out_SONATA.dat $output
+        (set -x; python "$_THISDIR/generate_sonata_out.py" \
+                        "$output/out.h5" \
+                        "$output/out_SONATA.dat")
         check_spike_files $output/out_SONATA.dat "$ref_spikes"
     fi
 
@@ -195,18 +196,18 @@ check_prints(){
 
 
 _test_results() {
-    outdir=$1
+    local outputdir="$1"
     log "Checking results..."
-    if [ -f "$outdir/.exception.expected" ]; then
+    if [ -f "$outputdir/.exception.expected" ]; then
         log "Expected exception detected"
         return 0
     fi
     REF_SPIKES=""
-    if [ -f "$outdir/ref_spikes.txt" ]; then
+    if [ -f "$outputdir/ref_spikes.txt" ]; then
         # ref_spikes.txt contains the filename of the spikes file
-        REF_SPIKES=$(<"$outdir/ref_spikes.txt")
+        REF_SPIKES=$(<"$outputdir/ref_spikes.txt")
     fi
-    test_check_results "$outdir" "${REF_RESULTS[$testname]}" "${REF_SPIKES}"
+    test_check_results "$outputdir" "${REF_RESULTS[$testname]}" "${REF_SPIKES}"
     [ $? -eq 0 ] || ERR=y
 }
 

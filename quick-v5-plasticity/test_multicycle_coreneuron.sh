@@ -39,5 +39,6 @@ blue_set Simulator CORENEURON ${blueconfig}_py
 blue_set CircuitTarget mini50 ${blueconfig}_py
 RUN_PY_TESTS=yes run_blueconfig "${blueconfig}_py" "--modelbuilding-steps=3"
 # Skip result check as CircuitTarget is changed
-touch $outputdir/.exception.expected
+mkdir -p "$outputdir"
+touch "$outputdir/.exception.expected"
 
