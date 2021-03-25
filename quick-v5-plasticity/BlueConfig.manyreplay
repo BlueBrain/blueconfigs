@@ -48,7 +48,7 @@ Report compartment
             ReportOn v
                 Unit mV
               Format Bin
-                  Dt 0.1
+                  Dt 1
            StartTime 0.0
              EndTime 1000
 }

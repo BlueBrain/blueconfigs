@@ -18,7 +18,7 @@ Run Default
     RNGMode Random123
     RunMode RR
 
-    Duration 500
+    Duration 200
     Dt 0.025
 }
 
@@ -42,9 +42,9 @@ Report compartments
         ReportOn v
         Unit mV
         Format Bin
-        Dt 1.5
-        StartTime 400
-        EndTime 490
+        Dt 1
+        StartTime 50
+        EndTime 150
 }
 
 #Report currents

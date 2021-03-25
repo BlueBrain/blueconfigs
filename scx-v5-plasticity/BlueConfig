@@ -49,7 +49,7 @@ Report AllCompartmentsIMembrane
         ReportOn i_membrane
         Unit nA
         Format Bin
-        Dt 0.1
+        Dt 1
         StartTime 0.025
         EndTime 100
 }
@@ -61,7 +61,7 @@ Report compartment
             ReportOn v
                 Unit mV
               Format Bin
-                  Dt 0.1
+                  Dt 1
            StartTime 0.0
              EndTime 1000
 }

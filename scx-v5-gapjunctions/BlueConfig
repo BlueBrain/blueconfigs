@@ -67,7 +67,7 @@ Report AllCompartmentsMembrane
       ReportOn i_membrane IClamp
           Unit nA
         Format Bin
-            Dt 0.1
+            Dt 1
      StartTime 0
        EndTime 1000
 }
