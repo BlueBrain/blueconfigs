@@ -38,8 +38,16 @@ else:
     data_frame = population_elements.get()
     data_frame2 = population_elements2.get()
 
-df = pandas.DataFrame(data_frame.data, columns=pandas.MultiIndex.from_tuples(data_frame.ids), index=data_frame.times)
-df2 = pandas.DataFrame(data_frame2.data, columns=pandas.MultiIndex.from_tuples(data_frame2.ids), index=data_frame2.times)
+df = pandas.DataFrame(
+    data_frame.data,
+    columns=pandas.MultiIndex.from_tuples(data_frame.ids),
+    index=data_frame.times
+)
+df2 = pandas.DataFrame(
+    data_frame2.data,
+    columns=pandas.MultiIndex.from_tuples(data_frame2.ids),
+    index=data_frame2.times
+)
 
 # Sort the dataFrame according to the node_ids
 df = df.sort_index(axis=1)

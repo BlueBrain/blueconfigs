@@ -16,7 +16,7 @@ log() (
     echo -e "[${3:-$Blue} $log_type $ColorReset] $1"
 )
 
-log_ok() { log "$1\n" ${2:-OK} $Green; }
+log_ok() { log "$1" ${2:-OK} $Green; }
 
 log_warn() { log "$1" ${2:-WARNING} $Yellow; }
 

@@ -146,11 +146,20 @@ test_check_results() (
     local output="$1"
     local ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
     local ref_spikes="${3:-out.sorted}"
-    local fraction_sonata_report_compare=${4}
+    local fraction_sonata_report_compare="$4"
+    if [ -z "$3" ] && [ -f "$output/ref_spikes.txt" ]; then
+        ref_spikes=$(<"$output/ref_spikes.txt")
+    fi
     # Print nice msg on error
-    trap "(set +x; log_error \"Results DON'T Match\n\"; exit 1)" ERR
+    trap "(set +x; log_error \"Results DON'T Match\"; exit 1)" ERR
 
+    log "Checking results in $output"
     if [ "$DRY_RUN" ]; then
+        log_ok "Results check skipped (dry run)"
+        return
+    fi
+    if [ -f "$output/.exception.expected" ]; then
+        log_ok "Expected exception detected"
         return
     fi
 
@@ -172,7 +181,10 @@ test_check_results() (
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
             (set -x; [ -s $output/$sonata_report ] )
-            (set -x; python "$_THISDIR/compare_sonata_reports.py" "$ref_results/$sonata_report" "$output/$sonata_report" $fraction_sonata_report_compare)
+            (set -x; python "$_THISDIR/compare_sonata_reports.py" \
+                            "$ref_results/$sonata_report" \
+                            "$output/$sonata_report" \
+                            $fraction_sonata_report_compare)
         fi
     done
     log_ok "Results Match"
@@ -195,21 +207,14 @@ check_prints(){
 }
 
 
+# An semi-ugly workaround for bash not respecting -e in conditional clauses
 _test_results() {
-    local outputdir="$1"
-    log "Checking results in $outputdir"
-    if [ -f "$outputdir/.exception.expected" ]; then
-        log "Expected exception detected"
-        return 0
-    fi
-    REF_SPIKE_FILE=""
-    if [ -f "$outputdir/ref_spikes.txt" ]; then
-        # ref_spikes.txt contains the filename of the spikes file
-        REF_SPIKE_FILE=$(<"$outputdir/ref_spikes.txt")
-    fi
-    test_check_results "$outputdir" "${REF_RESULTS[$testname]}" "${REF_SPIKE_FILE}"
+    set +e
+    test_check_results "$@"
     [ $? -eq 0 ] || error_detected=y
+    set -e
 }
+
 
 #
 # Main function to start a test given its directory name.
@@ -237,7 +242,8 @@ run_test() (
     # Single BlueConfig will run directly in foreground
     if [ ${#configsrc[@]} -eq 1 ]; then
         run_blueconfig "$configsrc"
-        _test_results "${outputs[$configsrc]}"
+        test_check_results "${outputs[$configsrc]}"
+        log_ok "Tests $testname successful\n" "PASS"
         return 0
     fi
 
@@ -252,7 +258,7 @@ run_test() (
         # When using test scripts, handle DRY_RUN
         if [ ${src:(-3)} = .sh ]; then
             if [ "$DRY_RUN" ]; then
-                head ./$src > _$src.log &
+                log_warn "Would execute $src [Dry Run]" "SKIP" > _$src.log &
             else
                 (source ./$src "$configfile" "${outputs[$src]}") &> _$src.log &
             fi
@@ -268,31 +274,31 @@ run_test() (
         fi
     done
 
-    echo; log "Base BlueConfig launch:" "$baseconfig"
+    local error_detected=  # flag to mark error, so we print all results
+    echo; log "Base BlueConfig launch: $baseconfig"
     run_blueconfig "$baseconfig" # understands $DRY_RUN
-    log_ok "Simulation Finished!"
+    log "Simulation Finished: $baseconfig"
     _test_results "${outputs[$baseconfig]}"
+    echo  # newline
 
-    # Run checks in fg
-    error_detected=
-    echo
     for src in ${configsrc[@]}; do
         [ "${pids[$src]}" ] || continue
-        tail -f _$src.log &
+        log " ================ JOB $src ================="
+        tail -n20 _$src.log
+        tail -n0 -f _$src.log &
         tail_pid=$!
         wait ${pids[$src]} || {
             log_error "Failed to run simulation. FULL LOG:"; cat _$src.log;
             error_detected=y
             continue
         }
-        log_ok "Simulation Finished!"
+        log "Job Finished: $src"
         kill $tail_pid  # stop the corresponding tail process
-
-        set +e
         _test_results "${outputs[$src]}"
-        set -e
+        echo  # newline
     done
-    if [ $error_detected ]; then
+
+    if [ "$error_detected" ]; then
         log_error "Tests $testname failed\n"
         return 1
     fi
