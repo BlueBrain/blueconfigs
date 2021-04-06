@@ -2,6 +2,9 @@
 source .jenkins/envutils.sh
 source ./toolbox.sh
 
+# temp fix while neurodamus requires coreneuron master after a br change
+export CORENEURON_BRANCH=${CORENEURON_BRANCH:-"master"}
+
 # Test parameters eventually defined by Jenkins (env vars)
 set +x
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
