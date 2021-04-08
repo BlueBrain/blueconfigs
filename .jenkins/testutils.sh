@@ -31,6 +31,7 @@ REF_RESULTS["quick-hip-projSeed2"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-
 REF_RESULTS["quick-hip-delayconn"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-delayconn"
 REF_RESULTS["quick-hip-multipopulation"]="$EXTENDED_RESULTS/circuit-hip-mooc/simulation-multipopulation"
 REF_RESULTS["quick-mousify-sonata"]="$EXTENDED_RESULTS/circuit-n34-mousify/simulation"
+REF_RESULTS["quick-1k-v5-nodesets"]="$EXTENDED_RESULTS/circuit-1k/simulation-quick-nodesets"
 
 _prepare_test() {
     # If test not provided check if curdir has BlueConfig
