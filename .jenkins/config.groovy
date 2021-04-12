@@ -45,7 +45,7 @@ def setAlternateBranches() {
             // Merge them. We later can do a single export
             alt_branches+=line + " "
             if (line.startsWith("MODELS_COMMON")) {
-                MODELS_COMMON_BRANCH=line.split("=")[1]
+                env.MODELS_COMMON_BRANCH=line.split("=")[1]
             }
         }
     }
@@ -141,7 +141,7 @@ pipeline {
                         test_versions = ['ncx_plasticity', 'hippocampus', 'thalamus']
                     }
                     def test_pre_init = ""
-                    if(MODELS_COMMON_BRANCH != '') {
+                    if( env.MODELS_COMMON_BRANCH != '' ) {
                         // Clone and use certain common models branch for neurodamus-models
                         def common_mods_dir = "${TMPDIR}/common"
                         dir(common_mods_dir) {
