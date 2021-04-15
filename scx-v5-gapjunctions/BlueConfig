@@ -27,14 +27,6 @@ Run Default
     ForwardSkip 5000
 }
 
-Projection gapjunction
-{
-    # can use absolute path
-    Path gap_junctions
-    Type GapJunction
-    Source Non
-}
-
 
 Projection Thalamocortical_input_VPM
 {
@@ -43,6 +35,13 @@ Projection Thalamocortical_input_VPM
     NumSynapseFiles 8192
 }
 
+Projection gapjunction
+{
+    # can use absolute path
+    Path gap_junctions
+    Type GapJunction
+    Source Non
+}
 
 Stimulus spikeReplay
 {
