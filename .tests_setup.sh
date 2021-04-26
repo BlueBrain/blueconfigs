@@ -3,7 +3,9 @@ source .jenkins/envutils.sh
 source ./toolbox.sh
 
 # temp fix while neurodamus requires coreneuron master after a br change
-export CORENEURON_BRANCH=${CORENEURON_BRANCH:-"master"}
+# In normal conditions take the latest deployed version
+#export CORENEURON_BRANCH=${CORENEURON_BRANCH:-"master"}
+#export NEURON_BRANCH=${NEURON_BRANCH:-"master"}
 
 # Test parameters eventually defined by Jenkins (env vars)
 set +x
@@ -25,7 +27,7 @@ else
 fi
 DEFAULT_VARIANT="+coreneuron+synapsetool"
 CORENRN_DEP="^coreneuron build_type=Debug"
-NEURODAMUS_PY_VERSION="py-neurodamus $BUILD_VERSION"
+NEURODAMUS_PY_VERSION="py-neurodamus @develop"
 _BASE_OPTIONS="$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
 
 log "DATADIR=$DATADIR; BASE_OPTIONS=$_BASE_OPTIONS; BUILD_OPTIONS=$BUILD_OPTIONS" DBG
