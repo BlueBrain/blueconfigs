@@ -347,32 +347,31 @@ run_blueconfig() (
     testname=${testname:-$(basename $PWD)}
     shift
 
-    # If the blueconfig starts with BlueConfig_hoc we need to set RUN_PY_TESTS to 'no'
+    # If the blueconfig starts with BlueConfig_hoc we typically need to set RUN_PY_TESTS to 'no'
+    # However, sometimes tests only run in neurodamus-py, so skip it
     if [[ $configfile == BlueConfig_hoc* ]]; then
+        if _contains "${PY_ONLY_TESTS[@]}" "$testname"; then
+            log_warn "[SKIP] No nd-py for explicit hoc run. Creating $outputdir/.exception.expected"
+            mkdir -p "$outputdir" && touch "$outputdir/.exception.expected"
+            return 0
+        fi
         RUN_PY_TESTS=no
     fi
 
-    if [ $RUN_PY_TESTS == "yes" ]; then
+    # Check if Hoc supports. Otherwise need to run w neurodamus-py
+    if [ "$RUN_PY_TESTS" != yes ] && _contains "${PY_ONLY_TESTS[@]}" "$testname"; then
+        log "TEST $testname is only supported by neurodamus-py. Loading it"
+        RUN_PY_TESTS=yes
+        [ "$DRY_RUN" ] || module load py-neurodamus
+    fi
+
+    if [ "$RUN_PY_TESTS" == "yes" ]; then
         if [ -z "$NEURODAMUS_PYTHON" ] && [ -z "$DRY_RUN" ]; then
             log_error "NEURODAMUS_PYTHON var is not set. Unknown location of init.py"
             return 1
         fi
         INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" --verbose "$@")
     else
-        # Check if Hoc supports
-        for value in ${PY_ONLY_TESTS[@]}; do
-            if [[ $value = $testname ]]; then
-                log_warn "[SKIP] TEST $testname is only supported by neurodamus-py"
-                # if called from run_test it will have outputs[$src] defined
-                if [ "$outputdir" ]; then
-                    log "Creating $outputdir/.exception.expected"
-                    mkdir -p "$outputdir"
-                    touch "$outputdir/.exception.expected"
-                fi
-                return 0
-            fi
-        done
-
         INIT_ARGS=("-c" "{strdef configFile configFile=\"$configfile\"}" -mpi "$HOC_LIBRARY_PATH/init.hoc" "$@")
     fi
 

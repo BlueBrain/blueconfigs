@@ -22,6 +22,10 @@ log_warn() { log "$1" ${2:-WARNING} $Yellow; }
 
 log_error() { log "$1" ${2:-ERROR} $Red; }
 
+_contains () {  # Check if space-separated list $1 contains line $2
+    [[ $1 =~ (^|[[:space:]])$2($|[[:space:]]) ]]
+}
+
 
 # On error abort with a meaningful msg
 trap 'log_error "Exit code: ${?}"' ERR
