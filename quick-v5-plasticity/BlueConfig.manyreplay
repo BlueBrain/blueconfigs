@@ -276,7 +276,8 @@ Connection GABAB_erev
 	SynapseConfigure %s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081
 }
 
-Connection MGGate
+# commented out as it's using the optimized mod files and mg is GLOBAL var there...
+#Connection MGGate
 {
 	          Source Excitatory
 	     Destination Mosaic
