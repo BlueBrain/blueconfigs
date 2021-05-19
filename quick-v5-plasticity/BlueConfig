@@ -32,8 +32,7 @@ Conditions Default
 }
 
 # Setup Reports
-# Soma reports with Neuron seem buggy. Reenable later
-#Report soma
+Report soma
 {
               Target miniCompartments
                 Type compartment
@@ -97,7 +96,7 @@ Report compartment_SONATA
 {
               Target AllCompartments_mc2_Excitatory
                 Type Synapse
-            ReportOn GluSynapse.Use_GB
+            ReportOn GluSynapse.Use
                 Unit nd
               Format Bin
                   Dt 100.0
@@ -196,7 +195,7 @@ Connection GluSynapseSwitch
               Weight 1
          ModOverride GluSynapse
         #OtherSynPath /gpfs/bbp.cscs.ch/project/proj32/bioSTDP/v1/step4_circuit_generalization/glusynapse.h5
-    SynapseConfigure cao_CR_GluSynapse = 1.2 %s.Use_d_GB *= 0.158401372855 %s.Use_p_GB *= 0.158401372855
+    SynapseConfigure cao_CR_GluSynapse = 1.2 %s.Use_d *= 0.158401372855 %s.Use_p *= 0.158401372855
 }
 
 
@@ -270,7 +269,7 @@ Connection GABAB_erev
 	SynapseConfigure %s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081
 }
 
-#Connection MGGate
+Connection MGGate
 {
 	          Source Excitatory
 	     Destination Mosaic
@@ -346,7 +345,10 @@ Connection scheme_CaUse_Inh_Inh
 
 
 # Adjust AMPA_NMDA and GABAA_B ratios
-Connection scheme_minus2
+# E-E NMDA_ratios were commented out by A.E (May 2021)
+# as NMDA_ratio is not part of GluSynapse
+# but this scaling should be incorporated into the extra synapse file
+#Connection scheme_minus2
 {
               Source Excitatory
          Destination Excitatory
@@ -362,7 +364,7 @@ Connection scheme_minus1
     SynapseConfigure %s.NMDA_ratio = 0.8
 }
 
-Connection scheme5
+#Connection scheme5
 {
               Source L5_TTPC1
          Destination L5_TTPC1
@@ -370,7 +372,7 @@ Connection scheme5
     SynapseConfigure %s.NMDA_ratio = 0.71
 }
 
-Connection scheme6
+#Connection scheme6
 {
               Source L5_TTPC2
          Destination L5_TTPC2
@@ -378,7 +380,7 @@ Connection scheme6
     SynapseConfigure %s.NMDA_ratio = 0.71
 }
 
-Connection scheme7
+#Connection scheme7
 {
               Source L5_TTPC1
          Destination L5_TTPC2
@@ -386,7 +388,7 @@ Connection scheme7
     SynapseConfigure %s.NMDA_ratio = 0.71
 }
 
-Connection scheme8
+#Connection scheme8
 {
               Source L5_TTPC2
          Destination L5_TTPC1
@@ -394,7 +396,7 @@ Connection scheme8
     SynapseConfigure %s.NMDA_ratio = 0.71
 }
 
-Connection NMDA_Override_L4-L4
+#Connection NMDA_Override_L4-L4
 {
         Source Layer4Excitatory
         Destination Layer4Excitatory
@@ -402,7 +404,7 @@ Connection NMDA_Override_L4-L4
         SynapseConfigure %s.NMDA_ratio = 0.86
 }
 
-Connection NMDA_Override_L4-L23
+#Connection NMDA_Override_L4-L23
 {
         Source L4_SS
         Destination L23_PC
@@ -433,4 +435,3 @@ Connection scheme_CaUse_ee_tc2c
               Weight 1.0
     SynapseConfigure %s.Use *= 0.158401372855
 }
-
