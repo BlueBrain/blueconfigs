@@ -3,6 +3,15 @@ Target Compartment AllCompartments
   Mosaic
 }
 
+Target Section soma_Mosaic
+{
+  Mosaic soma
+}
+
+Target Compartment soma_comp_Mosaic
+{
+  soma_Mosaic
+}
 Target Compartment AllCompartments_mc2_Excitatory
 {
   mc2_Excitatory

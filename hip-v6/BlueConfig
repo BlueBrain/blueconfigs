@@ -92,6 +92,18 @@ Report section_axon_comp_SONATA
     EndTime 1000
 }
 
+Report summation_section_SONATA
+{
+    Target axon_comp_Mosaic
+    Type Summation
+    ReportOn i_membrane IClamp
+    Unit nA
+    Format SONATA
+    Dt 0.1
+    StartTime 0
+    EndTime 1000
+}
+
 Connection ConUni-Uni
 {
     Source Mosaic

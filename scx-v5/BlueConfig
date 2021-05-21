@@ -39,6 +39,30 @@ Report soma
              EndTime 1000
 }
 
+Report section_soma_SONATA
+{
+              Target soma_Mosaic
+                Type compartment
+            ReportOn v
+                Unit mV
+              Format SONATA
+                  Dt 0.1
+           StartTime 0.0
+             EndTime 1000
+}
+
+Report section_soma_comp_SONATA
+{
+              Target soma_comp_Mosaic
+                Type compartment
+            ReportOn v
+                Unit mV
+              Format SONATA
+                  Dt 0.1
+           StartTime 0.0
+             EndTime 1000
+}
+
 Report gAMPA
 {
               Target MiniColumn_712_10cell
