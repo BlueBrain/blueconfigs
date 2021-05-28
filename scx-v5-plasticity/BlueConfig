@@ -29,7 +29,10 @@ Run Default
 
 
 # Setup Reports
-Report soma
+# DONT use soma reports since results differ by initial bytes between
+# neuron and Coreneuron and wont be fixed
+
+#Report soma
 {
               Target Mosaic
                 Type compartment
