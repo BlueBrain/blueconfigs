@@ -65,7 +65,7 @@ run_long_test() (
     if [ $testname = "thalamus" ]; then
         nodes=16  # thalamus cell count is slightly lower and mods are really fast
     fi
-    SALLOC_PARTITION=pre_prod N=${nodes} n=$(expr "$nodes" '*' 40) run_blueconfig "$configfile"
+    SALLOC_PARTITION=prod_p2 N=${nodes} n=$(expr "$nodes" '*' 40) run_blueconfig "$configfile"
     test_check_results "$outputdir" "${REF_RESULTS_LONGRUN[$testname]}" "${REF_RESULTS_LONGRUN[$testname]}/out.sorted" 0.1
 
 )
