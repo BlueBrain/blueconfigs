@@ -1,0 +1,3 @@
+[submodule "circuit-documentation"]
+	path = circuit-documentation
+	url = ssh://bbpcode.epfl.ch/common/circuit-documentation
