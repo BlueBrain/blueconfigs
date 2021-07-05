@@ -27,7 +27,7 @@ else
 fi
 DEFAULT_VARIANT="+coreneuron+synapsetool"
 CORENRN_DEP="^coreneuron build_type=Debug"
-NEURODAMUS_PY_VERSION="py-neurodamus @develop"
+NEURODAMUS_PY_VERSION="py-neurodamus+all_deps @develop"
 _BASE_OPTIONS="$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
 
 log "DATADIR=$DATADIR; BASE_OPTIONS=$_BASE_OPTIONS; BUILD_OPTIONS=$BUILD_OPTIONS" DBG
