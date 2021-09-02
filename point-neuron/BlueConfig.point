@@ -64,14 +64,14 @@ StimulusInject spikeReplayIntocells2377
 
 Connection excite1302tocells2377
 {
-    Source excite1302
-    Destination cells2377
+    Source default:excite1302
+    Destination default:cells2377
     Weight 1
 }
 
 Connection cells2377tocells2377
 {
-    Source cells2377
-    Destination cells2377
+    Source default:cells2377
+    Destination default:cells2377
     Weight 1
 }
