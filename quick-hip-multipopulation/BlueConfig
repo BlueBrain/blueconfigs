@@ -18,13 +18,14 @@ Run Default
 
     NumSynapseFiles 2048
     RNGMode Random123
-    Simulator NEURON
+    Simulator CORENEURON
     BaseSeed 264118
-    RunMode RR
-    CircuitTarget hippocampus_neurons:most_central_100_SP_PC
+    RunMode WholeCell
+    CircuitTarget hippocampus_neurons:Mosaic
     Duration 100
     Dt 0.025
     ForwardSkip 5000
+    KeepModelData True
 }
 
 Projection SC
