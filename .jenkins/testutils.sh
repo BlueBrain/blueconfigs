@@ -182,15 +182,21 @@ test_check_results() (
         return
     fi
 
-    check_spike_files $output/out.dat "$ref_spikes"
-
-    if [ -f $output/out_SONATA.dat ]; then
-        check_spike_files $output/out_SONATA.dat "$ref_spikes"
-    elif [ -f $output/out.h5 ]; then
-        (set -x; python "$_THISDIR/generate_sonata_out.py" \
+    if [[ $ref_spikes == *"out.h5" ]] && [ -f $ref_spikes ]; then
+        (set -x; python "$_THISDIR/compare_sonata_spikes.py" \
                         "$output/out.h5" \
-                        "$output/out_SONATA.dat")
-        check_spike_files $output/out_SONATA.dat "$ref_spikes"
+                        "$ref_spikes")
+    else
+        check_spike_files $output/out.dat "$ref_spikes"
+
+        if [ -f $output/out_SONATA.dat ]; then
+            check_spike_files $output/out_SONATA.dat "$ref_spikes"
+        elif [ -f $output/out.h5 ]; then
+            (set -x; python "$_THISDIR/generate_sonata_out.py" \
+                            "$output/out.h5" \
+                            "$output/out_SONATA.dat")
+            check_spike_files $output/out_SONATA.dat "$ref_spikes"
+        fi
     fi
 
     # compare reports
