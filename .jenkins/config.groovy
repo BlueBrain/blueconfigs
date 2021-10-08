@@ -38,26 +38,25 @@ def run_long_test() {
 }
 
 def setAlternateBranches() {
-    def lines = GERRIT_CHANGE_COMMIT_MESSAGE.split('\n')
     def alt_branches=""
-    for (line in lines) {
-        if (line.contains("_BRANCH=") && !line.startsWith("#")) {
-            // Merge them. We later can do a single export
-            alt_branches+=line + " "
-            if (line.startsWith("MODELS_COMMON")) {
-                env.MODELS_COMMON_BRANCH=line.split("=")[1]
-            }
+    def description = ""
+    if (env.gitlabSourceRepoName && env.gitlabSourceRepoName == "blueconfigs") {
+        if (env.gitlabMergeRequestDescription && env.gitlabMergeRequestDescription != "") {
+            description = env.gitlabMergeRequestDescription
         }
+    } else if (env.ghprbGhRepository && env.ghprbGhRepository == "BlueBrain/CoreNeuron" && env.ghprbSourceBranch != "" && env.ghprbPullLongDescription != "") {
+        description = env.ghprbPullLongDescription
     }
-    if (ghprbGhRepository == "BlueBrain/CoreNeuron" && ghprbSourceBranch != "" && ghprbPullLongDescription != "") {
-        if (ghprbPullLongDescription.contains('CI_BRANCHES:')) {
-            ci_branches = ghprbPullLongDescription.split('CI_BRANCHES:')
-            branches = ci_branches[1].split(',')
-            for (branch in branches) {
-                if (branch.contains("_BRANCH=")) {
-                    // Merge them. We later can do a single export
-                    alt_branches+=branch + " "
-                }
+    if (description.contains('CI_BRANCHES:')) {
+        ci_branches = description.split('CI_BRANCHES:')
+        branches = ci_branches[1].split(',')
+        for (branch in branches) {
+            if (branch.contains("_BRANCH=")) {
+                // Merge them. We later can do a single export
+                alt_branches+=branch + " "
+            }
+            if (branch.startsWith("MODELS_COMMON")) {
+                env.MODELS_COMMON_BRANCH=branch.split("=")[1]
             }
         }
     }
@@ -68,10 +67,6 @@ pipeline {
     agent { label 'bb5' }
 
     parameters {
-        string(name: 'GERRIT_REFSPEC', defaultValue: '',
-               description: 'What refspec to fetch for the build (leave empty for standard manual build)', )
-        string(name: 'GERRIT_PATCHSET_REVISION', defaultValue: 'master',
-               description: 'Which revision to build (master for standard manual build)')
         text(name: 'TEST_VERSIONS',
              defaultValue: "neocortex\nncx_bare\nncx_plasticity\nhippocampus\nthalamus\nmousify",
              description: 'Which version of the package to build & test.')
@@ -91,10 +86,6 @@ pipeline {
                description: 'Will start a DRY_RUN, i.e. dont run sims, mostly to test CI itself')
         string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '',
                description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x')
-        string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '')
-        string(name: 'ghprbGhRepository', defaultValue: '')
-        string(name: 'ghprbSourceBranch', defaultValue: '')
-        string(name: 'ghprbPullLongDescription', defaultValue: '')
         string(name: 'LONG_RUN', defaultValue: '',
                description: 'RUN weekly large simulation tests with Python Neuromdamus')
         string(name: 'SKIP_DAILY_TESTS', defaultValue: 'no',
@@ -103,7 +94,6 @@ pipeline {
                description: 'Activate Bash trace for debugging')
         string(name: 'gitlabSourceBranch', defaultValue: 'master',
                description: 'Which branch from gitlab to build (master for standard manual build)')
-        string(name: 'gitlabMergeRequestDescription', defaultValue: '')
     }
 
     triggers {
@@ -249,6 +239,27 @@ pipeline {
             cleanWs()
             dir(env.TMPDIR) {
                 deleteDir()
+            }
+        }
+        failure {
+            script{
+                if (currentBuild.getBuildCauses()[0].shortDescription.contains("GitLab")){
+                    updateGitlabCommitStatus name: 'jenkins', state: 'failed'
+                }
+            }
+        }
+        success {
+            script{
+                if (currentBuild.getBuildCauses()[0].shortDescription.contains("GitLab")){
+                    updateGitlabCommitStatus name: 'jenkins', state: 'success'
+                }
+            }
+        }
+        aborted {
+            script{
+                if (currentBuild.getBuildCauses()[0].shortDescription.contains("GitLab")){
+                    updateGitlabCommitStatus name: 'jenkins', state: 'canceled'
+                }
             }
         }
     }
