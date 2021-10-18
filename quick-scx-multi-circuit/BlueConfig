@@ -1,9 +1,9 @@
 Run Default
 {
     CircuitPath usecase3
-    MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/example_data/sonata/v2/components/CircuitA/morphologies/asc
+    MorphologyPath usecase3/components/CircuitA/morphologies/asc
     MorphologyType asc
-    METypePath /gpfs/bbp.cscs.ch/project/proj12/example_data/sonata/v2/components/CircuitA/hoc
+    METypePath usecase3/components/CircuitA/hoc
     CellLibraryFile usecase3/nodes_A.h5
     nrnPath usecase3/local_edges_A.h5
     CircuitTarget Mosaic_A
@@ -21,15 +21,17 @@ Run Default
     Dt 0.025
 }
 
+
 Circuit B
 {
     CircuitPath usecase3
-    MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/example_data/sonata/v2/components/CircuitB/morphologies/asc
+    MorphologyPath usecase3/components/CircuitB/morphologies/asc
     MorphologyType asc
-    METypePath /gpfs/bbp.cscs.ch/project/proj12/example_data/sonata/v2/components/CircuitB/hoc
+    METypePath usecase3/components/CircuitB/hoc
     CellLibraryFile usecase3/nodes_B.h5
     nrnPath usecase3/local_edges_B.h5
 }
+
 
 Projection A_to_B
 {
@@ -37,9 +39,7 @@ Projection A_to_B
 }
 
 
-
-
-Report soma_SONATA
+#Report soma_SONATA
 {
         Target Mosaic_A
         Type compartment

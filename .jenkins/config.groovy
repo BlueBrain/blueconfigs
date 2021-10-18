@@ -6,7 +6,8 @@ library(identifier: 'bbp@master',
 def PARAMS = [
     tests: [
         neocortex:      ["scx-v5", "scx-v6", "scx-1k-v5", "scx-2k-v6", "scx-v5-gapjunctions",
-                         "scx-v5-bonus-minis", "quick-v5-multisplit", "scx-1k-v5-newparams", "quick-1k-v5-nodesets"],
+                         "scx-v5-bonus-minis", "quick-v5-multisplit", "scx-1k-v5-newparams",
+                         "quick-1k-v5-nodesets", "quick-scx-multi-circuit"],
         ncx_bare:       ["quick-v5-gaps", "quick-v6", "quick-v5-multisplit", "point-neuron"],
         ncx_plasticity: ["scx-v5-plasticity", "quick-v5-plasticity"],
         hippocampus:    ["hip-v6", "hip-v6-mcr4", "quick-hip-projSeed2", "quick-hip-multipopulation", "quick-hip-delayconn"],
