@@ -45,12 +45,12 @@ VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $_BASE_OPTIONS"
 declare -A TESTS
 TESTS[neocortex]="scx-v5 scx-v6 scx-1k-v5 scx-1k-v5-newparams scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis quick-1k-v5-nodesets quick-scx-multi-circuit"
 TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit point-neuron"
-TESTS[ncx_plasticity]="scx-v5-plasticity quick-v5-plasticity"
+TESTS[ncx_plasticity]="scx-v5-plasticity quick-v5-plasticity sscx-v7-plasticity quick-v7-plasticity"
 TESTS[hippocampus]="hip-v6 hip-v6-mcr4 quick-hip-projSeed2 quick-hip-delayconn quick-hip-multipopulation"
 TESTS[thalamus]="thalamus"
 TESTS[mousify]="mousify quick-mousify-sonata"
 
-PY_ONLY_TESTS="quick-hip-multipopulation scx-1k-v5-newparams quick-1k-v5-nodesets quick-scx-multi-circuit point-neuron"
+PY_ONLY_TESTS="quick-hip-multipopulation scx-1k-v5-newparams quick-1k-v5-nodesets quick-scx-multi-circuit point-neuron sscx-v7-plasticity quick-v7-plasticity"
 
 # Prepare spack (install+env)
 source .jenkins/spack_setup.sh

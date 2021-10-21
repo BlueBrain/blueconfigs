@@ -131,7 +131,7 @@ Connection synSwitch
              Source Excitatory
         Destination Excitatory
              Weight 1
-        ModOverride GluSynapse
+        ModOverride GluSynapseLegacy
    SynapseConfigure cao_CR_GluSynapse = 1.2
        OtherSynPath /gpfs/bbp.cscs.ch/project/proj32/bioSTDP/v2/step3_generalization/bak/ncsStructural/glusynapse.h5
 }

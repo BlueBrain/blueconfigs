@@ -1,7 +1,7 @@
 def TESTS = [
     neocortex: ['scx-v5-gapjunctions', 'scx-2k-v6', 'quick-v5-multisplit', 'scx-1k-v5', 'scx-1k-v5-newparams', 'scx-v5-bonus-minis'],
     ncx_bare: ['quick-v5-gaps', 'quick-v6', 'point-neuron'],
-    ncx_plasticity: ['scx-v5-plasticity', 'quick-v5-plasticity'],
+    ncx_plasticity: ['scx-v5-plasticity', 'quick-v5-plasticity', 'sscx-v7-plasticity'],
     hippocampus: ['hip-v6', 'quick-hip-multipopulation', 'quick-hip-delayconn'],
     thalamus: ['thalamus'],
     mousify: ['quick-mousify-sonata', 'mousify']
@@ -90,7 +90,7 @@ pipeline {
                     checkout(
                         $class: 'GitSCM',
                         userRemoteConfigs: [[
-                            url: "ssh://bbpcode.epfl.ch/hpc/blueconfigs",
+                            url: "git@bbpgitlab.epfl.ch:hpc/blueconfigs.git",
                             refspec: "+refs/heads/*:refs/remotes/origin/*"
                         ]],
                         branches: [[name: "${BLUECONFIGS_BRANCH}" ]]
@@ -113,7 +113,7 @@ pipeline {
                         source ./.tests_setup.sh
                     """
                     // Use neurodamus upstream to avoid rebuilding core
-                    if (GERRIT_PROJECT == "sim/neurodamus-py") {
+        /*            if (GERRIT_PROJECT == "sim/neurodamus-py") {
                         sh  """
                             set -x
                             echo "Using Upstream spack neurodamus"
@@ -128,7 +128,7 @@ upstreams:
 \$cur_upstreams
 " > "\$upstreams_f"
 """
-                    }
+                    }*/
 
                     // Patch for model or neurodamus core(/py)?
                     if (GERRIT_PROJECT != "sim/models/common") {
@@ -191,11 +191,16 @@ upstreams:
                             }
                             test_pre_init += """export ND_VARIANT=' common_mods=${common_mods_dir} ';"""
                         }
-                        test_pre_init += "export TEST_VERSIONS='" + (model?: TESTS.keySet().join(' ')) + "'"
+                        if(model == 'neocortex') {
+                            test_pre_init += "export TEST_VERSIONS='ncx_bare ncx_plasticity neocortex'"
+                        } else {
+                            test_pre_init += "export TEST_VERSIONS='" + (model?: TESTS.keySet().join(' ')) + "'"
+                        }
                         if (GERRIT_PROJECT == "sim/neurodamus-py") {
                             sh """
                                 source ./.tests_setup.sh
-                                spack install py-neurodamus
+                                install_neurodamus
+                                spack install py-neurodamus+all_deps
                             """
                         } else {
                             sh """
@@ -220,6 +225,10 @@ upstreams:
                     if(model != null) {
                         // Replace map to have the single entry that matters
                         testmap = [(model): TESTS[model]]
+                        if(model == 'neocortex') {
+                            testmap += [('ncx_bare'): TESTS['ncx_bare']]
+                            testmap += [('ncx_plasticity'): TESTS['ncx_plasticity']]
+                        }
                     }
 
                     for (vtests in testmap) {

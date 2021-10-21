@@ -193,7 +193,7 @@ Connection GluSynapseSwitch
               Source Excitatory
          Destination Excitatory
               Weight 1
-         ModOverride GluSynapse
+         ModOverride GluSynapseLegacy
         #OtherSynPath /gpfs/bbp.cscs.ch/project/proj32/bioSTDP/v1/step4_circuit_generalization/glusynapse.h5
     SynapseConfigure cao_CR_GluSynapse = 1.2 %s.Use_d *= 0.158401372855 %s.Use_p *= 0.158401372855
 }

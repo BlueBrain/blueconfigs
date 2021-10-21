@@ -74,7 +74,7 @@ _prepare_test() {
     # to support running both HOC and PY tests and keep backward compatibility
     # we introduce RUN_HOC_TESTS. When not defined the meaning is the old one, i.e.
     # RUN_PY_TESTS defines which test to run. Otherwise, variables only control their test
-    if [ $RUN_HOC_TESTS == yes ] && [ $RUN_PY_TESTS == yes ] && [ -f "BlueConfig" ]; then
+    if [ "$RUN_HOC_TESTS" == "yes" ] && [ "$RUN_PY_TESTS" == "yes" ] && [ -f "BlueConfig" ]; then
         # Create an additional blueconfig for a separate hoc execution
         cp BlueConfig "BlueConfig_hoc_$hash"
         configsrc+=( "BlueConfig_hoc_$hash" )

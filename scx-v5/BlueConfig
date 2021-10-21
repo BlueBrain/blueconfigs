@@ -188,7 +188,7 @@ StimulusInject hypamp_mosaic
               Source Excitatory
          Destination mc2_Excitatory
               Weight 1
-         ModOverride GluSynapse
+         ModOverride GluSynapseLegacy
         OtherSynPath /gpfs/bbp.cscs.ch/project/proj32/bioSTDP/v1/step4_circuit_generalization/glusynapse.h5
     SynapseConfigure %s.cao_CR = 1.2 %s.Use_d_GB *= 0.158401372855 %s.Use_p_GB *= 0.158401372855
 }

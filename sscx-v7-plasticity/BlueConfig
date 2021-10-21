@@ -1,0 +1,96 @@
+Run Default
+{
+
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj83/circuits/Bio_M/20200805
+    nrnPath /gpfs/bbp.cscs.ch/project/proj83/circuits/sscx-v7-plasticity/edges.sonata
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj83/morphologies/fixed_ais_L23PC_20201210/ascii
+    MorphologyType asc
+    METypePath /gpfs/bbp.cscs.ch/project/proj83/singlecell/release_2020-07-31/hoc
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj83/singlecell/fixed_L6_allBPC_thresholds/mecombo_emodel.tsv
+    CellLibraryFile circuit.mvd3
+
+    CurrentDir .
+    OutputRoot output
+    TargetFile user.target
+
+    CircuitTarget 200_L5_PCs
+    Simulator NEURON
+    RunMode WholeCell
+    Dt 0.025
+    Duration 1000
+
+    RNGMode Random123
+    BaseSeed 12345
+    StimulusSeed 12345
+
+    ExtracellularCalcium 1.2
+    SpikeLocation AIS
+    V_Init -80
+
+}
+
+Conditions synapses
+{
+    SYNAPSES__init_depleted 1
+    SYNAPSES__minis_single_vesicle 1
+    cao_CR_GluSynapse 1.2
+}
+
+# DEPOLARIZATION
+# shot noise stimulus (calibrated to match Reyes-Puerta et al. 2015)
+Stimulus RelativeShotNoise_L5E
+{
+    Mode Current
+    Pattern RelativeShotNoise
+    Delay 0
+    Duration 1000
+    DecayTime 4
+    RiseTime 0.4
+    AmpCV 0.63
+    MeanPercent 70
+    SDPercent 40
+}
+StimulusInject RelativeShotNoise_L5E_inject
+{
+    Stimulus RelativeShotNoise_L5E
+    Target 200_L5_PCs
+}
+
+Stimulus hypamp
+{
+    Mode Current
+    Pattern Hyperpolarizing
+    Delay 0.0
+    Duration 10000
+}
+StimulusInject hypamp_mosaic
+{
+    Stimulus hypamp
+    Target 200_L5_PCs
+}
+
+# CONNECTIONS
+# switch to plasticity of E-E connections
+Connection plasticity
+{
+    Source 200_L5_PCs
+    Destination 200_L5_PCs
+    ModOverride GluSynapse
+    Weight 1.0
+}
+
+# disconnect cells in the beginning for better initialization of single cells
+Connection disconnect
+{
+    Source 200_L5_PCs
+    Destination 200_L5_PCs
+    Delay 0.025
+    Weight 0.0
+}
+Connection reconnect
+{
+    Source 200_L5_PCs
+    Destination 200_L5_PCs
+    Delay 100
+    Weight 1.0
+}

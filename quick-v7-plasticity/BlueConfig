@@ -1,0 +1,85 @@
+Run Default
+{
+
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj83/circuits/Bio_M/20200805
+    nrnPath /gpfs/bbp.cscs.ch/project/proj83/circuits/sscx-v7-plasticity/edges.sonata
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj83/morphologies/fixed_ais_L23PC_20201210/ascii
+    MorphologyType asc
+    METypePath /gpfs/bbp.cscs.ch/project/proj83/singlecell/release_2020-07-31/hoc
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj83/singlecell/fixed_L6_allBPC_thresholds/mecombo_emodel.tsv
+    CellLibraryFile circuit.mvd3
+
+    CurrentDir .
+    OutputRoot output
+    TargetFile user.target
+
+    CircuitTarget L5_PC_pair
+    Simulator NEURON
+    RunMode WholeCell
+    Dt 0.025
+    Duration 2000
+
+    RNGMode Random123
+    BaseSeed 12345
+
+    ExtracellularCalcium 2.0
+    SpikeLocation AIS
+    V_Init -80
+
+}
+
+Conditions synapses
+{
+    cao_CR_GluSynapse 2.0
+}
+
+Report soma
+{
+    Target L5_PC_pair
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format Bin
+    Dt 0.1
+    StartTime 0
+    EndTime 2000
+}
+
+# DEPOLARIZATION of the presyn cell
+Stimulus depol
+{
+    Mode Current
+    Pattern Noise
+    MeanPercent 300.0
+    Variance 0.0
+    Delay 500.0
+    Duration 1000
+}
+StimulusInject pre_depol
+{
+    Stimulus depol
+    Target pre_L5_PC
+}
+Stimulus hypamp
+{
+    Mode Current
+    Pattern Hyperpolarizing
+    Delay 0.0
+    Duration 2000
+}
+StimulusInject pre_hypamp
+{
+    Stimulus hypamp
+    Target pre_L5_PC
+}
+
+# CONNECTIONS
+Connection plasticity
+{
+    Source pre_L5_PC
+    Destination post_L5_PC
+    ModOverride GluSynapse
+    Weight 1.0
+    SpontMinis 0.0
+    SynapseConfigure %s.theta_d_GB = -1 %s.theta_p_GB = -1
+}
