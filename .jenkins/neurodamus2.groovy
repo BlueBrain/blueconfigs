@@ -60,7 +60,7 @@ pipeline {
         string(name: 'GERRIT_CHANGE_NUMBER', defaultValue: '', description: 'Gerrit change number', )
         string(name: 'ADDITIONAL_ENV_VARS', defaultValue: '', description: 'Additional environment variables that should be exposed to jenkins', )
         string(name: 'GERRIT_CHANGE_COMMIT_MESSAGE', defaultValue: '', description: 'Gerrit commit message to read environment variables to expose to jenkins', )
-        string(name: 'BLUECONFIGS_BRANCH', defaultValue: 'master', description: 'Blueconfigs repo branch to use for the tests', )
+        string(name: 'BLUECONFIGS_BRANCH', defaultValue: 'main', description: 'Blueconfigs repo branch to use for the tests', )
         string(name: 'SYNAPSETOOL_BRANCH', defaultValue: '', description: 'Synapsetool repo branch to use for the tests', )
         string(name: 'CORENEURON_BRANCH', defaultValue: '', description: 'CoreNeuron repo branch to use for the tests', )
         string(name: 'SPACK_BRANCH', defaultValue: '', description: 'The spack branch to use', )
