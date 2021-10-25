@@ -1,6 +1,0 @@
-[gerrit]
-host=bbpcode.epfl.ch
-port=22
-project=hpc/blueconfigs
-defaultbranch=master
-defaultremote=origin
