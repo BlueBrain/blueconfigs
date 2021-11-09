@@ -1,7 +1,7 @@
 library(identifier: 'bbp@master',
         retriever: modernSCM(
             [$class:'GitSCMSource',
-             remote: 'ssh://bbpcode.epfl.ch/hpc/jenkins-pipeline']))
+             remote: 'git@bbpgitlab.epfl.ch:hpc/module-testing.git']))
 
 def PARAMS = [
     tests: [
