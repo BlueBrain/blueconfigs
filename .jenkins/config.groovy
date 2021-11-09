@@ -1,4 +1,4 @@
-library(identifier: 'bbp@master',
+library(identifier: 'bbp@main',
         retriever: modernSCM(
             [$class:'GitSCMSource',
              remote: 'git@bbpgitlab.epfl.ch:hpc/module-testing.git']))
