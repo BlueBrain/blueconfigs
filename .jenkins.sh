@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-source .jenkins/envutils.sh
+source ci/envutils.sh
 
 # In jenkins mode set HOME to BUILD_HOME
 export WORKSPACE=${WORKSPACE:-$_THISDIR}

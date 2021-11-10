@@ -81,7 +81,7 @@ check_report_length "$output3" $((t_end3 - t_end2))
 # Generate ascii format for the spikes in h5 for all directories
 for directory in "$output1" "$output2" "$output3"; do
   if [ -f "$directory/out.h5" ]; then
-    (set -x; python "$_THISDIR/../.jenkins/generate_sonata_out.py" \
+    (set -x; python "$_THISDIR/../ci/generate_sonata_out.py" \
                     "$directory/out.h5" \
                     "$directory/out_SONATA.dat")
   fi

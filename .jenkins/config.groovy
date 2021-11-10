@@ -223,7 +223,7 @@ pipeline {
                         tasks[taskname] = {
                             stage(taskname) {
                                 sh("""source ${WORKSPACE}/.tests_setup.sh
-                                      source ${WORKSPACE}/.jenkins/longrun.sh
+                                      source ${WORKSPACE}/ci/longrun.sh
                                       run_long_test ${testname} "\${VERSIONS[$v]}" ${target}
                                     """
                                 )

@@ -1,5 +1,5 @@
 #!/bin/bash
-source .jenkins/envutils.sh
+source ci/envutils.sh
 source ./toolbox.sh
 
 # temp fix while neurodamus requires coreneuron master after a br change
@@ -53,11 +53,11 @@ TESTS[mousify]="mousify quick-mousify-sonata"
 PY_ONLY_TESTS="quick-hip-multipopulation scx-1k-v5-newparams quick-1k-v5-nodesets quick-scx-multi-circuit point-neuron sscx-v7-plasticity quick-v7-plasticity"
 
 # Prepare spack (install+env)
-source .jenkins/spack_setup.sh
+source ci/spack_setup.sh
 
 # Routines for installing
-source .jenkins/build.sh
+source ci/build.sh
 
 # load test/check routines
-source .jenkins/testutils.sh
+source ci/testutils.sh
 
