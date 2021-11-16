@@ -93,8 +93,6 @@ pipeline {
                description: 'Skip daily tests (mostly for debugging long tests)')
         string(name: 'BASH_TRACE', defaultValue: 'no',
                description: 'Activate Bash trace for debugging')
-        string(name: 'gitlabSourceBranch', defaultValue: 'main',
-               description: 'Which branch from gitlab to build (master for standard manual build)')
     }
 
     triggers {
