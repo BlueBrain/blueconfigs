@@ -124,7 +124,7 @@ _prepare_test() {
     # ----------------
 
     local _tsetbk=$-
-    set +x  # Never trace for module load
+    # set +x  # Never trace for module load
 
     if [ "$spec" != "default" ]; then
         log "COMMANDS: module purge; spack load $spec" "DBG"

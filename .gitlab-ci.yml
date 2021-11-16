@@ -5,7 +5,9 @@ stages:
   - medium_size_tests
 
 variables:
-  DATADIR: "/gpfs/bbp.cscs.ch/project/proj12/jenkins"
+  bb5_build_dir: "pipeline"  # Notice: this keeps build dir among jobs! no artifacts needed
+  RUN_PY_TESTS: "yes"
+  SPACK_BRANCH: "ci/change_gitlab"
 
 default:
   tags:
@@ -15,9 +17,8 @@ default:
     - export SPACK_ROOT="$HOME/spack"
     - export PATH="$SPACK_ROOT/bin:$PATH"
     - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
-    - export SPACK_BRANCH=ci/change_gitlab
 
-build_neurodamus_all:
+build_neurodamus:
   stage: build
   variables:
     bb5_cpus_per_task: 16
@@ -29,14 +30,10 @@ build_neurodamus_all:
     - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@bbpgitlab.epfl.ch/".insteadOf "git@bbpgitlab.epfl.ch:"
     - source ./.tests_setup.sh
     - install_neurodamus
-  artifacts:
-    paths:
-      - BUILD_HOME/spack
-    expire_in: 1 day
 
 .neurodamus_test:
-  dependencies:
-    - build_neurodamus_all
+  variables:
+    GIT_STRATEGY: none
   script:
     - source ./.tests_setup.sh
     - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
