@@ -11,7 +11,7 @@ blue_set OutputRoot "$outputdir" $blueconfig
 rm -rf x86_64 hippocampus mod
 
 # Clone hippocampus with adex.mod
-git clone --recursive -b sandbox/magkanar/pointneuron_merge ssh://bbpcode.epfl.ch/sim/models/hippocampus
+git clone --recursive -b adex_mod git@bbpgitlab.epfl.ch:hpc/sim/models/hippocampus.git
 mkdir mod
 cp hippocampus/mod/adex.mod mod
 build_neurodamus.sh mod
