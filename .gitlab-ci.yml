@@ -1,0 +1,92 @@
+
+stages:
+  - build
+  - quick_tests
+  - medium_size_tests
+
+variables:
+  DATADIR: "/gpfs/bbp.cscs.ch/project/proj12/jenkins"
+
+default:
+  tags:
+    - bb5_map
+  before_script:
+    - export HOME="$(pwd)/BUILD_HOME"
+    - export SPACK_ROOT="$HOME/spack"
+    - export PATH="$SPACK_ROOT/bin:$PATH"
+    - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
+    - export SPACK_BRANCH=ci/change_gitlab
+
+build_neurodamus_all:
+  stage: build
+  variables:
+    bb5_cpus_per_task: 16
+    bb5_constraint: cpu
+  script:
+    - mkdir -p $HOME
+    - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@bbpgitlab.epfl.ch/hpc/sim/models/common.git".insteadOf "ssh://bbpcode.epfl.ch/sim/models/common"
+    - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@bbpgitlab.epfl.ch/hpc/sim/models/neocortex.git".insteadOf "ssh://bbpcode.epfl.ch/sim/models/neocortex"
+    - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@bbpgitlab.epfl.ch/".insteadOf "git@bbpgitlab.epfl.ch:"
+    - source ./.tests_setup.sh
+    - install_neurodamus
+  artifacts:
+    paths:
+      - BUILD_HOME/spack
+    expire_in: 1 day
+
+.neurodamus_test:
+  dependencies:
+    - build_neurodamus_all
+  script:
+    - source ./.tests_setup.sh
+    - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
+
+quick_neocortex:
+  stage: quick_tests
+  extends: .neurodamus_test
+  parallel:
+    matrix:
+      - ND_VERSION: ncx_bare
+        TESTNAME: [quick-v5-gaps, quick-v6, quick-v5-multisplit, point-neuron]
+      - ND_VERSION: neocortex
+        TESTNAME: [quick-v5-multisplit, scx-1k-v5, scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
+      - ND_VERSION: ncx_plasticity
+        TESTNAME: quick-v5-plasticity
+
+quick_hippocampus:
+  stage: quick_tests
+  extends: .neurodamus_test
+  parallel:
+    matrix:
+      - ND_VERSION: hippocampus
+        TESTNAME: [quick-hip-projSeed2, quick-hip-multipopulation, quick-hip-delayconn]
+
+quick_other:
+  stage: quick_tests
+  extends: .neurodamus_test
+  parallel:
+    matrix:
+      - ND_VERSION: thalamus
+        TESTNAME: thalamus
+      - ND_VERSION: mousify
+        TESTNAME: quick-mousify-sonata
+
+neocortex:
+  stage: medium_size_tests
+  extends: .neurodamus_test
+  parallel:
+    matrix:
+      - ND_VERSION: neocortex
+        TESTNAME: [scx-v5-gapjunctions, scx-v5-bonus-minis]
+      - ND_VERSION: ncx_plasticity
+        TESTNAME: [scx-v5-plasticity, sscx-v7-plasticity]
+
+other-models:
+  stage: medium_size_tests
+  extends: .neurodamus_test
+  parallel:
+    matrix:
+      - ND_VERSION: hippocampus
+        TESTNAME: [hip-v6, hip-v6-mcr4]
+      - ND_VERSION: mousify
+        TESTNAME: mousify
