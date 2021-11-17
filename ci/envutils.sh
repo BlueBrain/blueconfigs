@@ -2,7 +2,11 @@
 # NOTE: This file shall be sourced so that important variables are avail to other scripts
 [ -n "$ENVUTILS_LOADED" ] && return || readonly ENVUTILS_LOADED=1
 _setbk=$-
-unset $(set +x; env | awk -F= '/^(PMI|SLURM)_/ {print $1}' | xargs)
+
+if [ -z "$TESTS_REUSE_ALLOCATION" ]; then
+    unset $(set +x; env | awk -F= '/^(PMI|SLURM)_/ {print $1}' | xargs)
+fi
+
 set +x
 Red='\033[31m'
 Green='\033[32m'
@@ -51,8 +55,14 @@ bb5_run() (
     else
         SALLOC_OPTS="$SALLOC_OPTS --ntasks-per-node=36 --exclusive --mem=0"
     fi
-
-    cmd_base="time salloc -N$N $SALLOC_OPTS -Aproj16 --hint=compute_bound -Ccpu --time 1:00:00 srun dplace "
+    if [ -z "$SALLOC_ACCOUNT" ]; then
+        SALLOC_OPTS="$SALLOC_OPTS -Aproj9998"
+    fi
+    if [ -z "$TESTS_REUSE_ALLOCATION" ]; then
+        cmd_base="time salloc -N$N $SALLOC_OPTS --hint=compute_bound -Ccpu --time 1:00:00 srun dplace "
+    else
+        cmd_base="time srun dplace"
+    fi
 
     echo "$cmd_base $@"
     if [ ! "$DRY_RUN"  ]; then
