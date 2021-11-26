@@ -32,7 +32,7 @@ _contains () {  # Check if space-separated list $1 contains line $2
 
 
 # On error abort with a meaningful msg
-trap 'log_error "Exit code: ${?}"' ERR
+trap 'log_error "Exit code: ${?}. At: $(caller): $LINENO"' ERR
 
 
 if [[ -z "$ADDITIONAL_ENV_VARS" && -n "$GERRIT_CHANGE_COMMIT_MESSAGE" ]]; then

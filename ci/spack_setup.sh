@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 # NOTE: This file shall be sourced so that important variables are avail to other scripts
 _THISDIR=$(readlink -f $(dirname $BASH_SOURCE))
 source "$_THISDIR/envutils.sh"
@@ -37,7 +37,6 @@ export PATH=$SPACK_ROOT/bin/spack:/usr/bin:$PATH
 module purge
 unset MODULEPATH
 module use "/gpfs/bbp.cscs.ch/ssd/apps/hpc/jenkins/modules/all"
-module load unstable
 export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
 
 _external_pkg_tpl='
@@ -99,6 +98,7 @@ spack_setup() (
     log_ok "Spack environment setup done"
 )
 
-
+# Let me work
+export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 spack_setup
 

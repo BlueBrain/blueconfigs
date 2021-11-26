@@ -3,15 +3,38 @@ stages:
   - build
   - quick_tests
   - medium_size_tests
+  - long_tests
 
 variables:
   bb5_build_dir: "pipeline"  # Notice: this keeps build dir among jobs! no artifacts needed
   bb5_account: proj12
   bb5_partition: prod_small
   bb5_cpus_per_task: 2
-  RUN_PY_TESTS: "yes"
-  SPACK_BRANCH: "ci/change_gitlab"
-  TEST_VERSIONS: "neocortex"
+  TEST_VERSIONS:
+    value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify"
+    description: 'Which version of the package to build & test.'
+  SPACK_BRANCH:
+    description: 'Which branch of spack to use for the build.'
+  CORENEURON_BRANCH:
+    description: 'Which branch of coreneuron to use for the build.'
+  NEURON_BRANCH:
+    description: 'Which branch of neuron to use for the build.'
+  MODELS_COMMON_BRANCH:
+    description: 'The common mods branch to use'
+  RUN_PY_TESTS:
+    value: 'yes'
+    description: 'Run tests with Python Neurodamus'
+  RUN_HOC_TESTS:
+    value: 'no'
+    description: 'Run tests with HOC Neurodamus'
+  DRY_RUN:
+    description: 'Dont actually run sims (Mostly to test CI itself)'
+  ADDITIONAL_ENV_VARS:
+    description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x'
+  LONG_RUN:
+    description: 'RUN weekly large simulation tests with Python Neuromdamus'
+  SKIP_DAILY_TESTS:
+    description: 'Skip daily tests (mostly for debugging long tests)'
 
 default:
   tags:
@@ -48,38 +71,37 @@ build_neurodamus:
 
 ## Neurodamus Quick tests
 
-.neurodamus_test_quick:
+.nd_quick_test:
   extends: .neurodamus_test
   stage: quick_tests
   variables:
-    bb5_ntasks: 2
   #   TESTS_REUSE_ALLOCATION: "1"
   #   bb5_memory: 0
   #   bb5_ntasks: 36
 
 
 q_neocortex:
-  extends: .neurodamus_test_quick
+  extends: .nd_quick_test
   parallel:
     matrix:
-#       - ND_VERSION: ncx_bare
-#         TESTNAME: [quick-v5-gaps, quick-v6, quick-v5-multisplit, point-neuron]
 #       - ND_VERSION: neocortex
-#         TESTNAME: [quick-v5-multisplit, scx-1k-v5, scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
+#         TESTNAME: [quick-v5-gaps, scx-1k-v5, quick-v6, quick-v5-multisplit, point-neuron]
+#       - ND_VERSION: neocortex
+#         TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
 #       - ND_VERSION: ncx_plasticity
 #         TESTNAME: quick-v5-plasticity
       - ND_VERSION: neocortex  # TODO: delete me
         TESTNAME: quick-v6
 
 # q_hippocampus:
-#   extends: .neurodamus_test_quick
+#   extends: .nd_quick_test
 #   parallel:
 #     matrix:
 #       - ND_VERSION: hippocampus
 #         TESTNAME: [quick-hip-projSeed2, quick-hip-multipopulation, quick-hip-delayconn]
 
 # q_other:
-#   extends: .neurodamus_test_quick
+#   extends: .nd_quick_test
 #   parallel:
 #     matrix:
 #       - ND_VERSION: thalamus
@@ -90,12 +112,12 @@ q_neocortex:
 
 ## Neurodamus Medium Size tests
 
-# .neurodamus_medium-size_test:
+# .nd_medium_test:
 #   extends: .neurodamus_test
 #   stage: medium_size_tests
 
 # neocortex:
-#   extends: .neurodamus_medium-size_test
+#   extends: .nd_medium_test
 #   parallel:
 #     matrix:
 #       - ND_VERSION: neocortex
@@ -104,10 +126,46 @@ q_neocortex:
 #         TESTNAME: [scx-v5-plasticity, sscx-v7-plasticity]
 
 # other-models:
-#   extends: .neurodamus_medium-size_test
+#   extends: .nd_medium_test
 #   parallel:
 #     matrix:
 #       - ND_VERSION: hippocampus
 #         TESTNAME: [hip-v6, hip-v6-mcr4]
 #       - ND_VERSION: mousify
 #         TESTNAME: mousify
+
+
+# We should define two schedules:
+#  - nightly (days of the week)
+#  - weekely (Setting LONG_RUN=1)
+
+.nd_long_test:
+  extends: .neurodamus_test
+  stage: long_tests
+  script:
+    - source ${WORKSPACE}/.tests_setup.sh
+    - source ${WORKSPACE}/ci/longrun.sh
+    - run_long_test $TESTNAME "${VERSIONS[$ND_VERSION]}" $SIM_TARGET
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $LONG_RUN == "yes"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: manual
+    # - Otherwise dont even show the option
+
+long_tests:
+  extends: .nd_long_test
+  parallel:
+    matrix:
+      - ND_VERSION: ncx_plasticity
+        TESTNAME: quick-hip-multipopulation
+        SIM_TARGET: mc0_Column
+      - ND_VERSION: hippocampus
+        TESTNAME: quick-hip-multipopulation
+        SIM_TARGET: hippocampus_neurons:Mosaic
+      - ND_VERSION: hippocampus
+        TESTNAME: mousify
+        SIM_TARGET: Layer45
+      - ND_VERSION: thalamus
+        TESTNAME: thalamus
+        SIM_TARGET: Mosaic
