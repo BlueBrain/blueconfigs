@@ -41,9 +41,12 @@ def run_long_test() {
 def setAlternateBranches() {
     def alt_branches=""
     def description = ""
-    if (env.gitlabSourceRepoName && env.gitlabSourceRepoName == "blueconfigs") {
-        if (env.gitlabMergeRequestDescription && env.gitlabMergeRequestDescription != "") {
-            description = env.gitlabMergeRequestDescription
+    if (env.gitlabSourceRepoName) {
+        if (env.gitlabSourceRepoName == "blueconfigs") {
+            description = env.gitlabMergeRequestDescription ?: ""
+        }
+        else if (env.gitlabSourceRepoName == "Neurodamus-py") {
+            env.PYNEURODAMUS_BRANCH=env.gitlabBranch
         }
     } else if (env.ghprbGhRepository && env.ghprbGhRepository == "BlueBrain/CoreNeuron" && env.ghprbSourceBranch != "" && env.ghprbPullLongDescription != "") {
         description = env.ghprbPullLongDescription
@@ -81,7 +84,7 @@ pipeline {
                description: 'The common mods branch to use', )
         string(name: 'RUN_PY_TESTS', defaultValue: 'yes',
                description: 'Run tests with Python Neurodamus')
-        string(name: 'RUN_HOC_TESTS', defaultValue: 'yes',
+        string(name: 'RUN_HOC_TESTS', defaultValue: '',
                description: 'Run tests with HOC Neurodamus')
         string(name: 'DRY_RUN', defaultValue: '',
                description: 'Will start a DRY_RUN, i.e. dont run sims, mostly to test CI itself')
@@ -109,6 +112,7 @@ pipeline {
         MODULEPATH = "${SPACK_INSTALL_PREFIX}/modules/tcl/linux-rhel7-x86_64:${MODULEPATH}"
         TMPDIR = "${TMPDIR}/${BUILD_TAG}"
         LONG_RUN = run_long_test()
+        SALLOC_ACCOUNT="proj16"
     }
 
     stages {
@@ -140,7 +144,7 @@ pipeline {
                             checkout(
                                 $class: 'GitSCM',
                                 userRemoteConfigs: [[
-                                    url: "ssh://bbpcode.epfl.ch/sim/models/common",
+                                    url: "git@bbpgitlab.epfl.ch:hpc/sim/models/common.git",
                                     refspec: "+refs/heads/*:refs/remotes/origin/*"
                                 ]],
                                 branches: [[name: "${MODELS_COMMON_BRANCH}" ]]

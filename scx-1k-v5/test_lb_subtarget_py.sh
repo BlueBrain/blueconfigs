@@ -4,9 +4,6 @@
 # NOTE: We must be careful with concurrent tests since cx files are
 # all created in pwd. At most one test should do load bal
 
-module load py-neurodamus
-module list
-
 source ../toolbox.sh
 configfile_bk $1
 outputdir="${2:-output}"
@@ -14,7 +11,8 @@ outputdir="${2:-output}"
 export RUN_PY_TESTS=yes
 
 blue_set RunMode WholeCell $blueconfig
-blue_set Duration 10 $blueconfig
+blue_set Duration 2 $blueconfig
+blue_comment_section Report $blueconfig
 
 echo "
 >> Setting Target to MiniColumn_1"

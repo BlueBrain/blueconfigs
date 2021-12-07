@@ -2,7 +2,11 @@
 # NOTE: This file shall be sourced so that important variables are avail to other scripts
 [ -n "$ENVUTILS_LOADED" ] && return || readonly ENVUTILS_LOADED=1
 _setbk=$-
-unset $(set +x; env | awk -F= '/^(PMI|SLURM)_/ {print $1}' | xargs)
+
+if [ -z "$TESTS_REUSE_ALLOCATION" ]; then
+    unset $(env|awk -F= '/^(PMI|SLURM)_/ {if (match($1, "_(ACCOUNT|PARTITION)$")==0) print $1}')
+fi
+
 set +x
 Red='\033[31m'
 Green='\033[32m'
@@ -28,7 +32,7 @@ _contains () {  # Check if space-separated list $1 contains line $2
 
 
 # On error abort with a meaningful msg
-trap 'log_error "Exit code: ${?}"' ERR
+trap 'log_error "retcode ${?} at $BASH_SOURCE:$LINENO (cmd: ${BASH_COMMAND})"' ERR
 
 
 if [[ -z "$ADDITIONAL_ENV_VARS" && -n "$GERRIT_CHANGE_COMMIT_MESSAGE" ]]; then
@@ -43,7 +47,9 @@ bb5_run() (
     # default partition is interactive. during night use production
     hour=`date +%H`
     weekday=`date +%u`
-    if [ -z "$SALLOC_PARTITION" ] && ([ "$hour" -ge "19" ] || [ "$hour" -lt "8" ] || [ $weekday -gt 5 ]); then export SALLOC_PARTITION="prod"; fi
+    if [ -z "$SALLOC_PARTITION" ] && ([ "$hour" -ge "19" ] || [ "$hour" -lt "8" ] || [ $weekday -gt 5 ]); then
+        export SALLOC_PARTITION="prod"
+    fi
 
     N=${N:-1}
     if [ -n "$n" ]; then
@@ -51,8 +57,18 @@ bb5_run() (
     else
         SALLOC_OPTS="$SALLOC_OPTS --ntasks-per-node=36 --exclusive --mem=0"
     fi
-
-    cmd_base="time salloc -N$N $SALLOC_OPTS -Aproj16 --hint=compute_bound -Ccpu --time 1:00:00 srun dplace "
+    if [ -z "$SALLOC_ACCOUNT" ]; then
+        if [ -n "$SLURM_JOB_ACCOUNT" ]; then
+            SALLOC_OPTS="$SALLOC_OPTS -A$SLURM_JOB_ACCOUNT"
+        else
+            echo "Warning: No SALLOC_ACCOUNT or SLURM_JOB_ACCOUNT vars defined"
+        fi
+    fi
+    if [ -z "$TESTS_REUSE_ALLOCATION" ]; then
+        cmd_base="time salloc -N$N $SALLOC_OPTS --hint=compute_bound -Ccpu --time 1:00:00 srun dplace "
+    else
+        cmd_base="time srun dplace"
+    fi
 
     echo "$cmd_base $@"
     if [ ! "$DRY_RUN"  ]; then

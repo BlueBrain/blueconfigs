@@ -6,8 +6,6 @@ Run Default
     METypePath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/ccells
     CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional
     nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional/newparams
-    gitPath ssh://bbpgit.epfl.ch/sim/neurodamus/bbp
-    Version HEAD
 
     CurrentDir   .
     OutputRoot   output

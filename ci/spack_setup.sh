@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 # NOTE: This file shall be sourced so that important variables are avail to other scripts
 _THISDIR=$(readlink -f $(dirname $BASH_SOURCE))
 source "$_THISDIR/envutils.sh"
@@ -28,16 +28,14 @@ log "SPACK_INSTALL_PREFIX=$SPACK_INSTALL_PREFIX; BUILD_HOME=$BUILD_HOME" DBG
 
 
 # ENV SETUP
+export PATH=$SPACK_ROOT/bin/spack:$PATH
 
-# TODO: /usr/bin was added as a quickfix due to git dependencies probs
-export PATH=$SPACK_ROOT/bin/spack:/usr/bin:$PATH
 
 # MODULES
 # Use spack only modules. Last one is added by changing MODULEPATH since it might not exist yet
 module purge
 unset MODULEPATH
 module use "/gpfs/bbp.cscs.ch/ssd/apps/hpc/jenkins/modules/all"
-module load unstable
 export MODULEPATH=$SPACK_INSTALL_PREFIX/modules/tcl/linux-rhel7-x86_64:$MODULEPATH
 
 _external_pkg_tpl='
@@ -87,6 +85,10 @@ cat "$SPACK_ROOT/etc/spack/upstreams.yaml"
 
 spack_setup() (
     set -e
+    if [[ ! -d "$DATADIR" && ! "$DRY_RUN" ]]; then
+      log_error "DATADIR ($DATADIR) not found."
+      return 1
+    fi
     # Install a Spack environment if needed
     if [ -d $SPACK_ROOT ]; then
         log_warn "Using existing spack at $SPACK_ROOT"

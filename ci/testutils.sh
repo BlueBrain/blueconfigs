@@ -170,7 +170,7 @@ test_check_results() (
         ref_spikes=$(<"$output/ref_spikes.txt")
     fi
     # Print nice msg on error
-    trap "(set +x; log_error \"Results DON'T Match\"; exit 1)" ERR
+    trap "(set +x; log_error \"Results DON'T Match\"; exit 1)" ERR SIGINT SIGTERM
 
     log "Checking results in $output"
     if [ "$DRY_RUN" ]; then
@@ -221,12 +221,12 @@ check_prints(){
   set +x
   local expected="$1"
   local stopper="$2"
-  local line
+  local line noprint
   local ret=1
   while read line; do
-      echo "$line"
+      [[ "$noprint" ]] || echo "$line"
       if [[ "$line" =~ "$expected" ]]; then ret=0; fi
-      if [ "$stopper" ] && [[ "$line" =~ "$stopper" ]]; then break; fi
+      if [ "$stopper" ] && [[ "$line" =~ "$stopper" ]]; then noprint=1; fi
   done
   return $ret
 }
@@ -241,6 +241,13 @@ _test_results() {
 }
 
 
+_kill_jobs() {
+    log_error "Error detected! Cancelling simulations... Pids: $@"
+    for i in $@; do
+        { pkill -P $i; kill $i; } >& /dev/null || true
+    done
+}
+
 #
 # Main function to start a test given its directory name.
 # _prepare_test will additionally search for test_*.sh files and call them with a copy
@@ -253,8 +260,6 @@ run_test() (
     set -e
     testname=$1
     spec="$2"
-    # Dont leave hanging processes
-    trap 'echo "Killing..."; pkill -f "srun dplace special -mpi -python"; killall grep' ERR
 
     (set +x; log
      log "------------ TEST: $testname ------------"
@@ -273,6 +278,9 @@ run_test() (
     fi
 
     # Otherwise we launch several processes to the background, store output and wait
+    # Install a TRAP to properly clean up subprocesses on error
+    trap '_kill_jobs ${pids[@]}' ERR SIGINT SIGTERM
+
     # Loop over $blueconfig tests
     declare -A pids
     declare baseconfig
@@ -285,7 +293,9 @@ run_test() (
             if [ "$DRY_RUN" ]; then
                 log_warn "Would execute $src [Dry Run]" "SKIP" > _$src.log &
             else
-                (source ./$src "$configfile" "${outputs[$src]}") &> _$src.log &
+                (   trap '_kill_jobs ${pids[@]}' ERR SIGINT SIGTERM
+                    source ./$src "$configfile" "${outputs[$src]}"
+                ) &> _$src.log &
             fi
             pids[$src]=$!
         else
@@ -299,8 +309,12 @@ run_test() (
         fi
     done
 
+    log_ok "Done launching simulations for $testname. Waiting for results..."
+
     local error_detected=  # flag to mark error, so we print all results
-    if [ ! -z $baseconfig ]; then
+
+    # Base one runs in foreground
+    if [ -n "$baseconfig" ]; then
         echo; log "Base BlueConfig launch: $baseconfig"
         run_blueconfig "$baseconfig" # understands $DRY_RUN
         log "Simulation Finished: $baseconfig"
@@ -311,7 +325,11 @@ run_test() (
     for src in ${configsrc[@]}; do
         [ "${pids[$src]}" ] || continue
         log " ================ JOB $src ================="
+        # Show tail
         tail -n20 _$src.log
+        # Skip if some job failed
+        [ -z "$error_detected" ] || { echo "Previous errors detected."; continue; }
+        # Otherwise follow job
         tail -n0 -f _$src.log &
         tail_pid=$!
         wait ${pids[$src]} || {
@@ -494,7 +512,7 @@ source $SPACK_ROOT/share/spack/setup-env.sh
 log_ok "Tests ready"
 
 if [ ! $BASH_TRACE ]; then
-    set -$_setbk
+    set -$(tr -d is <<< $_setbk)
 elif [ $BASH_TRACE = yes ]; then
     set -x
 fi

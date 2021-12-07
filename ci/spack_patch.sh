@@ -4,13 +4,13 @@ PKGS_BASE="${SPACK_ROOT}/var/spack/repos/builtin/packages"
 
 
 # Patch to use a different neurodamus branch
-sed_apply() (
-    f=$1
-    sedexp=$2
+sed_apply() {
+    local f=$1
+    local sedexp=$2
     log "PATCHING $f with '$sedexp'"
     (cd $(dirname $f) && git checkout "$(basename $f)") && sed -i "$sedexp" "$f"
     grep 'version(' "$f"
-)
+}
 
 
 # In the original neurodamus repo there were no tags

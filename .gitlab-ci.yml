@@ -1,0 +1,200 @@
+workflow:
+  rules:
+    # Rules taken from official docs to avoid duplicated pipelines
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "pipeline"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+
+stages:
+  - build
+  - quick_tests
+  - medium_size_tests
+  - long_tests
+
+variables:
+  bb5_build_dir: "pipeline"  # Notice: this keeps build dir among jobs! no artifacts needed
+  bb5_partition: prod_small
+  bb5_cpus_per_task: 2
+  TEST_VERSIONS:
+    value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify"
+    description: 'Which version of the package to build & test.'
+  SPACK_BRANCH:
+    value: sim/gitlab_repos
+    description: 'Which branch of spack to use for the build.'
+  CORENEURON_BRANCH:
+    description: 'Which branch of coreneuron to use for the build.'
+  NEURON_BRANCH:
+    description: 'Which branch of neuron to use for the build.'
+  MODELS_COMMON_BRANCH:
+    description: 'The common mods branch to use'
+  RUN_PY_TESTS:
+    value: 'yes'
+    description: 'Run tests with Python Neurodamus'
+  RUN_HOC_TESTS:
+    value: 'no'
+    description: 'Run tests with HOC Neurodamus'
+  DRY_RUN:
+    description: 'Dont actually run sims (Mostly to test CI itself)'
+  ADDITIONAL_ENV_VARS:
+    description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x'
+  LONG_RUN:
+    description: 'RUN weekly large simulation tests with Python Neuromdamus'
+  SKIP_DAILY_TESTS:
+    description: 'Skip daily tests (mostly for debugging long tests)'
+
+default:
+  tags:
+    - bb5_map
+  before_script:
+    - export HOME="$(pwd)/BUILD_HOME"
+    - export SPACK_ROOT="$HOME/spack"
+    - export PATH="$SPACK_ROOT/bin:$PATH"
+    - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
+    - export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
+    - export
+
+build_neurodamus:
+  stage: build
+  variables:
+    bb5_cpus_per_task: 16
+    bb5_constraint: cpu
+  script:
+    - mkdir -p $HOME
+    - cp -R ~bbpcihpcsim/.ssh $HOME/
+    - source ./.tests_setup.sh
+    - install_neurodamus
+
+
+## Generic test settings
+
+.neurodamus_test:
+  variables:
+    GIT_STRATEGY: none
+    bb5_constraint: cpu
+  script:
+    - if [ "$CI_PIPELINE_SOURCE" == push ]; then DRY_RUN=1; fi
+    # Workaround note: Gitlab doesnt support regex with a var in the expression
+    # Therefore, instead of using rules:if, we do a DRY_RUN on Models not related
+    - if [[ -n $MODEL_NAME && $MODEL_NAME != $ND_VERSION ]]; then DRY_RUN=1; fi
+    - source ./.tests_setup.sh
+    - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
+
+
+# Neurodamus Quick tests
+# ~~~~~~~~~~~~~~~~~~~~~~
+
+.nd_quick_test:
+  extends: .neurodamus_test
+  stage: quick_tests
+
+
+q_neocortex:
+  extends: .nd_quick_test
+  parallel:
+    matrix:
+      - ND_VERSION: neocortex
+        TESTNAME: [quick-v5-gaps, scx-1k-v5, quick-v6, quick-v5-multisplit, point-neuron]
+      - ND_VERSION: neocortex
+        TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
+      - ND_VERSION: ncx_plasticity
+        TESTNAME: quick-v5-plasticity
+
+q_hippocampus:
+  extends: .nd_quick_test
+  parallel:
+    matrix:
+      - ND_VERSION: hippocampus
+        TESTNAME: [quick-hip-projSeed2, quick-hip-multipopulation, quick-hip-delayconn]
+
+q_thalamus:
+  extends: .nd_quick_test
+  parallel:
+    matrix:
+      - ND_VERSION: thalamus
+        TESTNAME: thalamus
+
+q_mousify:
+  extends: .nd_quick_test
+  parallel:
+    matrix:
+      - ND_VERSION: mousify
+        TESTNAME: quick-mousify-sonata
+
+
+# Neurodamus Medium Size tests
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.nd_medium_test:
+  extends: .neurodamus_test
+  stage: medium_size_tests
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
+      allow_failure: true
+
+neocortex:
+  extends: .nd_medium_test
+  parallel:
+    matrix:
+      - ND_VERSION: neocortex
+        TESTNAME: [scx-v5-gapjunctions, scx-v5-bonus-minis]
+      - ND_VERSION: ncx_plasticity
+        TESTNAME: [scx-v5-plasticity, sscx-v7-plasticity]
+
+hippocampus:
+  extends: .nd_medium_test
+  parallel:
+    matrix:
+      - ND_VERSION: hippocampus
+        TESTNAME: [hip-v6, hip-v6-mcr4]
+
+mousify:
+  extends: .nd_medium_test
+  variables:
+    ND_VERSION: mousify
+    TESTNAME: mousify
+
+
+# Neurodamus Long tests
+# ~~~~~~~~~~~~~~~~~~~~~
+
+# We should define two schedules:
+#  - nightly (days of the week)
+#  - weekely (Setting LONG_RUN=1)
+
+.nd_long_test:
+  extends: .neurodamus_test
+  stage: long_tests
+  script:
+    - source ${WORKSPACE}/.tests_setup.sh
+    - source ${WORKSPACE}/ci/longrun.sh
+    - run_long_test $TESTNAME "${VERSIONS[$ND_VERSION]}" $SIM_TARGET
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $LONG_RUN == "yes"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: manual
+    # - Otherwise dont even show the option
+
+long_tests:
+  extends: .nd_long_test
+  parallel:
+    matrix:
+      - ND_VERSION: ncx_plasticity
+        TESTNAME: quick-hip-multipopulation
+        SIM_TARGET: mc0_Column
+      - ND_VERSION: hippocampus
+        TESTNAME: quick-hip-multipopulation
+        SIM_TARGET: hippocampus_neurons:Mosaic
+      - ND_VERSION: hippocampus
+        TESTNAME: mousify
+        SIM_TARGET: Layer45
+      - ND_VERSION: thalamus
+        TESTNAME: thalamus
+        SIM_TARGET: Mosaic

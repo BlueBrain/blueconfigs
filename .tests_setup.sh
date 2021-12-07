@@ -53,10 +53,10 @@ TESTS[mousify]="mousify quick-mousify-sonata"
 PY_ONLY_TESTS="quick-hip-multipopulation scx-1k-v5-newparams quick-1k-v5-nodesets quick-scx-multi-circuit point-neuron sscx-v7-plasticity quick-v7-plasticity"
 
 # Prepare spack (install+env)
-source ci/spack_setup.sh
+source ci/spack_setup.sh || return $?
 
 # Routines for installing
-source ci/build.sh
+source ci/build.sh || return $?
 
 # load test/check routines
 source ci/testutils.sh

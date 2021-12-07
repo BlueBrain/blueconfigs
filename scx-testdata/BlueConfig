@@ -2,8 +2,6 @@ Run Default
 {
     Date    9:1:14
     Time    16:43:10
-    gitPath ssh://bbpgit.epfl.ch/sim/neurodamus/bbp
-    Version HEAD
 
     MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-simtestdata/circuitBuilding_1000neurons/morphologies
     METypePath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-simtestdata/circuitBuilding_1000neurons/CCells
