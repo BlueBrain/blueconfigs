@@ -42,10 +42,8 @@ def setAlternateBranches() {
     def alt_branches=""
     def description = ""
     if (env.gitlabSourceRepoName) {
-        if (env.gitlabSourceRepoName == "blueconfigs") {
-            description = env.gitlabMergeRequestDescription ?: ""
-        }
-        else if (env.gitlabSourceRepoName == "Neurodamus-py") {
+        description = env.gitlabMergeRequestDescription ?: ""
+        if (env.gitlabSourceRepoName == "Neurodamus-py") {
             env.PYNEURODAMUS_BRANCH=env.gitlabBranch
         }
     } else if (env.ghprbGhRepository && env.ghprbGhRepository == "BlueBrain/CoreNeuron" && env.ghprbSourceBranch != "" && env.ghprbPullLongDescription != "") {
