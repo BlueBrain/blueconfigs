@@ -24,7 +24,6 @@ variables:
     value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify"
     description: 'Which version of the package to build & test.'
   SPACK_BRANCH:
-    value: sim/gitlab_repos
     description: 'Which branch of spack to use for the build.'
   CORENEURON_BRANCH:
     description: 'Which branch of coreneuron to use for the build.'
@@ -133,10 +132,10 @@ q_mousify:
   extends: .neurodamus_test
   stage: medium_size_tests
   rules:
-    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $PYNEURODAMUS_BRANCH'
       when: manual
       allow_failure: true
+    - when: on_success
 
 neocortex:
   extends: .nd_medium_test
