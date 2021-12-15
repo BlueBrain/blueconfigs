@@ -176,9 +176,10 @@ mousify:
     - run_long_test $TESTNAME "${VERSIONS[$ND_VERSION]}" $SIM_TARGET
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $LONG_RUN == "yes"'
-      when: always
+      when: on_success
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: manual
+      allow_failure: true
     # - Otherwise dont even show the option
 
 long_tests:
