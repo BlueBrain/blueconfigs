@@ -171,8 +171,8 @@ mousify:
   extends: .neurodamus_test
   stage: long_tests
   script:
-    - source ${WORKSPACE}/.tests_setup.sh
-    - source ${WORKSPACE}/ci/longrun.sh
+    - source ./.tests_setup.sh
+    - source ./ci/longrun.sh
     - run_long_test $TESTNAME "${VERSIONS[$ND_VERSION]}" $SIM_TARGET
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $LONG_RUN == "yes"'
