@@ -28,8 +28,8 @@ log "SPACK_INSTALL_PREFIX=$SPACK_INSTALL_PREFIX; BUILD_HOME=$BUILD_HOME" DBG
 
 
 # ENV SETUP
-export PATH=$SPACK_ROOT/bin/spack:$PATH
-
+# TODO: /usr/bin was added as a quickfix due to git dependencies probs
+export PATH=$SPACK_ROOT/bin/spack:/usr/bin:$PATH
 
 # MODULES
 # Use spack only modules. Last one is added by changing MODULEPATH since it might not exist yet
