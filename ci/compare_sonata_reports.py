@@ -40,12 +40,12 @@ else:
 
 df = pandas.DataFrame(
     data_frame.data,
-    columns=pandas.MultiIndex.from_tuples(data_frame.ids),
+    columns=pandas.MultiIndex.from_arrays(data_frame.ids.T),
     index=data_frame.times
 )
 df2 = pandas.DataFrame(
     data_frame2.data,
-    columns=pandas.MultiIndex.from_tuples(data_frame2.ids),
+    columns=pandas.MultiIndex.from_arrays(data_frame2.ids.T),
     index=data_frame2.times
 )
 
