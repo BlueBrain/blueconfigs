@@ -2,6 +2,7 @@
 source ../toolbox.sh
 configfile_bk $1
 
+
 # This test file checks the new default of removing coreneuron files by default
 # and the possibility of overriding such default with BlueConfig or --keep-build (Python)
 #
@@ -11,8 +12,11 @@ configfile_bk $1
 #   3. neurodamuspy --keep-data. No deletion
 #   4. Hoc version, Blueconfig setting KeepModelData=True. No deletion
 
+
 outputdir=${2:-output}
 coreneuron_data=$outputdir/coreneuron_input
+blue_comment_section Report $blueconfig
+
 
 #######################################################
 
