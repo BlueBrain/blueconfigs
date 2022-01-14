@@ -11,12 +11,12 @@ Run Default
     OutputRoot   output
 
     TargetFile user.target
-    CircuitTarget Column
+    CircuitTarget Small
     Simulator NEURON
     RNGMode Random123
     RunMode RR
 
-    Duration 200
+    Duration 50
     Dt 0.025
 }
 
@@ -33,13 +33,13 @@ Report soma
         EndTime 30000
 }
 
-Report compartments
+Report compartments_SON
 {
         Target AllCompartments
         Type compartment
         ReportOn v
         Unit mV
-        Format Bin
+        Format SONATA
         Dt 1
         StartTime 50
         EndTime 150

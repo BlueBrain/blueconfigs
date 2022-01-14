@@ -59,6 +59,7 @@ default:
 
 build_neurodamus:
   stage: build
+  interruptible: true
   variables:
     bb5_cpus_per_task: 16
     bb5_constraint: cpu

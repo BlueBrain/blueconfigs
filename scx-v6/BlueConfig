@@ -17,7 +17,7 @@ Run Default
     TargetFile user.target
 
     RunMode RR
-    CircuitTarget Column
+    CircuitTarget mini50
     Duration 100
     Dt 0.025
     #ForwardSkip 5000

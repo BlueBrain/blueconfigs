@@ -1,7 +1,11 @@
 [ -f spack_patched.flag ] && return || log "Patching spack packages source"
 
-PKGS_BASE="${SPACK_ROOT}/var/spack/repos/builtin/packages"
-
+PKGS_BASE_OLD="${SPACK_ROOT}/var/spack/repos/builtin/packages"
+PKGS_BASE="${SPACK_ROOT}/bluebrain/repo-bluebrain/packages"
+if [ ! -d "$PKGS_BASE" ]; then
+    echo "Using legacy package Base"
+    PKGS_BASE=$PKGS_BASE_OLD
+fi
 
 # Patch to use a different neurodamus branch
 sed_apply() {
