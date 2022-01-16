@@ -25,6 +25,8 @@ module load spack unstable git
 
 install_spack() (
     set -e
+    spack spec zlib  # Bootstrap
+
     rm -rf $HOME/.spack   # CLEANUP SPACK CONFIGS
     SPACK_REPO=https://github.com/BlueBrain/spack.git
     SPACK_BRANCH=${SPACK_BRANCH:-"develop"}

@@ -62,6 +62,7 @@ build_neurodamus:
     bb5_cpus_per_task: 16
     bb5_constraint: cpu
   script:
+    - rm -rf $HOME  # clean up
     - mkdir -p $HOME
     - cp -R ~bbpcihpcsim/.ssh $HOME/
     - source ./.tests_setup.sh
