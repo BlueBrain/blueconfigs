@@ -64,7 +64,13 @@ build_neurodamus:
   script:
     - rm -rf $HOME  # clean up
     - mkdir -p $HOME
+    - module purge
+    - module load spack unstable git
+    - spack --debug spec zlib
+
     - cp -R ~bbpcihpcsim/.ssh $HOME/
+    - module load spack unstable git
+    - spack spec zlib
     - source ./.tests_setup.sh
     - install_neurodamus
 
