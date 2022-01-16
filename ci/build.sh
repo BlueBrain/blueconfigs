@@ -46,7 +46,7 @@ if [ "$RUN_PY_TESTS" ]; then
     fi
 fi
 
-log_ok "Environment successfully setup"
+log_ok "Neurodamus installed successfully. You may reload spack env to find modules"
 
 ) #eof install_neurodamus f
 

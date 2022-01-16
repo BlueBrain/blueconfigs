@@ -1,4 +1,8 @@
-[ -f spack_patched.flag ] && return || log "Patching spack packages source"
+[[ -n "$SPACK_ROOT" && -d $SPACK_ROOT ]] || {
+    log_error "SPACK_ROOT not set"
+    return 1
+}
+[ -f $SPACK_ROOT/spack_patched.flag ] && return || log "Patching spack packages source"
 
 PKGS_BASE_OLD="${SPACK_ROOT}/var/spack/repos/builtin/packages"
 PKGS_BASE="${SPACK_ROOT}/bluebrain/repo-bluebrain/packages"
@@ -78,7 +82,7 @@ main()(
 
     patch_models_common "$MODELS_COMMON_BRANCH"
 
-    touch spack_patched.flag
+    touch $SPACK_ROOT/spack_patched.flag
 )
 
 main
