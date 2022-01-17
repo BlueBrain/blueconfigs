@@ -50,7 +50,7 @@ default:
   tags:
     - bb5_map
   before_script:
-    - export HOME="$(pwd)/BUILD_HOME"
+    #- export HOME="$(pwd)/BUILD_HOME"
     - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
     - export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
     - export
