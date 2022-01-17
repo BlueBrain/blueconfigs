@@ -51,8 +51,8 @@ default:
     - bb5_map
   before_script:
     #- export HOME="$(pwd)/BUILD_HOME"
-    - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
-    - export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
+    #- export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
+    #- export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
     - export
 
 build_neurodamus:
@@ -65,6 +65,8 @@ build_neurodamus:
     #- rm -rf $HOME  # clean up
     #- mkdir -p $HOME
     - module purge
+    - unset MODULEPATH
+    - . /gpfs/bbp.cscs.ch/ssd/apps/bsd/config/modules.sh
     - module load spack unstable git
     - spack config blame compilers
     - spack --debug spec zlib
