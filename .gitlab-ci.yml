@@ -51,8 +51,12 @@ default:
     - bb5_map
   before_script:
     #- export HOME="$(pwd)/BUILD_HOME"
+    - echo "TMPDIR=${TMPDIR}"
+    - ls -l "${TMPDIR}"
     - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
-    - export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
+    - echo "TMPDIR=${TMPDIR}"
+    - ls -l "${TMPDIR}"
+    #- export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
     - export
 
 build_neurodamus:
