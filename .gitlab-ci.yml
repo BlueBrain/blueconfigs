@@ -54,6 +54,7 @@ default:
     - echo "TMPDIR=${TMPDIR}"
     - ls -l "${TMPDIR}"
     - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
+    - mkdir -p "${TMPDIR}"
     - echo "TMPDIR=${TMPDIR}"
     - ls -l "${TMPDIR}"
     #- export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
