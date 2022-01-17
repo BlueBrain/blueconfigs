@@ -62,10 +62,11 @@ build_neurodamus:
     bb5_cpus_per_task: 16
     bb5_constraint: cpu
   script:
-    - rm -rf $HOME  # clean up
-    - mkdir -p $HOME
+    #- rm -rf $HOME  # clean up
+    #- mkdir -p $HOME
     - module purge
     - module load spack unstable git
+    - spack config blame compilers
     - spack --debug spec zlib
 
     - cp -R ~bbpcihpcsim/.ssh $HOME/
