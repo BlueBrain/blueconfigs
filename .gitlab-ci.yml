@@ -50,10 +50,7 @@ default:
   tags:
     - bb5_map
   before_script:
-    - export HOME="$(pwd)/BUILD_HOME"
     - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
-    - export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
-    - export
 
 build_neurodamus:
   stage: build
@@ -62,15 +59,17 @@ build_neurodamus:
     bb5_cpus_per_task: 16
     bb5_constraint: cpu
   script:
-    - rm -rf $HOME  # clean up
-    - mkdir -p $HOME
-    - module purge
-    - module load spack unstable git
-    - spack --debug spec zlib
-
+    - mkdir -p $TMPDIR
     - cp -R ~bbpcihpcsim/.ssh $HOME/
+
+    - module purge
+    - unset MODULEPATH
+    - . /gpfs/bbp.cscs.ch/ssd/apps/bsd/config/modules.sh
     - module load spack unstable git
     - spack spec zlib
+
+    - export  # Debug
+    - spack spec zlib  # Ensure spak is fine
     - source ./.tests_setup.sh
     - install_neurodamus
 
