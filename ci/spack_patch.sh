@@ -1,7 +1,8 @@
-[ -f spack_patched.flag ] && return || log "Patching spack packages source"
-
-PKGS_BASE="${SPACK_ROOT}/var/spack/repos/builtin/packages"
-
+[[ -n "$SPACK_ROOT" && -d $SPACK_ROOT ]] || {
+    log_error "SPACK_ROOT not set"
+    return 1
+}
+[ -f $SPACK_ROOT/spack_patched.flag ] && return || log "Patching spack packages source"
 
 # Patch to use a different neurodamus branch
 sed_apply() {
@@ -18,7 +19,7 @@ sed_apply() {
 strip_nd_git_tags() (
     nd_projects=(core neocortex hippocampus thalamus mousify)
     for proj in ${nd_projects[@]}; do
-        pkg_file="$PKGS_BASE/neurodamus-$proj/package.py"
+        pkg_base=$(spack location -p neurodamus-$proj)
         sedexp='/version.*tag=/d; /version_from_model_core_deps(/d'
 
         # change branch if requested
@@ -27,7 +28,7 @@ strip_nd_git_tags() (
             sedexp="$sedexp; s#branch=[^,]*,#branch='${!BVAR}', preferred=True,#g"
             sedexp="$sedexp; s#branch=[^,)]*)#branch='${!BVAR}', preferred=True)#g"
         fi
-        sed_apply "$pkg_file" "$sedexp"
+        sed_apply "${pkg_base}/package.py" "$sedexp"
     done
 )
 
@@ -35,11 +36,11 @@ check_patch_project() (
     projname="$1"
     branch="$2"
     if [ "$branch" ]; then
-        pkg_file="$PKGS_BASE/$projname/package.py"
+        pkg_base=$(spack location -p $projname)
         sedexp='/version.*tag=/d'  # Drop tags
         sedexp="$sedexp; /version.*commit=/d"  # Drop commits
         sedexp="$sedexp; s#branch=[^)]*)#branch='$branch', preferred=True)#g"  # replace branch
-        sed_apply "$pkg_file" "$sedexp"
+        sed_apply "${pkg_base}/package.py" "$sedexp"
     fi
 )
 
@@ -47,13 +48,22 @@ patch_models_common() (
     branch="$1"
     if [ "$branch" ]; then
       # Patch neurodamus-core in case it's installed with "+common" variant
+      pkg_base=$(spack location -p neurondamus-core)
       sedexp="s#git=\'ssh:\/\/bbpcode.epfl.ch\/sim\/models\/common\',#git=\'ssh:\/\/bbpcode.epfl.ch\/sim\/models\/common\',\ branch='$branch',#g"
-      sed_apply "$PKGS_BASE/neurodamus-core/package.py" "$sedexp"
+      sed_apply "${pkg_base}/package.py" "$sedexp"
     fi
 )
 
 main()(
     set -e
+    # Generate all modules
+    echo "modules:
+  tcl:
+    naming_scheme: '\${PACKAGE}/\${VERSION}'
+    whitelist:
+      - '@:'
+    " > ${SPACK_ROOT}/etc/spack/modules.yaml
+
     strip_nd_git_tags
 
     if [ "${ghprbGhRepository}" = "BlueBrain/CoreNeuron" ] && [ "${ghprbSourceBranch}" ]; then
@@ -74,7 +84,7 @@ main()(
 
     patch_models_common "$MODELS_COMMON_BRANCH"
 
-    touch spack_patched.flag
+    touch $SPACK_ROOT/spack_patched.flag
 )
 
 main

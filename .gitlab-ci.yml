@@ -10,7 +10,12 @@ workflow:
     - if: '$CI_COMMIT_BRANCH'
     - if: '$CI_COMMIT_TAG'
 
+include:
+  - project: hpc/gitlab-pipelines
+    file: spack-build-components.gitlab-ci.yml
+
 stages:
+  - prepare_env
   - build
   - quick_tests
   - medium_size_tests
@@ -20,6 +25,7 @@ variables:
   bb5_build_dir: "pipeline"  # Notice: this keeps build dir among jobs! no artifacts needed
   bb5_partition: prod_small
   bb5_cpus_per_task: 2
+  SALLOC_ACCOUNT: proj9998  # salloc won't require `-A` param
   TEST_VERSIONS:
     value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify"
     description: 'Which version of the package to build & test.'
@@ -49,25 +55,23 @@ variables:
 default:
   tags:
     - bb5_map
-  before_script:
-    - export HOME="$(pwd)/BUILD_HOME"
-    - export SPACK_ROOT="$HOME/spack"
-    - export PATH="$SPACK_ROOT/bin:$PATH"
-    - export TMPDIR="$TMPDIR/$CI_PIPELINE_ID"
-    - export SALLOC_ACCOUNT="proj9998"  # test alloc use proj9998
-    - export
+
+setup_spack:
+  stage: prepare_env
+  extends: .spack_setup
 
 build_neurodamus:
   stage: build
+  interruptible: true
   variables:
     bb5_cpus_per_task: 16
     bb5_constraint: cpu
   script:
-    - mkdir -p $HOME
-    - cp -R ~bbpcihpcsim/.ssh $HOME/
+    - cp -R ~bbpcihpcsim/.ssh ./
+    - module purge && unset MODULEPATH
+    - export
     - source ./.tests_setup.sh
     - install_neurodamus
-
 
 ## Generic test settings
 

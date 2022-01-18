@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-module load py-neurodamus
+module load intel-oneapi-compilers py-neurodamus
 module list
 
 source ../toolbox.sh
