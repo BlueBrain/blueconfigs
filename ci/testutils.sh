@@ -131,15 +131,19 @@ _prepare_test() {
         module purge
         if [ $RUN_PY_TESTS = "yes" ]; then
             log "Loading python with deps"
-            which neurodamus &> /dev/null || module load py-neurodamus
+            # olupton 2022-02-03: after BlueBrain/spack#1406 then models depend
+            #   on py-neurodamus, but as this is not a run dependency the spack
+            #   load command below is not sufficient.
+            which neurodamus &> /dev/null || module load unstable py-neurodamus
         fi
         spack load $spec
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
     # Loading bluepy for the libsonata readers
-    module load unstable py-bluepy
-
+    # olupton 2022-02-02: this leaks a deployed NEURON version into the
+    #   environment, let's load it when needed instead.
+    # module load unstable py-bluepy
     set -$_tsetbk  # reenable disabled flags
 }
 
@@ -183,7 +187,8 @@ test_check_results() (
     fi
 
     if [[ $ref_spikes == *"out.h5" ]] && [ -f $ref_spikes ]; then
-        (set -x; python "$_THISDIR/compare_sonata_spikes.py" \
+        (set -x; module load unstable py-bluepy; \
+                 python "$_THISDIR/compare_sonata_spikes.py" \
                         "$output/out.h5" \
                         "$ref_spikes")
     else
@@ -192,7 +197,8 @@ test_check_results() (
         if [ -f $output/out_SONATA.dat ]; then
             check_spike_files $output/out_SONATA.dat "$ref_spikes"
         elif [ -f $output/out.h5 ]; then
-            (set -x; python "$_THISDIR/generate_sonata_out.py" \
+            (set -x; module load unstable py-bluepy; \
+                     python "$_THISDIR/generate_sonata_out.py" \
                             "$output/out.h5" \
                             "$output/out_SONATA.dat")
             check_spike_files $output/out_SONATA.dat "$ref_spikes"
@@ -206,7 +212,8 @@ test_check_results() (
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
             (set -x; [ -s $output/$sonata_report ] )
-            (set -x; python "$_THISDIR/compare_sonata_reports.py" \
+            (set -x; module load unstable py-bluepy; \
+                     python "$_THISDIR/compare_sonata_reports.py" \
                             "$ref_results/$sonata_report" \
                             "$output/$sonata_report" \
                             $fraction_sonata_report_compare)
