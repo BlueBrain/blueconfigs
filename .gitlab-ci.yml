@@ -37,6 +37,12 @@ variables:
     description: 'Which branch of neuron to use for the build.'
   MODELS_COMMON_BRANCH:
     description: 'The common mods branch to use'
+  PYNEURODAMUS_BRANCH:
+    description: 'Which branch of py-neurodamus to use for the build.'
+  REPORTINGLIB_BRANCH:
+    description: 'Which branch of reportinglib to use for the build.'
+  SYNAPSETOOL_BRANCH:
+    description: 'Which branch of synapsetool to use for the build.'
   RUN_PY_TESTS:
     value: 'yes'
     description: 'Run tests with Python Neurodamus'
