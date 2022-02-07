@@ -39,7 +39,7 @@ check_patch_project() (
         pkg_base=$(spack location -p $projname)
         sedexp='/version.*tag=/d'  # Drop tags
         sedexp="$sedexp; /version.*commit=/d"  # Drop commits
-        sedexp="$sedexp; s#branch=[^)]*)#branch='$branch', preferred=True)#g"  # replace branch
+        sedexp="$sedexp; s#branch=[^),]*\([),]\)#branch='$branch'\1#g" # replace branch
         sed_apply "${pkg_base}/package.py" "$sedexp"
     fi
 )
