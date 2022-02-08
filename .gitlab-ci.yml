@@ -41,6 +41,8 @@ variables:
     description: 'Which branch of py-neurodamus to use for the build.'
   REPORTINGLIB_BRANCH:
     description: 'Which branch of reportinglib to use for the build.'
+  LIBSONATAREPORT_BRANCH:
+    description: 'Which branch of libsonata-report to use for the build.'
   SYNAPSETOOL_BRANCH:
     description: 'Which branch of synapsetool to use for the build.'
   RUN_PY_TESTS:

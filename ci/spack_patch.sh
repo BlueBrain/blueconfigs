@@ -80,6 +80,7 @@ main()(
 
     check_patch_project synapsetool "$SYNAPSETOOL_BRANCH"
     check_patch_project reportinglib "$REPORTINGLIB_BRANCH"
+    check_patch_project libsonata-report "$LIBSONATAREPORT_BRANCH"
     check_patch_project py-neurodamus "$PYNEURODAMUS_BRANCH"
 
     patch_models_common "$MODELS_COMMON_BRANCH"
