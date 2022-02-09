@@ -2,7 +2,10 @@
     log_error "SPACK_ROOT not set"
     return 1
 }
-[ -f $SPACK_ROOT/spack_patched.flag ] && return || log "Patching spack packages source"
+if [ -f $SPACK_ROOT/spack_patched.flag ]; then
+    log "Spack installation already Patched (develop branches)"
+    return
+fi
 
 # Patch to use a different neurodamus branch
 sed_apply() {
@@ -20,7 +23,7 @@ strip_nd_git_tags() (
     nd_projects=(core neocortex hippocampus thalamus mousify)
     for proj in ${nd_projects[@]}; do
         pkg_base=$(spack location -p neurodamus-$proj)
-        sedexp='/version.*tag=/d; /version_from_model_core_deps(/d'
+        sedexp='/version.*tag=/d; /version_from_model_.*(/d'
 
         # change branch if requested
         BVAR="NEURODAMUS_${proj^^}_BRANCH"
@@ -56,6 +59,7 @@ patch_models_common() (
 
 main()(
     set -e
+    log "Patching Spack sources according to required branches..."
     # Generate all modules
     echo "modules:
   tcl:

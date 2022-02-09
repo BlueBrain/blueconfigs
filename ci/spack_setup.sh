@@ -14,11 +14,19 @@ Preparing spack environment...
 
 # Give the use the possibility of running with an existing spack
 if [[ "$SPACK_ROOT" ]]; then
-    log "SPACK_ROOT is already set: $SPACK_ROOT"
+    log_warn "Using pre-configured spack from $SPACK_ROOT"
     export LOCAL_SPACK=${SPACK_ROOT}
 else
+    # Install spack if we are using this from anywhere else other than CI
     export LOCAL_SPACK=${WORKSPACE}/spack
+    export SPACK_SYSTEM_CONFIG_PATH=/gpfs/bbp.cscs.ch/ssd/apps/bsd/config  # latest config
+    export SPACK_USER_CACHE_PATH=${WORKSPACE}/INSTALL
 fi
+
+log "Spack settings:
+ - Path: $LOCAL_SPACK
+ - SPACK_SYSTEM_CONFIG_PATH: $SPACK_SYSTEM_CONFIG_PATH
+ - SPACK_USER_CACHE_PATH: $SPACK_USER_CACHE_PATH"
 
 module use /gpfs/bbp.cscs.ch/ssd/apps/bsd/modules/_meta
 module load unstable git
@@ -27,9 +35,8 @@ module load unstable git
 ############################# CLONE/SETUP REPOSITORY #############################
 
 install_spack() (
+    # Install spack if we are using this from anywhere else other than CI
     set -e
-    spack spec zlib  # Bootstrap
-
     rm -rf $HOME/.spack   # CLEANUP SPACK CONFIGS
     SPACK_REPO=https://github.com/BlueBrain/spack.git
     SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
@@ -37,6 +44,7 @@ install_spack() (
     cd $WORKSPACE
     log "Installing SPACK. Cloning $SPACK_REPO spack --depth 1 -b $SPACK_BRANCH"
     git clone -c feature.manyFiles=true $SPACK_REPO spack --depth 1 -b $SPACK_BRANCH
+    rm -f spack/etc/spack/*.yaml
     cp spack/bluebrain/sysconfig/bluebrain5/*.yaml spack/etc/spack/
 )
 
@@ -48,18 +56,19 @@ spack_setup() (
       return 1
     fi
     # Install a Spack environment if needed
-    if [ -d $LOCAL_SPACK ]; then
-        log_warn "Using existing spack at $LOCAL_SPACK"
-    else
+    if [ ! -d $LOCAL_SPACK ]; then
         install_spack
     fi
 
     source $LOCAL_SPACK/share/spack/setup-env.sh
     source "$_THISDIR/spack_patch.sh"
+
+    log "Testing Spack and bootstrap if needed"
+    spack spec -I zlib
 )
 
 
-spack_setup || return $?
+spack_setup || return 1
 echo PATH=$PATH
 log "Reloading spack config: source $LOCAL_SPACK/share/spack/setup-env.sh"
 source $LOCAL_SPACK/share/spack/setup-env.sh
