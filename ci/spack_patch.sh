@@ -51,8 +51,8 @@ patch_models_common() (
     branch="$1"
     if [ "$branch" ]; then
       # Patch neurodamus-core in case it's installed with "+common" variant
-      pkg_base=$(spack location -p neurondamus-core)
-      sedexp="s#git=\'ssh:\/\/bbpcode.epfl.ch\/sim\/models\/common\',#git=\'ssh:\/\/bbpcode.epfl.ch\/sim\/models\/common\',\ branch='$branch',#g"
+      pkg_base=$(spack location -p neurodamus-core)
+      sedexp="s#git=\'git@bbpgitlab.epfl.ch:hpc\/sim\/models\/common.git\',#git=\'git@bbpgitlab.epfl.ch:hpc\/sim\/models\/common.git\',\ branch='$branch',#g"
       sed_apply "${pkg_base}/package.py" "$sedexp"
     fi
 )
