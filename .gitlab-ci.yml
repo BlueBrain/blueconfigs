@@ -45,6 +45,16 @@ variables:
     description: 'Which branch of libsonata-report to use for the build.'
   SYNAPSETOOL_BRANCH:
     description: 'Which branch of synapsetool to use for the build.'
+  NEURODAMUS_CORE_BRANCH:
+    description: 'Which branch of neurodamus-core to use for the build.'
+  NEURODAMUS_HIPPOCAMPUS_BRANCH:
+    description: 'Which branch of neurodamus-hippocampus to use for the build.'
+  NEURODAMUS_MOUSIFY_BRANCH:
+    description: 'Which branch of neurodamus-mousify to use for the build.'
+  NEURODAMUS_NEOCORTEX_BRANCH:
+    description: 'Which branch of neurodamus-neocortex to use for the build.'
+  NEURODAMUS_THALAMUS_BRANCH:
+    description: 'Which branch of neurodamus-thalamus to use for the build.'
   RUN_PY_TESTS:
     value: 'yes'
     description: 'Run tests with Python Neurodamus'
