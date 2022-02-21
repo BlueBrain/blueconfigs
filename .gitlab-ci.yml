@@ -35,13 +35,11 @@ variables:
     description: 'Which branch of coreneuron to use for the build.'
   NEURON_BRANCH:
     description: 'Which branch of neuron to use for the build.'
-  MODELS_COMMON_BRANCH:
-    description: 'The common mods branch to use'
-  PYNEURODAMUS_BRANCH:
+  PY_NEURODAMUS_BRANCH:
     description: 'Which branch of py-neurodamus to use for the build.'
   REPORTINGLIB_BRANCH:
     description: 'Which branch of reportinglib to use for the build.'
-  LIBSONATAREPORT_BRANCH:
+  LIBSONATA_REPORT_BRANCH:
     description: 'Which branch of libsonata-report to use for the build.'
   SYNAPSETOOL_BRANCH:
     description: 'Which branch of synapsetool to use for the build.'
@@ -167,7 +165,7 @@ q_mousify:
   extends: .neurodamus_test
   stage: medium_size_tests
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $PYNEURODAMUS_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $PY_NEURODAMUS_BRANCH'
       when: manual
       allow_failure: true
     - when: on_success
