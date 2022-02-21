@@ -75,8 +75,13 @@ default:
     - bb5_map
 
 setup_spack:
-  stage: prepare_env
   extends: .spack_setup
+  stage: prepare_env
+  variables:
+    # BLUECONFIGS_BRANCH=main is set as a group-level variable for hpc/sim, but
+    # there is no blueconfigs package in Spack. This tells the spack_setup job
+    # not to try and modify the non-existent blueconfigs package.
+    SPACK_SETUP_IGNORE_PACKAGE_VARIABLES: BLUECONFIGS
 
 build_neurodamus:
   stage: build
