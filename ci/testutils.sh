@@ -33,6 +33,9 @@ REF_RESULTS["quick-hip-delayconn"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-
 REF_RESULTS["quick-hip-multipopulation"]="$EXTENDED_RESULTS/circuit-hip-mooc/simulation-multipopulation"
 REF_RESULTS["quick-mousify-sonata"]="$EXTENDED_RESULTS/circuit-n34-mousify/simulation"
 REF_RESULTS["quick-1k-v5-nodesets"]="$EXTENDED_RESULTS/circuit-1k/simulation-quick-nodesets"
+REF_RESULTS["sonataconf-quick-hip-multipopulation"]="$EXTENDED_RESULTS/circuit-hip-mooc/simulation-sonataconf"
+REF_RESULTS["sonataconf-quick-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation-quick-sonataconf"
+REF_RESULTS["sonataconf-quick-scx-multi-circuit"]="$EXTENDED_RESULTS/circuit-scx-multicircuit/simulation-sonataconf"
 
 _prepare_test() {
     # If test not provided check if curdir has BlueConfig
@@ -273,6 +276,11 @@ run_test() (
      log "spec: $spec"
     )
 
+    if [[ $testname == "sonataconf"* ]]; then
+        run_sonataconfig $testname "$spec"
+        return
+    fi
+
     # Will set $blueconfigs and an $output associate array
     _prepare_test
 
@@ -429,6 +437,67 @@ run_blueconfig() (
     N=${N:-$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2)} \
     bb5_run special "${INIT_ARGS[@]}"
 )
+
+
+#
+# Run neurodmus directly on a given sonata simulation config
+#
+# @param configFile: (optional) The sonata config for the simulation
+#
+run_sonataconfig() (
+    # If test not provided check if curdir has BlueConfig
+    if [ -z "$testname" ]; then
+        if [ -f "simulation_config.json" ] && [ -f "out.sorted" ]; then
+            testname="${PWD##*/}"
+        else
+            log_error  "Test name not provided and not found in cur dir"
+            exit -1
+        fi
+    else
+        cd $BLUECONFIG_DIR/$testname
+    fi
+
+    set -e
+    configfile="simulation_config.json"
+    testname=${1:-$(basename $PWD)}
+    spec="$2"
+
+    log "[TEST SETUP] $testname from $PWD"
+
+    # If neurodamus spec not given, check cur loaded
+    if [ -z "$spec" ]; then
+        spec="default"
+        which special # Ensure available
+    else
+        log "COMMANDS: module purge; spack load $spec" "DBG"
+        module purge
+        if [ $RUN_PY_TESTS != "yes" ]; then
+            log "TEST $testname is only supported by neurodamus-py. Loading it"
+        fi
+        echo "Loading python with deps"
+        module load unstable py-neurodamus
+        spack load $spec
+    fi
+
+    module list
+    module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
+    module load unstable py-bluepy  # req. for the libsonata readers
+
+    log "[TEST RUN] Launching test $testname ($spec) #$hash"
+
+    if [ -z "$NEURODAMUS_PYTHON" ] && [ -z "$DRY_RUN" ]; then
+        log_error "NEURODAMUS_PYTHON var is not set. Unknown location of init.py"
+        return 1
+    fi
+    INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" --verbose)
+
+    N=${N:-$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2)} \
+    bb5_run special "${INIT_ARGS[@]}"
+
+    test_check_results "output_sonata" "${REF_RESULTS[$testname]}" "output_sonata/out.h5"
+    log_ok "Tests $testname successful\n" "PASS"
+)
+
 
 #
 # Run a test script. It will also read the BlueConfig to get the OutputRoot

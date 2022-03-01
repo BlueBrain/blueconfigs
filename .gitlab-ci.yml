@@ -80,6 +80,14 @@ setup_spack:
     # there is no blueconfigs package in Spack. This tells the spack_setup job
     # not to try and modify the non-existent blueconfigs package.
     SPACK_SETUP_IGNORE_PACKAGE_VARIABLES: BLUECONFIGS
+  before_script:
+    - !reference [.spack_setup, before_script]
+    # Check commit msg as well for instructions to override spack branches
+    - grep '^[[:alnum:]_]*_BRANCH=' <<< "$CI_COMMIT_MESSAGE" | while read -r l; do echo export $l ; done > commit_variables.env
+    - cat commit_variables.env
+    - . commit_variables.env
+    - unset CI_COMMIT_MESSAGE  # spack is trying to interpret this value...
+    - unset CI_COMMIT_DESCRIPTION  # spack is trying to interpret this value...
 
 build_neurodamus:
   stage: build
@@ -156,6 +164,17 @@ q_mousify:
     matrix:
       - ND_VERSION: mousify
         TESTNAME: quick-mousify-sonata
+
+q_sonata_config:
+  extends: .nd_quick_test
+  parallel:
+    matrix:
+      - ND_VERSION: ncx_plasticity
+        TESTNAME: [sonataconf-quick-v5-plasticity]
+      - ND_VERSION: neocortex
+        TESTNAME: [sonataconf-quick-scx-multi-circuit]
+      - ND_VERSION: hippocampus
+        TESTNAME: [sonataconf-quick-hip-multipopulation]
 
 
 # Neurodamus Medium Size tests

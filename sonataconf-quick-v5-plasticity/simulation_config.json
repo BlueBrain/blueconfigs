@@ -1,0 +1,192 @@
+{
+  "manifest": {
+    "$CIRCUIT_DIR": "/gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit",
+    "$OUTPUT_DIR": "output_sonata"
+  },
+  "run": {
+    "tstop": 40.0,
+    "dt": 0.025,
+    "seed": 767740
+  },
+  "target_simulator": "NEURON",
+  "network": "circuit_config.json",
+  "node_sets_file": "node_sets.json",
+  "node_set": "miniColumn",
+  "output": {
+    "output_dir": "$OUTPUT_DIR",
+    "spikes_file": "out.h5",
+    "spikes_sort_order": "time"
+  },
+  "inputs": {
+    "spikeReplayIntoUniverse": {
+      "module": "synapse_replay",
+      "input_type": "spikes",
+      "delay": 0.0,
+      "duration": 30000.0,
+      "spike_file": "input.dat",
+      "node_set": "Mosaic"
+    },
+    "ThresholdIntoExc": {
+      "module": "noise",
+      "input_type": "current_clamp",
+      "delay": 0.0,
+      "duration": 30000.0,
+      "mean_percent": 100.457136089,
+      "variance": 0.001,
+      "node_set": "Excitatory"
+    },
+    "ThresholdIntoInh": {
+      "module": "noise",
+      "input_type": "current_clamp",
+      "delay": 0.0,
+      "duration": 30000.0,
+      "mean_percent": 100.457136089,
+      "variance": 0.001,
+      "node_set": "Inhibitory"
+    },
+    "hypamp_mosaic": {
+      "module": "hyperpolarizing",
+      "input_type": "current_clamp",
+      "delay": 0.0,
+      "duration": 30000.0,
+      "node_set": "Mosaic"
+    }
+  },
+  "connection_overrides": {
+    "GluSynapseSwitch": {
+      "source": "Excitatory",
+      "target": "Excitatory",
+      "weight": 1.0,
+      "mod_override": "GluSynapseLegacy",
+      "synapse_configure": "cao_CR_GluSynapse = 1.2 %s.Use_d *= 0.158401372855 %s.Use_p *= 0.158401372855"
+    },
+    "ConL6Exc-Uni": {
+      "source": "Excitatory",
+      "target": "Layer6",
+      "weight": 1.0,
+      "spont_minis": 0.04
+    },
+    "ConL5Exc-Uni": {
+      "source": "Excitatory",
+      "target": "Layer5",
+      "weight": 1.0,
+      "spont_minis": 0.067
+    },
+    "ConL4Exc-Uni": {
+      "source": "Excitatory",
+      "target": "Layer4",
+      "weight": 1.0,
+      "spont_minis": 0.072
+    },
+    "ConL3Exc-Uni": {
+      "source": "Excitatory",
+      "target": "Layer3",
+      "weight": 1.0,
+      "spont_minis": 0.122
+    },
+    "ConL2Exc-Uni": {
+      "source": "Excitatory",
+      "target": "Layer2",
+      "weight": 1.0,
+      "spont_minis": 0.26
+    },
+    "ConL1Exc-Uni": {
+      "source": "Excitatory",
+      "target": "Layer1",
+      "weight": 1.0,
+      "spont_minis": 0.63
+    },
+    "ConInh-Uni": {
+      "source": "Inhibitory",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "spont_minis": 0.012
+    },
+    "GABAB_erev": {
+      "source": "Inhibitory",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "synapse_configure": "%s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081"
+    },
+    "scheme_CaUse_ee": {
+      "source": "Excitatory",
+      "target": "Excitatory",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.158401372855"
+    },
+    "scheme_CaUse_e_2_PV_FS": {
+      "source": "Excitatory",
+      "target": "PV_FS",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.647467256852"
+    },
+    "scheme_CaUse_PV_FS_2_e": {
+      "source": "PV_FS",
+      "target": "Excitatory",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.647467256852"
+    },
+    "scheme_CaUse_e_2_DISTAR_INH": {
+      "source": "Excitatory",
+      "target": "DISTAR_INH",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.158401372855"
+    },
+    "scheme_CaUse_DISTAR_INH_2_e": {
+      "source": "DISTAR_INH",
+      "target": "Excitatory",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.158401372855"
+    },
+    "scheme_CaUse_Inh_Inh": {
+      "source": "Inhibitory",
+      "target": "Inhibitory",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.402934314853"
+    },
+    "scheme_minus1": {
+      "source": "Excitatory",
+      "target": "Inhibitory",
+      "weight": 1.0,
+      "synapse_configure": "%s.NMDA_ratio = 0.8"
+    },
+    "scheme1b": {
+      "source": "Layer1",
+      "target": "Excitatory",
+      "weight": 1.0,
+      "synapse_configure": "%s.GABAB_ratio = 0.75"
+    },
+    "scheme2b": {
+      "source": "L23_NGC",
+      "target": "Excitatory",
+      "weight": 1.0,
+      "synapse_configure": "%s.GABAB_ratio = 0.75"
+    }
+  },
+  "reports": {
+    "soma": {
+      "cells": "Mosaic",
+      "sections": "soma",
+      "variable_name": "v",
+      "type": "compartment",
+      "dt": 0.1
+    },
+    "AllCompartmentsIMembrane": {
+      "cells": "miniColumn",
+      "variable_name": "i_membrane",
+      "type": "compartment",
+      "dt": 0.1,
+      "start_time": 0.025,
+      "end_time": 100,
+      "sections": "all",
+      "compartments": "all"
+    },
+    "compartment": {
+      "cells": "miniColumn",
+      "variable_name": "v",
+      "type": "compartment",
+      "dt": 1.0,
+      "sections": "all"
+    }
+  }
+}

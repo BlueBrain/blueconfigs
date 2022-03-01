@@ -1,0 +1,43 @@
+{
+  "manifest": {
+    "$BASE_DIR": "/gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit",
+    "$COMPONENT_DIR": "$BASE_DIR",
+    "$NETWORK_DIR": "$BASE_DIR/sonata"
+  },
+  "components": {
+    "morphologies_dir": "$COMPONENT_DIR/morphologies/swc",
+    "mechanisms_dir": "$COMPONENT_DIR/mechanisms_dir",
+    "biophysical_neuron_models_dir": "$COMPONENT_DIR/emodels/hoc"
+  },
+  "node_sets_file": "$BASE_DIR/node_sets.json",
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$NETWORK_DIR/nodes/nodes.h5",
+        "node_types_file": null,
+        "populations": {
+          "hippocampus_neurons": {
+            "type": "biophysical"
+          },
+          "hippocampus_projections": {
+            "type": "virtual"
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "edges_file": "$NETWORK_DIR/edges/edges.h5",
+        "edge_types_file": null,
+        "populations":{
+          "hippocampus_neurons__hippocampus_neurons__chemical": {
+            "type": "chemical"
+          },
+          "hippocampus_projections__hippocampus_neurons__chemical": {
+            "type": "chemical"
+          }
+        }
+      }
+    ]
+  }
+}

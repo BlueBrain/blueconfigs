@@ -29,7 +29,7 @@ population_elements2 = elements2[elements2.get_population_names()[0]]
 if len(sys.argv) > 3:  # only compare part of the report
     part = float(sys.argv[3])
     node_ids = population_elements.get_node_ids()
-    n_sample = int(len(node_ids) * part)
+    n_sample = int(len(node_ids) * min(1, part))
     print("partially compare %s nodes" % n_sample)
     ids = node_ids[:n_sample]
     data_frame = population_elements.get(ids)

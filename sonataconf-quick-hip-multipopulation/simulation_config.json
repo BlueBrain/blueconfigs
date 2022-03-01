@@ -1,0 +1,56 @@
+{
+  "manifest": {
+    "$CIRCUIT_DIR": "/gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/"
+  },
+  "run": {
+    "tstop": 100.0,
+    "dt": 0.025,
+    "seed": 264118,
+    "forward_skip" : 5000
+  },
+  "target_simulator": "NEURON",
+  "network": "circuit_config.json",
+  "node_sets_file": "node_sets.json",
+  "node_set": "most_central_100_SP_PC",
+  "output": {
+    "output_dir": "output_sonata",
+    "spikes_file": "out.h5",
+    "spikes_sort_order": "time"
+  },
+  "inputs": {},
+  "connection_overrides": {
+    "All-All": {
+      "source": "hippocampus_neurons:Mosaic",
+      "target": "hippocampus_neurons:Mosaic",
+      "weight": 1.0,
+      "spont_minis": 0.01
+    },
+    "SC-All": {
+      "source": "hippocampus_projections:",
+      "target": "hippocampus_neurons:Mosaic",
+      "weight": 1.0,
+      "spont_minis": 0.2,
+      "synapse_configure": "%s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5"
+    },
+    "AMPA_NMDA": {
+      "source": "hippocampus_neurons:Excitatory",
+      "target": "hippocampus_neurons:Mosaic",
+      "synapse_configure": "%s.NMDA_ratio = 1.22 %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5"
+    },
+    "MGGate": {
+      "source": "hippocampus_neurons:Excitatory",
+      "target": "hippocampus_neurons:Mosaic",
+      "synapse_configure": "%s.mg = 1.0"
+    }
+  },
+  "reports": {
+    "soma": {
+      "cells": "hippocampus_neurons:Mosaic",
+      "variable_name": "v",
+      "type": "compartment",
+      "dt": 0.1,
+      "sections": "soma",
+      "compartments": "center"
+    }
+  }
+}
