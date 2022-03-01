@@ -83,7 +83,9 @@ setup_spack:
   before_script:
     - !reference [.spack_setup, before_script]
     # Check commit msg as well for instructions to override spack branches
+    - set +o pipefail
     - grep '^[[:alnum:]_]*_BRANCH=' <<< "$CI_COMMIT_MESSAGE" | while read -r l; do echo export $l ; done > commit_variables.env
+    - set -o pipefail
     - cat commit_variables.env
     - . commit_variables.env
     - unset CI_COMMIT_MESSAGE  # spack is trying to interpret this value...
