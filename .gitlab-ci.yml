@@ -88,8 +88,6 @@ setup_spack:
     - set -o pipefail
     - cat commit_variables.env
     - . commit_variables.env
-    - unset CI_COMMIT_MESSAGE  # spack is trying to interpret this value...
-    - unset CI_COMMIT_DESCRIPTION  # spack is trying to interpret this value...
 
 build_neurodamus:
   stage: build
