@@ -481,14 +481,13 @@ run_sonataconfig() (
 
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
-    module load unstable py-bluepy  # req. for the libsonata readers
-
-    log "[TEST RUN] Launching test $testname ($spec) #$hash"
 
     if [ -z "$NEURODAMUS_PYTHON" ] && [ -z "$DRY_RUN" ]; then
         log_error "NEURODAMUS_PYTHON var is not set. Unknown location of init.py"
         return 1
     fi
+
+    log "[TEST RUN] Launching test $testname ($spec) #$hash"
     INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" --verbose)
 
     N=${N:-$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2)} \
