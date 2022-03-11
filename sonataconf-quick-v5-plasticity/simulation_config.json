@@ -170,6 +170,8 @@
       "variable_name": "v",
       "type": "compartment",
       "dt": 0.1
+      "start_time": 0.0,
+      "end_time": 100.0
     },
     "AllCompartmentsIMembrane": {
       "cells": "miniColumn",
@@ -187,6 +189,8 @@
       "type": "compartment",
       "dt": 1.0,
       "sections": "all"
+      "start_time": 0.0,
+      "end_time": 100.0
     }
   }
 }

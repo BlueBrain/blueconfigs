@@ -50,7 +50,9 @@
       "type": "compartment",
       "dt": 0.1,
       "sections": "soma",
-      "compartments": "center"
+      "compartments": "center",
+      "start_time": 0,
+      "end_time": 100.0
     }
   }
 }
