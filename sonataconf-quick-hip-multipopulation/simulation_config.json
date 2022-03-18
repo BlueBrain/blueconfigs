@@ -5,7 +5,7 @@
   "run": {
     "tstop": 100.0,
     "dt": 0.025,
-    "seed": 264118,
+    "random_seed": 264118,
     "forward_skip" : 5000
   },
   "target_simulator": "NEURON",
@@ -20,32 +20,32 @@
   "inputs": {},
   "connection_overrides": {
     "All-All": {
-      "source": "hippocampus_neurons:Mosaic",
-      "target": "hippocampus_neurons:Mosaic",
+      "source": "Mosaic",
+      "target": "Mosaic",
       "weight": 1.0,
       "spont_minis": 0.01
     },
     "SC-All": {
       "source": "hippocampus_projections:",
-      "target": "hippocampus_neurons:Mosaic",
+      "target": "Mosaic",
       "weight": 1.0,
       "spont_minis": 0.2,
       "synapse_configure": "%s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5"
     },
     "AMPA_NMDA": {
-      "source": "hippocampus_neurons:Excitatory",
-      "target": "hippocampus_neurons:Mosaic",
+      "source": "Excitatory",
+      "target": "Mosaic",
       "synapse_configure": "%s.NMDA_ratio = 1.22 %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5"
     },
     "MGGate": {
-      "source": "hippocampus_neurons:Excitatory",
-      "target": "hippocampus_neurons:Mosaic",
+      "source": "Excitatory",
+      "target": "Mosaic",
       "synapse_configure": "%s.mg = 1.0"
     }
   },
   "reports": {
     "soma": {
-      "cells": "hippocampus_neurons:Mosaic",
+      "cells": "Mosaic",
       "variable_name": "v",
       "type": "compartment",
       "dt": 0.1,

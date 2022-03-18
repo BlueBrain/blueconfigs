@@ -10,7 +10,7 @@ source ./toolbox.sh
 # Test parameters eventually defined by Jenkins (env vars)
 set +x
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify"}
+export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify ncx_ngv"}
 export SPACK_BRANCH=${SPACK_BRANCH:-""}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 export DRY_RUN=${DRY_RUN:-""}  # Dont actually run sims. Default is false
@@ -36,13 +36,14 @@ VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity$_BASE_O
 VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $_BASE_OPTIONS"
 VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $_BASE_OPTIONS"
 VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $_BASE_OPTIONS"
+VERSIONS[ncx_ngv]="neurodamus-neocortex$BUILD_VERSION +ngv+synapsetool~plasticity~coreneuron"
 
 # list of simulations to run
 declare -A TESTS
 TESTS[neocortex]="scx-v5 scx-v6 scx-1k-v5 scx-1k-v5-newparams scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis quick-1k-v5-nodesets quick-scx-multi-circuit"
 TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit point-neuron"
 TESTS[ncx_plasticity]="scx-v5-plasticity quick-v5-plasticity sscx-v7-plasticity quick-v7-plasticity"
-TESTS[hippocampus]="hip-v6 hip-v6-mcr4 quick-hip-projSeed2 quick-hip-delayconn quick-hip-multipopulation sonataconf-quick-hip-multipopulation"
+TESTS[hippocampus]="hip-v6 hip-v6-mcr4 quick-hip-projSeed2 quick-hip-delayconn quick-hip-multipopulation"
 TESTS[thalamus]="thalamus"
 TESTS[mousify]="mousify quick-mousify-sonata"
 

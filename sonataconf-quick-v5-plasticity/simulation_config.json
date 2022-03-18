@@ -6,7 +6,7 @@
   "run": {
     "tstop": 40.0,
     "dt": 0.025,
-    "seed": 767740
+    "random_seed": 767740
   },
   "target_simulator": "NEURON",
   "network": "circuit_config.json",

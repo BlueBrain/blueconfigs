@@ -1,0 +1,69 @@
+{
+  "run": {
+    "tstop": 100.0,
+    "dt": 0.025,
+    "random_seed": 76775
+  },
+  "target_simulator": "NEURON",
+  "network": "circuit_sonata.json",
+  "node_sets_file": "node_sets.json",
+  "node_set": "All",
+  "output": {
+    "output_dir": "output_sonata",
+    "spikes_file": "out.h5",
+    "spikes_sort_order": "by_time"
+  },
+  "inputs": {
+    "Threshold":{
+      "module": "noise",
+      "mean_percent": 200,
+      "variance": 0.001,
+      "delay": 0.0,
+      "duration": 30000.0,
+      "input_type": "current_clamp",
+      "node_set": "astrocyteA:"
+    }
+  },
+  "reports": {
+    "v_soma": {
+      "cells": "All",
+      "type": "compartment",
+      "variable_name": "v",
+      "unit": "mV",
+      "dt": 0.1,
+      "start_time": 0,
+      "end_time": 1000
+    },
+    "rcai_soma": {
+      "cells": "Astrocytes",
+      "type": "compartment",
+      "variable_name": "reportcai_mcd",
+      "scaling": "None",
+      "unit": "nA",
+      "dt": 0.1,
+      "start_time": 0,
+      "end_time": 1000
+    },
+     "v_compartment": {
+      "cells": "All",
+      "type": "compartment",
+      "variable_name": "v",
+      "unit": "mV",
+      "dt": 0.1,
+      "start_time": 0,
+      "end_time": 1000,
+      "sections": "all"
+    },
+     "rcai_compartment": {
+      "cells": "Astrocytes",
+      "type": "compartment",
+      "variable_name": "reportcai_mcd",
+      "scaling": "None",
+      "unit": "nA",
+      "dt": 0.1,
+      "start_time": 0,
+      "end_time": 1000,
+      "sections": "all"
+    }
+  }
+}
