@@ -183,6 +183,26 @@
       "sections": "all",
       "compartments": "all"
     },
+    "SummationAllIMembrane": {
+      "cells": "miniColumn",
+      "variable_name": "i_membrane",
+      "type": "Summation",
+      "dt": 0.1,
+      "start_time": 0.025,
+      "end_time": 100,
+      "sections": "all",
+      "compartments": "all"
+    },
+    "SummationSomaCurrents": {
+      "cells": "miniColumn",
+      "variable_name": "i_membrane IClamp",
+      "type": "Summation",
+      "dt": 0.1,
+      "start_time": 0.025,
+      "end_time": 100,
+      "sections": "soma",
+      "compartments": "center"
+    },
     "compartment": {
       "cells": "miniColumn",
       "variable_name": "v",
