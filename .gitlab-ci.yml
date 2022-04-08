@@ -147,7 +147,7 @@ q_neocortex:
       - ND_VERSION: neocortex
         TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
       - ND_VERSION: ncx_plasticity
-        TESTNAME: quick-v5-plasticity
+        TESTNAME: [quick-v5-plasticity, sscx-v7-plasticity]
 
 q_hippocampus:
   extends: .nd_quick_test
@@ -203,7 +203,7 @@ neocortex:
       - ND_VERSION: neocortex
         TESTNAME: [scx-v5-gapjunctions, scx-v5-bonus-minis]
       - ND_VERSION: ncx_plasticity
-        TESTNAME: [scx-v5-plasticity, sscx-v7-plasticity]
+        TESTNAME: [scx-v5-plasticity]
 
 hippocampus:
   extends: .nd_medium_test
