@@ -126,6 +126,8 @@ build_neurodamus:
     # Workaround note: Gitlab doesnt support regex with a var in the expression
     # Therefore, instead of using rules:if, we do a DRY_RUN on Models not related
     - if [[ -n $MODEL_NAME && $MODEL_NAME != $ND_VERSION ]]; then DRY_RUN=1; fi
+    # If we update "common" test all neurodamus models
+    - if [[ -n $MODEL_NAME && $MODEL_NAME == "common"]]; then DRY_RUN=0; fi
     - source ./.tests_setup.sh
     - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
 
