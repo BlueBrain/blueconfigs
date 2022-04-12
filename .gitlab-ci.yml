@@ -126,6 +126,8 @@ build_neurodamus:
     # Workaround note: Gitlab doesnt support regex with a var in the expression
     # Therefore, instead of using rules:if, we do a DRY_RUN on Models not related
     - if [[ -n $MODEL_NAME && $MODEL_NAME != $ND_VERSION ]]; then DRY_RUN=1; fi
+    # If we update "common" test all neurodamus models
+    - if [[ -n $MODEL_NAME && $MODEL_NAME == "common" ]]; then unset DRY_RUN; fi
     - source ./.tests_setup.sh
     - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
 
@@ -147,7 +149,7 @@ q_neocortex:
       - ND_VERSION: neocortex
         TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
       - ND_VERSION: ncx_plasticity
-        TESTNAME: quick-v5-plasticity
+        TESTNAME: [quick-v5-plasticity, sscx-v7-plasticity]
 
 q_hippocampus:
   extends: .nd_quick_test
@@ -203,7 +205,7 @@ neocortex:
       - ND_VERSION: neocortex
         TESTNAME: [scx-v5-gapjunctions, scx-v5-bonus-minis]
       - ND_VERSION: ncx_plasticity
-        TESTNAME: [scx-v5-plasticity, sscx-v7-plasticity]
+        TESTNAME: [scx-v5-plasticity]
 
 hippocampus:
   extends: .nd_medium_test
