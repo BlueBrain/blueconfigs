@@ -32,7 +32,6 @@ Projection gapjunction
     # can use absolute path
     Path gap_junctions
     Type GapJunction
-    Source Non
 }
 
 

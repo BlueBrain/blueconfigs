@@ -26,7 +26,7 @@
       "spont_minis": 0.01
     },
     "SC-All": {
-      "source": "hippocampus_projections:",
+      "source": "HipProjections",
       "target": "Mosaic",
       "weight": 1.0,
       "spont_minis": 0.2,

@@ -190,9 +190,11 @@ test_check_results() (
         return
     fi
 
+    # load libsonata now since its required for new comparison tools
+    module load unstable py-libsonata python-dev
+
     if [[ $ref_spikes == *"out.h5" ]] && [ -f $ref_spikes ]; then
-        (set -x; module load unstable py-bluepy; \
-                 python "$_THISDIR/compare_sonata_spikes.py" \
+        (set -x; python "$_THISDIR/compare_sonata_spikes.py" \
                         "$output/out.h5" \
                         "$ref_spikes")
     else
@@ -201,8 +203,7 @@ test_check_results() (
         if [ -f $output/out_SONATA.dat ]; then
             check_spike_files $output/out_SONATA.dat "$ref_spikes"
         elif [ -f $output/out.h5 ]; then
-            (set -x; module load unstable py-bluepy; \
-                     python "$_THISDIR/generate_sonata_out.py" \
+            (set -x; python "$_THISDIR/generate_sonata_out.py" \
                             "$output/out.h5" \
                             "$output/out_SONATA.dat")
             check_spike_files $output/out_SONATA.dat "$ref_spikes"
@@ -215,9 +216,11 @@ test_check_results() (
     done
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
-            (set -x; [ -s $output/$sonata_report ] )
-            (set -x; module load unstable py-bluepy; \
-                     python "$_THISDIR/compare_sonata_reports.py" \
+            if [ ! -s $output/$sonata_report ]; then
+                echo "Empty report file!"
+                return 1
+            fi
+            (set -x; python "$_THISDIR/compare_sonata_reports.py" \
                             "$ref_results/$sonata_report" \
                             "$output/$sonata_report" \
                             $fraction_sonata_report_compare)
@@ -493,6 +496,7 @@ run_sonataconfig() (
 
     N=${N:-$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2)} \
     bb5_run special "${INIT_ARGS[@]}"
+    log_ok "Simulation finished successfully"
 
     test_check_results "output_sonata" "${REF_RESULTS[$testname]}" "output_sonata/out.h5"
     log_ok "Tests $testname successful\n" "PASS"

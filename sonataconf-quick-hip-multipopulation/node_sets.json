@@ -1,9 +1,9 @@
 {
-  "Mosaic":[
-    "SLM_PPA", "SO_BP", "SO_BS", "SO_OLM", "SO_Tri", "SP_AA", "SP_BS", "SP_CCKBC", "SP_Ivy", "SP_PC", "SP_PVBC", "SR_SCA"
-  ],
-  "CA1": {
+  "Mosaic":{
     "population": "hippocampus_neurons"
+  },
+  "HipProjections": {
+    "population": "hippocampus_projections"
   },
   "Excitatory": {
     "synapse_class": "EXC"
@@ -192,6 +192,7 @@
     "SP_CCKBC"
   ],
   "most_central_100_SP_PC": {
+    "population": "hippocampus_neurons",
     "node_id": [
       11616,
       6392,
@@ -293,6 +294,21 @@
       13517,
       7624,
       2316
+    ]
+  },
+  "most_central_10_SP_PC": {
+    "population": "hippocampus_neurons",
+    "node_id": [
+      11616,
+      6392,
+      6788,
+      6242,
+      13512,
+      14310,
+      9396,
+      3698,
+      12244,
+      12000
     ]
   }
 }

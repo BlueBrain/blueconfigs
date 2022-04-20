@@ -1,0 +1,90 @@
+# This is the BlueConfig used as the reference. Note the population is given as a sep circuit
+
+Run Default
+{
+  Date    14:2:13
+  Time    11:32:35
+  svnPath https://bbpteam.epfl.ch/svn/bluebrain
+  Version    1094
+
+    CurrentDir .
+    OutputRoot output
+    TargetFile /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/user_no_CA3_PC.target
+    CircuitPath <NONE>
+
+    NumSynapseFiles 2048
+    RNGMode Random123
+    Simulator NEURON
+    BaseSeed 264118
+    RunMode RR
+    Duration 100
+    Dt 0.025
+    ForwardSkip 5000
+}
+
+Circuit hippocampus_neurons
+{
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/morphologies/swc
+    MorphologyType swc
+    METypePath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/emodels/hoc
+    MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/emodels/mecombo_emodel.tsv
+    CellLibraryFile /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/nodes/nodes.h5
+    CircuitPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/
+    nrnPath /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/edges/edges.h5:hippocampus_neurons__hippocampus_neurons__chemical
+    CircuitTarget hippocampus_neurons:most_central_100_SP_PC
+}
+
+Projection SC
+{
+    Path /gpfs/bbp.cscs.ch/project/proj42/circuits/CA1.O1/mooc-circuit/sonata/edges/edges.h5:hippocampus_projections__hippocampus_neurons__chemical
+}
+
+Report soma
+{
+    Target Mosaic
+    Type compartment
+    ReportOn v
+    Unit mV
+    Format SONATA
+    Dt 0.1
+    StartTime 0
+    EndTime 1000
+}
+
+Connection All-All
+{
+    Source hippocampus_neurons:Mosaic
+    Destination hippocampus_neurons:Mosaic
+    Weight 1.0
+    SpontMinis 0.01
+}
+
+Connection SC-All
+{
+    Source hippocampus_projections:
+    Destination hippocampus_neurons:Mosaic
+    SynapseConfigure %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5
+    Weight 1.0
+    SpontMinis 0.2
+}
+
+Connection AMPA_NMDA
+{
+    Source Excitatory
+    Destination Mosaic
+    SynapseConfigure %s.NMDA_ratio = 1.22 %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5
+} # NMDA ratio from Myme et al. 2003
+
+#Connection GABA_AB
+{
+   Source hippocampus_neurons:Inhibitory
+   Destination hippocampus_neurons:Mosaic
+   SynapseConfigure %s.e_GABAA = -80.0 %s.GABAB_ratio = 0
+} # no GABA_B (so far)
+
+Connection MGGate
+{
+   Source hippocampus_neurons:Excitatory
+   Destination hippocampus_neurons:Mosaic
+   SynapseConfigure %s.mg = 1.0
+}

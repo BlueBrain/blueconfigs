@@ -61,6 +61,8 @@ spack_setup() (
     fi
 
     source $LOCAL_SPACK/share/spack/setup-env.sh
+
+    set -e
     source "$_THISDIR/spack_patch.sh"
 
     log "Testing Spack and bootstrap if needed"
