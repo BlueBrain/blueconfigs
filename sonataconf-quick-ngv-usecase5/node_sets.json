@@ -1,11 +1,9 @@
 {
-  "Mosaic": {
+  "Neurons": {
     "population": "nodeA"
   },
   "Astrocytes": {
     "population": "astrocyteA"
   },
-  "All": [
-    "Mosaic", "Astrocytes"
-  ]
+  "All": ["Neurons", "Astrocytes"]
 }
