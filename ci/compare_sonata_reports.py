@@ -66,7 +66,7 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
     df = df.sort_index(axis=1)
     df2 = df2.sort_index(axis=1)
 
-    if numpy.allclose(df.values, df2.values):
+    if df.equals(df2):
         # Check all populations
         continue
     else:
@@ -74,16 +74,16 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
             df_values = df[node_id].values
             df2_values = df2[node_id].values
             row_names = df[node_id].index
-            if not numpy.allclose(df_values, df2_values):
+            if not (df_values == df2_values).all():
                 print(">>>> Different values for node id " + str(node_id) + " in population " + pop_name + ":")
                 # Loop through timesteps
                 for i, timestep in enumerate(df_values):
-                    if not numpy.allclose(timestep, df2_values[i]):
+                    if not numpy.equal(timestep, df2_values[i]):
                         # Loop through element ids
                         for j, element_value in enumerate(timestep):
-                            if not numpy.allclose(element_value, df2_values[i][j]):
-                                print("[{:g}(ms)] ref {:.8f} vs output {:.8f} for element_id index {:d}".
-                                    format(row_names[i], element_value, df2_values[i][j], j))
+                            if not numpy.equal(element_value, df2_values[i][j]):
+                                print("[{:g}(ms)] ref {:.14f} vs output {:.14f} for element_id index {:d}, diff {:g}".
+                                    format(row_names[i], element_value, df2_values[i][j], j, element_value-df2_values[i][j]))
         # Exit with error on the first population that fails
         exit(-1)
     exit(0)
