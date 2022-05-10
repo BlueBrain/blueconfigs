@@ -37,6 +37,7 @@ REF_RESULTS["sonataconf-quick-hip-multipopulation"]="$EXTENDED_RESULTS/circuit-h
 REF_RESULTS["sonataconf-quick-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation-quick-sonataconf"
 REF_RESULTS["sonataconf-quick-scx-multi-circuit"]="$EXTENDED_RESULTS/circuit-scx-multicircuit/simulation-sonataconf"
 REF_RESULTS["sonataconf-quick-ngv-usecase5"]="$EXTENDED_RESULTS/circuit-ngv-usecase5/simulation-sonataconf"
+REF_RESULTS["sonataconf-quick-thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation-sonataconf"
 
 _prepare_test() {
     # If test not provided check if curdir has BlueConfig
@@ -498,7 +499,7 @@ run_sonataconfig() (
     bb5_run special "${INIT_ARGS[@]}"
     log_ok "Simulation finished successfully"
 
-    test_check_results "output_sonata" "${REF_RESULTS[$testname]}" "output_sonata/out.h5"
+    test_check_results "output_sonata" "${REF_RESULTS[$testname]}" "${REF_RESULTS[$testname]}/out.h5"
     log_ok "Tests $testname successful\n" "PASS"
 )
 
