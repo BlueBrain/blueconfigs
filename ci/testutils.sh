@@ -469,6 +469,11 @@ run_sonataconfig() (
 
     log "[TEST SETUP] $testname from $PWD"
 
+    if [ "$DRY_RUN" ]; then
+        log "[SKIP] DRY-RUN test $testname ($spec)."
+        return
+    fi
+
     # If neurodamus spec not given, check cur loaded
     if [ -z "$spec" ]; then
         spec="default"
