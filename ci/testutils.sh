@@ -40,9 +40,10 @@ REF_RESULTS["sonataconf-quick-ngv-usecase5"]="$EXTENDED_RESULTS/circuit-ngv-usec
 REF_RESULTS["sonataconf-quick-thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation-sonataconf"
 
 _prepare_test() {
+    confFile="${1:-BlueConfig}" #either sonata config or BlueConfig
     # If test not provided check if curdir has BlueConfig
     if [ -z "$testname" ]; then
-        if [ -f "BlueConfig" ] && [ -f "out.sorted" ]; then
+        if [ -f $confFile ] && [ -f "out.sorted" ]; then
             testname="${PWD##*/}"
         else
             log_error  "Test name not provided and not found in cur dir"
@@ -65,23 +66,28 @@ _prepare_test() {
 
     hash=$(echo "$spec" | md5sum | cut -c 1-8)
     # Check if there is a default BlueConfig
-    if [ -f "BlueConfig" ]; then
+    if [ -f $confFile ]; then
         # To run in parallel output and BlueConfig must be unique
-        log "Base Blueconfig copy: BlueConfig_$hash"
-        cp BlueConfig "BlueConfig_$hash"
+        if [[ ${confFile} == *json ]] ; then
+            confFile_copy=${confFile%".json"}"_"$hash".json"
+        else
+            confFile_copy=$confFile"_"$hash
+        fi
+        log "Base $confFile file copy: $confFile_copy"
+        cp $confFile $confFile_copy
 
-        configsrc=("BlueConfig_$hash")
-        blueconfigs["BlueConfig_$hash"]="BlueConfig_$hash"  # Default
+        configsrc=("$confFile_copy")
+        blueconfigs["$confFile_copy"]="$confFile_copy"  # Default
     else
-        log_warn "Base BlueConfig file not found"
+        log_warn "Base $confFile file not found"
     fi
 
     # to support running both HOC and PY tests and keep backward compatibility
     # we introduce RUN_HOC_TESTS. When not defined the meaning is the old one, i.e.
     # RUN_PY_TESTS defines which test to run. Otherwise, variables only control their test
-    if [ "$RUN_HOC_TESTS" == "yes" ] && [ "$RUN_PY_TESTS" == "yes" ] && [ -f "BlueConfig" ]; then
+    if [ "$RUN_HOC_TESTS" == "yes" ] && [ "$RUN_PY_TESTS" == "yes" ] && [ -f "$confFile" ]; then
         # Create an additional blueconfig for a separate hoc execution
-        cp BlueConfig "BlueConfig_hoc_$hash"
+        cp $confFile "BlueConfig_hoc_$hash"
         configsrc+=( "BlueConfig_hoc_$hash" )
         blueconfigs["BlueConfig_hoc_$hash"]="BlueConfig_hoc_$hash"
     fi
@@ -90,10 +96,14 @@ _prepare_test() {
     # This is specially required for save-resume simulation tests
     for bc_script in test_*.sh; do
         [ -f $bc_script ] || break  # bash will take it literally when does not exist
-        if [ -f "BlueConfig" ]; then
-            bc_copy="BlueConfig_${bc_script:5:-3}_$hash"
-            log "BlueConfig copy for script $bc_script: $bc_copy"
-            cp BlueConfig $bc_copy
+        if [ -f "$confFile" ]; then
+            if [[ $confFile == *json ]]; then
+                bc_copy=${confFile%".json"}"_${bc_script:5:-3}_"$hash".json"
+            else
+                bc_copy=$confFile"_"${bc_script:5:-3}"_"$hash
+            fi
+            log "$confFile copy for script $bc_script: $bc_copy"
+            cp $confFile $bc_copy
             configsrc+=( "$bc_script" )
             blueconfigs[$bc_script]=$bc_copy
         else
@@ -103,16 +113,19 @@ _prepare_test() {
     done
 
     # Patch all Blueconfigs, clean exisiting res
-    log "Patching BlueConfigs OutputRoot..."
+    log "Patching $confFile OutputRoot..."
     for src in ${configsrc[@]}; do
         bc=${blueconfigs[$src]}
-        if [ $bc != "none" ]; then
-            suffix=${bc:11}
+        if [[ ${bc} == *json ]]; then
+            suffix=${bc: 18: -5}
+            _output=output_$suffix
+            sed -i "s#\"output_dir\".*#\"output_dir\": \"$_output\",#" $bc
         else
             suffix="none"
-        fi
-        _output=output_$suffix
-        if [ ${bc} != "none" ]; then
+            if [ ${bc} != "none" ]; then
+                suffix=${bc:11}
+            fi
+            _output=output_$suffix
             sed -i "s#OutputRoot.*#OutputRoot $_output#" $bc
         fi
         outputs["$src"]=$_output
@@ -282,17 +295,22 @@ run_test() (
     )
 
     if [[ $testname == "sonataconf"* ]]; then
-        run_sonataconfig $testname "$spec"
-        return
+        confFile="simulation_config.json"
+    else
+        confFile="BlueConfig"
     fi
 
     # Will set $blueconfigs and an $output associate array
-    _prepare_test
+    _prepare_test $confFile
 
     # Single BlueConfig if it's the default will run directly in foreground
     if [ ${#configsrc[@]} -eq 1 ] && [ ${blueconfigs[$configsrc]} != "none" ]; then
         run_blueconfig "$configsrc"
-        test_check_results "${outputs[$configsrc]}"
+        if [[ $configsrc == *json ]]; then
+            test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}" "${REF_RESULTS[$testname]}/out.h5"
+        else
+            test_check_results "${outputs[$configsrc]}"
+        fi
         log_ok "Tests $testname successful\n" "PASS"
         return 0
     fi
@@ -338,7 +356,11 @@ run_test() (
         echo; log "Base BlueConfig launch: $baseconfig"
         run_blueconfig "$baseconfig" # understands $DRY_RUN
         log "Simulation Finished: $baseconfig"
-        _test_results "${outputs[$baseconfig]}"
+        if [[ $baseconfig == *json ]]; then
+            _test_results "${outputs[$baseconfig]}" "${REF_RESULTS[$testname]}" "${REF_RESULTS[$testname]}/out.h5"
+        else
+            _test_results "${outputs[$baseconfig]}"
+        fi
         echo  # newline
     fi
 
@@ -359,7 +381,13 @@ run_test() (
         }
         log "Job Finished: $src"
         kill $tail_pid  # stop the corresponding tail process
-        _test_results "${outputs[$src]}"
+
+        configfile=${blueconfigs[$src]}
+        if [[ $configfile == *json ]]; then
+            _test_results "${outputs[$src]}" "${REF_RESULTS[$testname]}" "${REF_RESULTS[$testname]}/out.h5"
+        else
+            _test_results "${outputs[$src]}"
+        fi
         echo  # newline
     done
 
@@ -407,7 +435,11 @@ run_test_debug() (
 run_blueconfig() (
     set -e
     configfile=${1:-"BlueConfig"}
-    outputdir=$(blue_get OutputRoot $configfile)
+    if [[ $configfile == *json* ]] ; then
+        outputdir=$(grep -o '"output_dir": "[^"]*' $configfile | grep -o '[^"]*$')
+    else
+        outputdir=$(blue_get OutputRoot $configfile)
+    fi
     testname=${testname:-$(basename $PWD)}
     shift
 

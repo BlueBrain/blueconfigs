@@ -9,4 +9,4 @@ blue_set RunMode LoadBalance $blueconfig
 rm -rf cx*
 
 # Simulate with 8 ranks (Multisplit is still troublesome with ranks >> cells)
-n=8 run_blueconfig $blueconfig
+run_blueconfig $blueconfig

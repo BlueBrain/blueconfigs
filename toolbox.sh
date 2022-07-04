@@ -101,3 +101,11 @@ configfile_bk() {
     blueconfig="${f0}.copy"
     cp "$f0" "$blueconfig"
 }
+
+# Copies the sonata configfile to avoid messing the original
+# Sets new variable $configfile
+sonata_configfile_bk() {
+    local f0="${1:-simulation_config.json}"
+    blueconfig=${f0%".json"}".copy.json"
+    cp "$f0" "$blueconfig"
+}
