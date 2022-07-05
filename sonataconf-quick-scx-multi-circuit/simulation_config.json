@@ -15,7 +15,7 @@
   "output": {
     "output_dir": "$OUTPUT_DIR/output_sonata",
     "spikes_file": "out.h5",
-    "spikes_sort_order": "time"
+    "spikes_sort_order": "by_time"
   },
   "inputs": {
     "hypamp_mosaic": {

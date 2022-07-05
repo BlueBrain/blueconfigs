@@ -7,7 +7,8 @@
     "run": {
         "dt": 0.025,
         "forward_skip": 5001,
-        "tstop": 20.0
+        "tstop": 20.0,
+        "random_seed": 0
     },
     "network": "/gpfs/bbp.cscs.ch/project/proj12/SIT/thalamus_sonata/circuit_sonata.json",
     "node_set": "small",

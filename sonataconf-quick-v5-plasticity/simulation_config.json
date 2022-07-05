@@ -15,7 +15,7 @@
   "output": {
     "output_dir": "$OUTPUT_DIR",
     "spikes_file": "out.h5",
-    "spikes_sort_order": "time"
+    "spikes_sort_order": "by_time"
   },
   "inputs": {
     "spikeReplayIntoUniverse": {
@@ -57,7 +57,7 @@
       "source": "Excitatory",
       "target": "Excitatory",
       "weight": 1.0,
-      "mod_override": "GluSynapseLegacy",
+      "modoverride": "GluSynapseLegacy",
       "synapse_configure": "cao_CR_GluSynapse = 1.2 %s.Use_d *= 0.158401372855 %s.Use_p *= 0.158401372855"
     },
     "ConL6Exc-Uni": {
@@ -186,7 +186,7 @@
     "SummationAllIMembrane": {
       "cells": "miniColumn",
       "variable_name": "i_membrane",
-      "type": "Summation",
+      "type": "summation",
       "dt": 0.1,
       "start_time": 0.025,
       "end_time": 100,
@@ -195,8 +195,8 @@
     },
     "SummationSomaCurrents": {
       "cells": "miniColumn",
-      "variable_name": "i_membrane IClamp",
-      "type": "Summation",
+      "variable_name": "i_membrane, IClamp",
+      "type": "summation",
       "dt": 0.1,
       "start_time": 0.025,
       "end_time": 100,
