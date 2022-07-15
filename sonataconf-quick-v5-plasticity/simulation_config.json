@@ -8,6 +8,21 @@
     "dt": 0.025,
     "random_seed": 767740
   },
+  "conditions": {
+    "v_init": -65,
+    "randomize_gaba_rise_time": true,
+    "mechanisms": {
+        "ProbAMPANMDA_EMS": {
+             "init_depleted": false
+         },
+         "ProbGABAAB_EMS" : {
+             "init_depleted": false
+         },
+         "GluSynapse": {
+             "init_depleted": false
+         }
+    }
+ },
   "target_simulator": "NEURON",
   "network": "circuit_config.json",
   "node_sets_file": "node_sets.json",

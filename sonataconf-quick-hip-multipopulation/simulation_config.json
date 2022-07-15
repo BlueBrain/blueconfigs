@@ -8,6 +8,10 @@
     "random_seed": 264118,
     "forward_skip" : 5000
   },
+  "conditions": {
+    "v_init": -65,
+    "randomize_gaba_rise_time": true
+  },
   "target_simulator": "NEURON",
   "network": "circuit_config.json",
   "node_sets_file": "node_sets.json",

@@ -10,6 +10,10 @@
         "tstop": 20.0,
         "random_seed": 0
     },
+    "conditions": {
+        "v_init": -65,
+        "randomize_gaba_rise_time": true
+    },
     "network": "/gpfs/bbp.cscs.ch/project/proj12/SIT/thalamus_sonata/circuit_sonata.json",
     "node_set": "small",
     "node_sets_file": "node_sets.json",
@@ -61,7 +65,7 @@
             "delay": 0.0,
             "duration": 40000.0,
             "input_type": "spikes",
-            "spike_file": "/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/simulation-sonataconf/ml_noise_rawgid.dat",
+            "spike_file": "$INPUT_DIR/ml_noise_rawgid.dat",
             "source": "ML_afferents",
             "node_set": "Mosaic"
         },
@@ -70,7 +74,7 @@
             "delay": 0.0,
             "duration": 40000.0,
             "input_type": "spikes",
-            "spike_file": "/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/simulation-sonataconf/ct_noise_rawgid.dat",
+            "spike_file": "$INPUT_DIR/ct_noise_rawgid.dat",
             "source": "CT_afferents",
             "node_set": "Mosaic"
         }

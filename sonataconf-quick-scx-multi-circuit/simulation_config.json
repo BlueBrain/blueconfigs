@@ -8,6 +8,10 @@
     "dt": 0.025,
     "random_seed": 1
   },
+  "conditions": {
+    "v_init": -65,
+    "randomize_gaba_rise_time": true
+  },
   "target_simulator": "NEURON",
   "network": "circuit_sonata.json",
   "node_sets_file": "node_sets.json",
