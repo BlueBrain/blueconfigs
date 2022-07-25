@@ -1,9 +1,15 @@
 Run Default
 {
-        CircuitPath <NONE>
+        CircuitPath usecase3
+        MorphologyPath usecase3/components/CircuitA/morphologies/asc
+        MorphologyType asc
+        METypePath usecase3/components/CircuitA/hoc
+        CellLibraryFile usecase3/nodes_A.h5
+        nrnPath <NONE>
+        CircuitTarget Mosaic_A
 
         Simulator NEURON
-        BaseSeed 75599
+        BaseSeed 1
         RNGMode Random123
 
         CurrentDir .
@@ -11,8 +17,7 @@ Run Default
         TargetFile user.target
 
         RunMode RR
-        CircuitTarget cells2377
-        Duration 1000
+        Duration 50
         Dt 0.025
 }
 
@@ -21,16 +26,28 @@ Circuit PointNeurons
     Engine PointNeuron
     CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/nodes
     CellLibraryFile /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/nodes/whole_brain_model_SONATA.h5
-    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/nodes/whole_brain_model_SONATA.h5
-    CircuitTarget cells2377
+    #nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/nodes/whole_brain_model_SONATA.h5
+    nrnPath <NONE>
+    CircuitTarget Single
 }
 
-Projection proj1302
+#Projection proj1302
+#{
+#    Path /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/proj/proj_SONATA.h5
+#    Destination default:cells2377
+#    Source excite1302
+#    Type Point
+#}
+
+Projection projDetailedToPoint
 {
-    Path /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/proj/proj_SONATA.h5
-    Destination default:cells2377
-    Source excite1302
+    Path ./edges_A_point.h5
     Type Point
+}
+
+Projection projPointToDetailed
+{
+    Path ./edges_point_A.h5
 }
 
 Report adex
@@ -45,33 +62,47 @@ Report adex
     EndTime 2100
 }
 
-Stimulus spikeReplay
-{
-    Mode Current
-    Delay 0
-    Duration 100000000
-    Pattern SynapseReplay
-    SpikeFile stim.dat
-}
+#Stimulus spikeReplay
+#{
+#    Mode Current
+#    Delay 0
+#    Duration 100000000
+#    Pattern SynapseReplay
+#    SpikeFile stim.dat
+#}
 
-StimulusInject spikeReplayIntocells2377
-{
-    Stimulus spikeReplay
-    Source default:excite1302
-    Target default:cells2377
-    Type Point
-}
+#StimulusInject spikeReplayIntocells2377
+#{
+#    Stimulus spikeReplay
+#    Source default:excite1302
+#    Target default:cells2377
+#    Type Point
+#}
 
-Connection excite1302tocells2377
+Connection AtoPoint
 {
-    Source default:excite1302
-    Destination default:cells2377
+    Source NodeA:Mosaic_A
+    Destination default:Single
     Weight 1
 }
 
-Connection cells2377tocells2377
+Connection PointToA
 {
-    Source default:cells2377
-    Destination default:cells2377
+    Source default:Single
+    Destination NodeA:Mosaic_A
     Weight 1
 }
+
+#Connection excite1302tocells2377
+#{
+#    Source default:excite1302
+#    Destination default:cells2377
+#    Weight 1
+#}
+
+#Connection cells2377tocells2377
+#{
+#    Source default:cells2377
+#    Destination default:cells2377
+#    Weight 1
+#}

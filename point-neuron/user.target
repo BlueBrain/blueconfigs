@@ -1,3 +1,13 @@
+Target Cell Mosaic_A
+{
+  a1 a2 a3
+}
+
+Target Cell Mosaic_B
+{
+  a1 a2
+}
+
 Target Compartment Single_synapse
 {
 a36201
