@@ -51,6 +51,8 @@ bb5_run() (
         export SALLOC_PARTITION="prod"
     fi
 
+    export SALLOC_PARTITION="prod"
+
     N=${N:-1}
     if [ -n "$n" ]; then
         SALLOC_OPTS="$SALLOC_OPTS -n$n --reservation=shm_hpc"
