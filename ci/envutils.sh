@@ -53,9 +53,9 @@ bb5_run() (
 
     N=${N:-1}
     if [ -n "$n" ]; then
-        SALLOC_OPTS="$SALLOC_OPTS -n$n"
+        SALLOC_OPTS="$SALLOC_OPTS -n$n --reservation=shm_hpc"
     else
-        SALLOC_OPTS="$SALLOC_OPTS --ntasks-per-node=36 --exclusive --mem=0"
+        SALLOC_OPTS="$SALLOC_OPTS --ntasks-per-node=36 --exclusive --mem=0 --reservation=shm_hpc"
     fi
     if [ -z "$SALLOC_ACCOUNT" ]; then
         if [ -n "$SLURM_JOB_ACCOUNT" ]; then
