@@ -11,7 +11,7 @@ export OMP_NUM_THREADS=1
 #  - SHM file transfer on a single pass
 #  - SHM file transfer with multicycle model build
 
-module load py-neurodamus
+module load py-neurodamus py-bluepy
 
 # Test the default execution with Neurodamus-py and SHM file transfer enabled
 blue_set Simulator CORENEURON ${blueconfig}

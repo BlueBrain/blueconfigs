@@ -33,7 +33,7 @@ test_check_results "${outputdir}_bc" "${REF_RESULTS["quick-v5-plasticity"]}"
 # Test the multicycle execution with Neurodamus-py and CLI opt, n_steps=3
 # Change CircuitTarget to 50 cells so that No.(cells/cycle) << No.(ranks) to
 # test the creation of dummy cells for coreneuron data
-module load py-neurodamus
+module load py-neurodamus py-bluepy
 
 blue_set Simulator CORENEURON ${blueconfig}_py
 blue_set CircuitTarget mini50 ${blueconfig}_py

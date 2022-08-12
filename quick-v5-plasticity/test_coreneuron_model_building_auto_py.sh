@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-module load py-neurodamus
+module load py-neurodamus py-bluepy
 module list
 
 source ../toolbox.sh

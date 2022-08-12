@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-module load intel-oneapi-compilers py-neurodamus
+module load intel-oneapi-compilers py-neurodamus py-bluepy
 module list
 
 source ../toolbox.sh

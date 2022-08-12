@@ -34,7 +34,7 @@ rm -rf "$outputdir"
 #######################################################
 
 echo ">> Test CoreNeuron data removal with neurodamus-py"
-module load py-neurodamus
+module load py-neurodamus py-bluepy
 RUN_PY_TESTS=yes run_blueconfig $blueconfig
 
 if [ -d "$coreneuron_data" ]; then
