@@ -5,6 +5,7 @@ workflow:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "pipeline"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
     - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
       when: never
     - if: '$CI_COMMIT_BRANCH'
@@ -28,7 +29,8 @@ variables:
   bb5_cpus_per_task: 2
   SALLOC_ACCOUNT: proj9998  # salloc won't require `-A` param
   TEST_VERSIONS:
-    value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify ncx_ngv"
+    # value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify ncx_ngv"
+    value: "ncx_ngv"
     description: 'Which version of the package to build & test.'
   SPACK_BRANCH:
     description: 'Which branch of spack to use for the build.'
@@ -140,50 +142,50 @@ build_neurodamus:
   stage: quick_tests
 
 
-q_neocortex:
-  extends: .nd_quick_test
-  parallel:
-    matrix:
-      - ND_VERSION: neocortex
-        TESTNAME: [quick-v5-gaps, scx-1k-v5, quick-v6, quick-v5-multisplit, point-neuron]
-      - ND_VERSION: neocortex
-        TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
-      - ND_VERSION: ncx_plasticity
-        TESTNAME: [quick-v5-plasticity, sscx-v7-plasticity]
+# q_neocortex:
+#   extends: .nd_quick_test
+#   parallel:
+#     matrix:
+#       - ND_VERSION: neocortex
+#         TESTNAME: [quick-v5-gaps, scx-1k-v5, quick-v6, quick-v5-multisplit, point-neuron]
+#       - ND_VERSION: neocortex
+#         TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
+#       - ND_VERSION: ncx_plasticity
+#         TESTNAME: [quick-v5-plasticity, sscx-v7-plasticity]
 
-q_hippocampus:
-  extends: .nd_quick_test
-  parallel:
-    matrix:
-      - ND_VERSION: hippocampus
-        TESTNAME: [quick-hip-projSeed2, quick-hip-multipopulation, quick-hip-delayconn]
+# q_hippocampus:
+#   extends: .nd_quick_test
+#   parallel:
+#     matrix:
+#       - ND_VERSION: hippocampus
+#         TESTNAME: [quick-hip-projSeed2, quick-hip-multipopulation, quick-hip-delayconn]
 
-q_thalamus:
-  extends: .nd_quick_test
-  parallel:
-    matrix:
-      - ND_VERSION: thalamus
-        TESTNAME: thalamus
+# q_thalamus:
+#   extends: .nd_quick_test
+#   parallel:
+#     matrix:
+#       - ND_VERSION: thalamus
+#         TESTNAME: thalamus
 
-q_mousify:
-  extends: .nd_quick_test
-  parallel:
-    matrix:
-      - ND_VERSION: mousify
-        TESTNAME: quick-mousify-sonata
+# q_mousify:
+#   extends: .nd_quick_test
+#   parallel:
+#     matrix:
+#       - ND_VERSION: mousify
+#         TESTNAME: quick-mousify-sonata
 
 q_sonata_config:
   extends: .nd_quick_test
   parallel:
     matrix:
-      - ND_VERSION: ncx_plasticity
-        TESTNAME: [sonataconf-quick-v5-plasticity]
-      - ND_VERSION: neocortex
-        TESTNAME: [sonataconf-quick-scx-multi-circuit]
-      - ND_VERSION: hippocampus
-        TESTNAME: [sonataconf-quick-hip-multipopulation]
-      - ND_VERSION: thalamus
-        TESTNAME: [sonataconf-quick-thalamus]
+      # - ND_VERSION: ncx_plasticity
+      #   TESTNAME: [sonataconf-quick-v5-plasticity]
+      # - ND_VERSION: neocortex
+      #   TESTNAME: [sonataconf-quick-scx-multi-circuit]
+      # - ND_VERSION: hippocampus
+      #   TESTNAME: [sonataconf-quick-hip-multipopulation]
+      # - ND_VERSION: thalamus
+      #   TESTNAME: [sonataconf-quick-thalamus]
       - ND_VERSION: ncx_ngv
         TESTNAME: [sonataconf-quick-ngv-usecase5]
 
@@ -198,7 +200,7 @@ q_sonata_config:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $PY_NEURODAMUS_BRANCH'
       when: manual
       allow_failure: true
-    - when: on_success
+  #  - when: on_success
 
 neocortex:
   extends: .nd_medium_test
