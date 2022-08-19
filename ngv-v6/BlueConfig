@@ -114,7 +114,7 @@ StimulusInject ThresholdIntoExc
     Target   pre
 }
 
-Report voltage
+#Report voltage
 {
         Target select
           Type compartment
@@ -126,7 +126,7 @@ Report voltage
        EndTime 1000
 }
 
-Report rcai_soma
+#Report rcai_soma
 {
         Target GLIA:Astrocytes
           Type compartment
@@ -141,7 +141,7 @@ Report rcai_soma
 
 
 
-Report rcai_compart
+#Report rcai_compart
 {
         Target GLIA:AllCmpAstrocytes
           Type compartment
