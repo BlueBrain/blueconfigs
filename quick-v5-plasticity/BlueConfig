@@ -67,14 +67,14 @@ Report compartment_SONATA
              EndTime 1000
 }
 
-#Report rho
+Report rho
 {
               Target AllCompartments_mc2_Excitatory
                 Type Synapse
-            ReportOn GluSynapse.Rho_GB
+            ReportOn GluSynapse.rho_GB
                 Unit nd
-              Format Bin
-                  Dt 100.0
+              Format SONATA
+                  Dt 1.0
            StartTime 0.0
              EndTime 1000
 }
