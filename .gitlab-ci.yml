@@ -247,12 +247,12 @@ long_tests:
   parallel:
     matrix:
       - ND_VERSION: ncx_plasticity
-        TESTNAME: quick-hip-multipopulation
+        TESTNAME:  scx-v5-plasticity
         SIM_TARGET: mc0_Column
       - ND_VERSION: hippocampus
         TESTNAME: quick-hip-multipopulation
         SIM_TARGET: hippocampus_neurons:Mosaic
-      - ND_VERSION: hippocampus
+      - ND_VERSION: mousify
         TESTNAME: mousify
         SIM_TARGET: Layer45
       - ND_VERSION: thalamus
