@@ -1,5 +1,11 @@
 {
     "Mosaic":{
       "population": "SSCX_neurons"
-    }
+    },
+    "Mosaic_0": {
+        "population": "SSCX_neurons",
+        "node_id": [
+          0
+        ]
+      }
 }  
