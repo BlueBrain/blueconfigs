@@ -1,0 +1,37 @@
+{
+  "manifest": {
+    "$BASE_DIR": "/gpfs/bbp.cscs.ch/project/proj16/magkanar/MMB2022-218/blueconfigs/quick-single-compartment",
+    "$COMPONENT_DIR": "$BASE_DIR",
+    "$NETWORK_DIR": "$BASE_DIR"
+  },
+  "components": {
+    "morphologies_dir": "$COMPONENT_DIR/emodel=cADpyr_L5TPC__etype=cADpyr__species=mouse__brain_region=SSCX__seed=5",
+    "mechanisms_dir": "$COMPONENT_DIR/mechanisms_dir",
+    "biophysical_neuron_models_dir": "$COMPONENT_DIR/emodel=cADpyr_L5TPC__etype=cADpyr__species=mouse__brain_region=SSCX__seed=5"
+  },
+  "node_sets_file": "$BASE_DIR/node_sets.json",
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$BASE_DIR/emodel=cADpyr_L5TPC__etype=cADpyr__species=mouse__brain_region=SSCX__seed=5/nodes_small.h5",
+        "node_types_file": null,
+        "populations": {
+          "SSCX_neurons": {
+            "type": "biophysical"
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "edges_file": "$NETWORK_DIR/sscx_edges.h5",
+        "edge_types_file": null,
+        "populations":{
+          "SSCX_neurons__SSCX_neurons__chemical": {
+            "type": "chemical"
+          }
+        }
+      }
+    ]
+  }
+}

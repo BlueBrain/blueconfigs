@@ -1,0 +1,49 @@
+{
+  "manifest": {
+    "$CIRCUIT_DIR": "/gpfs/bbp.cscs.ch/project/proj16/magkanar/MMB2022-218/blueconfigs/sonataconf-single-compartment-large"
+  },
+  "run": {
+    "tstop": 100.0,
+    "dt": 0.025,
+    "random_seed": 264118
+  },
+  "target_simulator": "CORENEURON",
+  "network": "circuit_config.json",
+  "node_sets_file": "node_sets.json",
+  "node_set": "Mosaic",
+  "output": {
+    "output_dir": "output_sonata",
+    "spikes_file": "out.h5",
+    "spikes_sort_order": "by_time"
+  },
+  "inputs": {
+    "holding_current": {
+      "module": "linear",
+      "input_type": "current_clamp",
+      "amp_start": -0.03515624999999999,
+      "delay": 0.0,
+      "duration": 500.0,
+      "node_set": "Mosaic_0"
+    },
+    "threshold_current": {
+      "module": "linear",
+      "input_type": "current_clamp",
+      "amp_start": 0.15312774458632922,
+      "delay": 100.0,
+      "duration": 500.0,
+      "node_set": "Mosaic_0"
+    }
+  },
+  "reports": {
+    "soma": {
+      "cells": "Mosaic",
+      "variable_name": "v",
+      "type": "compartment",
+      "dt": 0.1,
+      "sections": "soma",
+      "compartments": "center",
+      "start_time": 0,
+      "end_time": 100.0
+    }
+  }
+}
