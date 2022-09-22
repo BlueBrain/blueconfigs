@@ -209,7 +209,6 @@ proc geom_nseg_fixed(/* chunkSize */) { local secIndex, chunkSize
     nseg = 1 + 2*int(L/chunkSize)
     segCounts.x[secIndex] = nseg
     secIndex += 1
-    printf("secIndex: %d nseg: %d\n", secIndex, nseg)
   }
 }
 
@@ -230,9 +229,7 @@ proc geom_nsec() { local nSec
   forsec all {
     segCounts.x[nSec] = nseg
     nSec += 1
-    printf("nSec: %d nseg: %d\n", nSec, nseg)
   }
-  printf("nSec of geom_nsec = %d\n", nSec)
 }
 
 /*
