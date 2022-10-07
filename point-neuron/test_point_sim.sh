@@ -17,5 +17,5 @@ cp hippocampus/mod/adex.mod mod
 echo adex.mod > mod/neuron_only_mods.txt
 build_neurodamus.sh mod
 
-bb5_run ./x86_64/special -mpi -python $NEURODAMUS_PYTHON/init.py --configFile=$blueconfig --verbose
+bb5_run ./x86_64/special -mpi -python $NEURODAMUS_PYTHON/init.py --configFile=$blueconfig --enable-shm=OFF --verbose
 echo "/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-point/simulation/out.h5" > $outputdir/ref_spikes.txt

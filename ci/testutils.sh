@@ -434,7 +434,7 @@ run_blueconfig() (
             log_error "NEURODAMUS_PYTHON var is not set. Unknown location of init.py"
             return 1
         fi
-        INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" --verbose "$@")
+        INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" "--enable-shm=${SHM_ENABLED:-OFF}" --verbose "$@")
     else
         INIT_ARGS=("-c" "{strdef configFile configFile=\"$configfile\"}" -mpi "$HOC_LIBRARY_PATH/init.hoc" "$@")
     fi
@@ -498,7 +498,7 @@ run_sonataconfig() (
     fi
 
     log "[TEST RUN] Launching test $testname ($spec) #$hash"
-    INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" --verbose)
+    INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" "--enable-shm=${SHM_ENABLED:-OFF}" --verbose)
 
     N=${N:-$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2)} \
     bb5_run special "${INIT_ARGS[@]}"
