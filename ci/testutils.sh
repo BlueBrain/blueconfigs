@@ -498,7 +498,7 @@ run_sonataconfig() (
     fi
 
     log "[TEST RUN] Launching test $testname ($spec) #$hash"
-    INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" "--enable-shm=${SHM_ENABLED:-OFF}" --verbose)
+    INIT_ARGS=("-mpi" "-python" "$NEURODAMUS_PYTHON/init.py" "--configFile=$configfile" "--enable-shm=${SHM_ENABLED:-OFF}" --verbose --model-stats)
 
     N=${N:-$(set -x; [[ $testname =~ quick* ]] && echo 1 || echo 2)} \
     bb5_run special "${INIT_ARGS[@]}"
