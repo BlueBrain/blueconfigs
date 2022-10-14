@@ -1,6 +1,6 @@
 def TESTS = [
     neocortex: ['scx-v5-gapjunctions', 'scx-2k-v6', 'quick-v5-multisplit', 'scx-1k-v5', 'scx-1k-v5-newparams', 'scx-v5-bonus-minis'],
-    ncx_bare: ['quick-v5-gaps', 'quick-v6', 'point-neuron'],
+    ncx_bare: ['quick-v5-gaps', 'quick-v6'],
     ncx_plasticity: ['scx-v5-plasticity', 'quick-v5-plasticity', 'sscx-v7-plasticity'],
     hippocampus: ['hip-v6', 'quick-hip-multipopulation', 'quick-hip-delayconn'],
     thalamus: ['thalamus'],

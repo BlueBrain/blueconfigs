@@ -142,7 +142,7 @@ q_neocortex:
   parallel:
     matrix:
       - ND_VERSION: neocortex
-        TESTNAME: [quick-v5-gaps, scx-1k-v5, quick-v6, quick-v5-multisplit, point-neuron]
+        TESTNAME: [quick-v5-gaps, scx-1k-v5, quick-v6, quick-v5-multisplit]
       - ND_VERSION: neocortex
         TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
       - ND_VERSION: ncx_plasticity
