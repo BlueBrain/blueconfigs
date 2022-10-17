@@ -16,34 +16,15 @@ blue_comment_section Report $blueconfig
 
 echo "
 >> Setting Target to MiniColumn_1"
-rm -rf sim_conf/cx* mcomplex.dat
+rm -rf sim_conf/cx* sim_conf/_loadbal_* mcomplex.dat
 blue_set CircuitTarget MiniColumn_1 $blueconfig
-run_blueconfig $blueconfig | check_prints "Could not reuse load balance data" "INSTANTIATING"
-
-echo "
->> Unsetting Target in $blueconfig. Wont be able to resume"
-blue_comment CircuitTarget $blueconfig
 run_blueconfig $blueconfig | check_prints "Could not reuse load balance data" "INSTANTIATING"
 
 echo "
 >> Setting Target to Small. Must reuse info from any previous"
 blue_set CircuitTarget Small $blueconfig
-run_blueconfig $blueconfig | check_prints "Target Small is a subset of the target" "INSTANTIATING"
-
-# With multi-split and Prospective hosts
-echo "
->> Recreating loadBalance info for target Small with MultiSplit and ProspectiveHosts"
-blue_set RunMode LoadBalance $blueconfig
-blue_set ProspectiveHosts 50 $blueconfig
-rm -rf sim_conf/cx*
-run_blueconfig $blueconfig | check_prints "at least one cell is broken into" "INSTANTIATING"
-
-echo "
->> Setting target to verySmall, should reuse multisplit LoadBal"
-blue_set CircuitTarget verySmall $blueconfig
-run_blueconfig $blueconfig | check_prints "at least one cell is broken into" "INSTANTIATING"
+N=1 run_blueconfig $blueconfig | check_prints "Target Small is a subset of the target" "INSTANTIATING"
 
 #skip result check
 mkdir -p "$outputdir"
 touch "$outputdir/.exception.expected"
-
