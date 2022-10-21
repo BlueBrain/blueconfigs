@@ -101,3 +101,20 @@ configfile_bk() {
     blueconfig="${f0}.copy"
     cp "$f0" "$blueconfig"
 }
+
+# Copies the sonata configfile to avoid messing the original
+# Sets new variable $configfile
+sonata_configfile_bk() {
+    local f0="${1:-simulation_config.json}"
+    sonataconfig=${f0%".json"}".copy.json"
+    cp "$f0" "$sonataconfig"
+}
+
+# Sets "entry" of SONATA file "sonataconf" to "newval".
+sonataconf_set() (
+    set -ex
+    entry=$1
+    newval=$2
+    sonataconf="${3:-simulation_config.json}"
+    sed -i "s#\"${entry}\": \".*\"#\"${entry}\": \"${newval}\"#g" "$sonataconf"
+)
