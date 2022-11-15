@@ -86,6 +86,8 @@ setup_spack:
   before_script:
     - !reference [.spack_setup, before_script]
     # Check commit msg as well for instructions to override spack branches
+    - echo "$SPACK_BRACH"
+    - echo "$NEURODAMUS_HIPPOCAMPUS_BRANCH"
     - if [ -n "$PARENT_COMMIT_MESSAGE" ]; then
     -   echo "Using parent commit message to look for branches $PARENT_COMMIT_MESSAGE"
     -   CI_COMMIT_MESSAGE="$PARENT_COMMIT_MESSAGE"
