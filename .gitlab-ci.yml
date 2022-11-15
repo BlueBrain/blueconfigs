@@ -106,6 +106,7 @@ build_neurodamus:
       # Tell Git how to re-write BBP GitLab URLs to use a token instead of SSH
     - !reference [.bbp_gitlab_access, script]
     - module purge && unset MODULEPATH
+    - export MODULEPATH=/gpfs/bbp.cscs.ch/ssd/apps/bsd/modules/_meta
     - export
     - source ./.tests_setup.sh
     # Needs to be new enough for rewriting to work.
