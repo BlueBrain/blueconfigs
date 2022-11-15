@@ -96,6 +96,7 @@ setup_spack:
     - fi
     - set +o pipefail
     - grep '^[[:alnum:]_]*_BRANCH=' <<< "$CI_COMMIT_MESSAGE" | while read -r l; do echo export $l ; done > commit_variables.env
+    - cat commit_variables.env
     - if [ -n "$SPACK_BRANCH" ]; then
     -   echo "SPACK_BRANCH=$SPACK_BRANCH" >> commit_variables.env
     - fi
