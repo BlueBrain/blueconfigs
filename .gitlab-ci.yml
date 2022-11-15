@@ -70,6 +70,8 @@ variables:
     description: 'RUN weekly large simulation tests with Python Neuromdamus'
   SKIP_DAILY_TESTS:
     description: 'Skip daily tests (mostly for debugging long tests)'
+  PARENT_SPACK_BRANCH:
+    description: 'Spack branch passed by parent pipelines'
 
 default:
   tags:
