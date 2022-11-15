@@ -86,12 +86,9 @@ setup_spack:
   before_script:
     - !reference [.spack_setup, before_script]
     # Check commit msg as well for instructions to override spack branches
-    - echo "$TEST_VERSIONS"
-    - echo "$SPACK_BRACH"
-    - echo "$NEURODAMUS_HIPPOCAMPUS_BRANCH"
-    - if [ -n "$PARENT_COMMIT_MESSAGE" ]; then
-    -   echo "Using parent commit message to look for branches $PARENT_COMMIT_MESSAGE"
-    -   CI_COMMIT_MESSAGE="$PARENT_COMMIT_MESSAGE"
+    - if [ -n "$PARENT_SPACK_BRANCH" ]; then
+    -   echo "Using parent SPACK_BRANCH instead the one overwritten by .spack_setup"
+    -   SPACK_BRANCH="$PARENT_SPACK_BRANCH"
     - fi
     - set +o pipefail
     - grep '^[[:alnum:]_]*_BRANCH=' <<< "$CI_COMMIT_MESSAGE" | while read -r l; do echo export $l ; done > commit_variables.env
