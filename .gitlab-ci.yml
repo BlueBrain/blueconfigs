@@ -90,6 +90,7 @@ setup_spack:
   before_script:
     - !reference [.spack_setup, before_script]
     # Check commit msg as well for instructions to override spack branches
+    - echo "$PARENT_COMMIT_MESSAGE"
     - if [ -n "$PARENT_COMMIT_MESSAGE" ]; then
     -   echo "Using parent commit message to look for branches $PARENT_COMMIT_MESSAGE"
     -   CI_COMMIT_MESSAGE="$PARENT_COMMIT_MESSAGE"
