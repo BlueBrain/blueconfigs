@@ -15,7 +15,7 @@ include:
     file:
       - spack-build-components.gitlab-ci.yml
       - bbp-gitlab-access.yml
-    ref: '$GITLAB_PIPELINES_BRANCH'
+    ref: magkanar/debugging
 
 stages:
   - prepare_env
