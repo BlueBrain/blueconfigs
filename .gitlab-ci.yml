@@ -70,8 +70,6 @@ variables:
     description: 'RUN weekly large simulation tests with Python Neuromdamus'
   SKIP_DAILY_TESTS:
     description: 'Skip daily tests (mostly for debugging long tests)'
-  PARENT_SPACK_BRANCH:
-    description: 'Spack branch passed by parent pipelines'
 
 default:
   tags:
@@ -84,14 +82,9 @@ setup_spack:
     # BLUECONFIGS_BRANCH=main is set as a group-level variable for hpc/sim, but
     # there is no blueconfigs package in Spack. This tells the spack_setup job
     # not to try and modify the non-existent blueconfigs package.
-    SPACK_SETUP_IGNORE_PACKAGE_VARIABLES: "BLUECONFIGS PARENT_SPACK"
+    SPACK_SETUP_IGNORE_PACKAGE_VARIABLES: BLUECONFIGS
   before_script:
     - !reference [.spack_setup, before_script]
-    # Check commit msg as well for instructions to override spack branches
-    - if [[ -n "$PARENT_SPACK_BRANCH" ]]; then
-    -   echo "Using parent SPACK_BRANCH instead the one overwritten by .spack_setup"
-    -   SPACK_BRANCH="$PARENT_SPACK_BRANCH"
-    - fi
     - set +o pipefail
     - grep '^[[:alnum:]_]*_BRANCH=' <<< "$CI_COMMIT_MESSAGE" | while read -r l; do echo export $l ; done > commit_variables.env
     - set -o pipefail
