@@ -88,7 +88,7 @@ setup_spack:
   before_script:
     - !reference [.spack_setup, before_script]
     # Check commit msg as well for instructions to override spack branches
-    - if [ -n "$PARENT_SPACK_BRANCH" ]; then
+    - if [[ -n "$PARENT_SPACK_BRANCH" ]]; then
     -   echo "Using parent SPACK_BRANCH instead the one overwritten by .spack_setup"
     -   SPACK_BRANCH="$PARENT_SPACK_BRANCH"
     - fi
