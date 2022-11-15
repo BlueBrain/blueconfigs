@@ -70,6 +70,10 @@ variables:
     description: 'RUN weekly large simulation tests with Python Neuromdamus'
   SKIP_DAILY_TESTS:
     description: 'Skip daily tests (mostly for debugging long tests)'
+  PARENT_COMMIT_MESSAGE:
+    description: 'Commit message of project from which blueconfigs got started'
+  SPACK_ENV_FILE_URL:
+    description: 'Spack configuration file to be passed by parent pipelines'
 
 default:
   tags:
