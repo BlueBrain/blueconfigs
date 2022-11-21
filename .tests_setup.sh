@@ -22,7 +22,7 @@ DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
 BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug"}"
 DEFAULT_VARIANT="+coreneuron+synapsetool"
-CORENRN_DEP="^coreneuron build_type=Debug"
+CORENRN_DEP=""
 NEURODAMUS_PY_VERSION="py-neurodamus+all_deps @develop"
 _BASE_OPTIONS="$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
 
