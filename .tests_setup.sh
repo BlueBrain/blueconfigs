@@ -20,8 +20,8 @@ log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRA
 BUILD_VERSION="@develop%intel"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
-BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug~coreneuron build_type=Debug"}"
-DEFAULT_VARIANT="~coreneuron+synapsetool"
+BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug+coreneuron build_type=Debug"}"
+DEFAULT_VARIANT="+coreneuron+synapsetool"
 CORENRN_DEP=""
 NEURODAMUS_PY_VERSION="py-neurodamus+all_deps @develop"
 _BASE_OPTIONS="$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
@@ -31,7 +31,7 @@ log "DATADIR=$DATADIR; BASE_OPTIONS=$_BASE_OPTIONS; BUILD_OPTIONS=$BUILD_OPTIONS
 declare -A VERSIONS
 # Master is a plain v5+v6 version
 VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION ~plasticity$_BASE_OPTIONS"
-VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity~coreneuron+synapsetool$EXTRA_VARIANT"
+VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity+coreneuron+synapsetool$EXTRA_VARIANT"
 VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity$_BASE_OPTIONS"
 VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $_BASE_OPTIONS"
 VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $_BASE_OPTIONS"
