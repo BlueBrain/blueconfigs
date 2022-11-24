@@ -191,11 +191,6 @@ q_sonata_config:
 .nd_medium_test:
   extends: .neurodamus_test
   stage: medium_size_tests
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $PY_NEURODAMUS_BRANCH'
-      when: manual
-      allow_failure: true
-    - when: on_success
 
 neocortex:
   extends: .nd_medium_test
