@@ -10,7 +10,7 @@ source ./toolbox.sh
 # Test parameters eventually defined by Jenkins (env vars)
 set +x
 export WORKSPACE=${WORKSPACE:-"`pwd`"}
-export TEST_VERSIONS=${TEST_VERSIONS:-"neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify ncx_ngv"}
+export TEST_VERSIONS=${TEST_VERSIONS:-"ncx_bare"}
 export SPACK_BRANCH=${SPACK_BRANCH:-""}
 export RUN_PY_TESTS=${RUN_PY_TESTS:-"no"}
 export DRY_RUN=${DRY_RUN:-""}  # Dont actually run sims. Default is false
@@ -20,8 +20,8 @@ log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRA
 BUILD_VERSION="@develop%intel"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
-BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug build_type=Debug"}"
-DEFAULT_VARIANT="+coreneuron+synapsetool"
+BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug~coreneuron build_type=Debug"}"
+DEFAULT_VARIANT="~coreneuron+synapsetool"
 CORENRN_DEP=""
 NEURODAMUS_PY_VERSION="py-neurodamus+all_deps @develop"
 _BASE_OPTIONS="$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
@@ -41,7 +41,8 @@ VERSIONS[ncx_ngv]="neurodamus-neocortex$BUILD_VERSION +ngv+synapsetool~plasticit
 # list of simulations to run
 declare -A TESTS
 TESTS[neocortex]="scx-v5 scx-v6 scx-1k-v5 scx-1k-v5-newparams scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis quick-1k-v5-nodesets quick-scx-multi-circuit"
-TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit point-neuron"
+#TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit point-neuron"
+TESTS[ncx_bare]="point-neuron"
 TESTS[ncx_plasticity]="scx-v5-plasticity quick-v5-plasticity sscx-v7-plasticity quick-v7-plasticity"
 TESTS[hippocampus]="hip-v6 hip-v6-mcr4 quick-hip-projSeed2 quick-hip-delayconn quick-hip-multipopulation"
 TESTS[thalamus]="thalamus"
