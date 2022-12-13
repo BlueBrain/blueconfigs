@@ -175,6 +175,8 @@ check_spike_files() {
     local _basename="$(basename $1)"
     # Some outputs (CoreNeuron) dont have a /scatter
     grep '/scatter' "$spike_file" > /dev/null || sed -i '1s#^#/scatter\n#' "$spike_file"
+    # sed -i doesn't work for empty file, in this case insert "/scatter" for comparison
+    [ -s $spike_file ] || echo "/scatter" > $spike_file
     # Sort Neuron output
     if [ "$_basename" = "out.dat" ]; then
         sort -n -k'1,1' -k2 < "$spike_file" | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > "$_output/out.sorted"
