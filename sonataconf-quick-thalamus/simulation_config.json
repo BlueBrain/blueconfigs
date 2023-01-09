@@ -14,6 +14,7 @@
         "v_init": -65,
         "randomize_gaba_rise_time": true
     },
+    "target_simulator": "NEURON",
     "network": "/gpfs/bbp.cscs.ch/project/proj12/SIT/thalamus_sonata/circuit_sonata.json",
     "node_set": "small",
     "node_sets_file": "node_sets.json",
