@@ -36,7 +36,7 @@ VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity$_BASE_O
 VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $_BASE_OPTIONS"
 VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $_BASE_OPTIONS"
 VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $_BASE_OPTIONS"
-VERSIONS[ncx_ngv]="neurodamus-neocortex$BUILD_VERSION +ngv+synapsetool~plasticity~coreneuron"
+VERSIONS[ncx_ngv]="neurodamus-neocortex$BUILD_VERSION +ngv+metabolism+synapsetool~plasticity~coreneuron"
 
 # list of simulations to run
 declare -A TESTS

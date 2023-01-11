@@ -181,8 +181,8 @@ q_sonata_config:
         TESTNAME: [sonataconf-quick-hip-multipopulation]
       - ND_VERSION: thalamus
         TESTNAME: [sonataconf-quick-thalamus]
-      # - ND_VERSION: ncx_ngv
-      #   TESTNAME: [sonataconf-quick-ngv-usecase5]
+      - ND_VERSION: ncx_ngv
+        TESTNAME: [multiscale]
 
 
 # Neurodamus Medium Size tests
