@@ -33,9 +33,8 @@ variables:
     value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify ncx_ngv"
     description: 'Which version of the package to build & test.'
   SPACK_BRANCH:
+    value: "develop"
     description: 'Which branch of spack to use for the build.'
-  CORENEURON_BRANCH:
-    description: 'Which branch of coreneuron to use for the build.'
   NEURON_BRANCH:
     description: 'Which branch of neuron to use for the build.'
   PY_NEURODAMUS_BRANCH:

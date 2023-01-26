@@ -227,8 +227,22 @@ test_check_results() (
     fi
 
     # compare reports
+    if [[ "${output}" == *"coreneuron"* ]]; then
+      coreneuron_suffix="_coreneuron"
+    else
+      coreneuron_suffix=""
+    fi
     for report in $(cd $output && ls *.bbp); do
-        (set -x; cmp "$ref_results/$report" "$output/$report")
+        basename=$(basename "${report}" .bbp)
+        arch_report="${basename}${coreneuron_suffix}_${BUILD_COMPILER}_${BUILD_COMPILER_VERSION}_${BUILD_TYPE}.bbp"
+        (
+          set -x
+          if [[ -f "${ref_results}/${arch_report}" ]]; then
+            cmp "${ref_results}/${arch_report}" "${output}/${report}"
+          else
+            cmp "${ref_results}/${report}" "${output}/${report}"
+          fi
+        )
     done
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then

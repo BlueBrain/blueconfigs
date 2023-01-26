@@ -17,10 +17,13 @@ export DRY_RUN=${DRY_RUN:-""}  # Dont actually run sims. Default is false
 log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRANCH; RUN_PY_TESTS=$RUN_PY_TESTS" "DBG"
 
 # Test definitions
-BUILD_VERSION="@develop%intel"
+BUILD_COMPILER="intel" # also used when constructing reference file paths
+BUILD_TYPE="FastDebug" # also used when constructing reference file paths
+BUILD_VERSION="@develop%${BUILD_COMPILER}"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
-BUILD_OPTIONS="${BUILD_OPTIONS:-"^neuron+debug+coreneuron build_type=Debug"}"
+# dropped support for overriding BUILD_OPTIONS as it makes BUILD_TYPE handling harder and it seemed not to be used
+BUILD_OPTIONS="^neuron+coreneuron build_type=${BUILD_TYPE}"
 DEFAULT_VARIANT="+coreneuron+synapsetool"
 CORENRN_DEP=""
 NEURODAMUS_PY_VERSION="py-neurodamus+all_deps @develop"

@@ -74,4 +74,6 @@ spack_setup || return 1
 echo PATH=$PATH
 log "Reloading spack config: source $LOCAL_SPACK/share/spack/setup-env.sh"
 source $LOCAL_SPACK/share/spack/setup-env.sh
+# used when constructing reference file paths
+BUILD_COMPILER_VERSION=$(spack spec "zlib%${BUILD_COMPILER}" | sed -ne "s#.*%${BUILD_COMPILER}@\([0-9\.]\+\).*#\1#p")
 log_ok "Spack environment setup done"
