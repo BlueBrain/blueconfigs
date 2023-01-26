@@ -44,12 +44,7 @@ log "Checking for override hooks (ADDITIONAL_ENV_VARS or gerrit 'ENV_VARS:')..."
 
 bb5_run() (
     set -e
-    # default partition is interactive. during night use production
-    hour=`date +%H`
-    weekday=`date +%u`
-    if [ -z "$SALLOC_PARTITION" ] && ([ "$hour" -ge "19" ] || [ "$hour" -lt "8" ] || [ $weekday -gt 5 ]); then
-        export SALLOC_PARTITION="prod"
-    fi
+    export SALLOC_PARTITION="prod"
 
     N=${N:-1}
     if [ -n "$n" ]; then
