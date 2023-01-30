@@ -17,6 +17,8 @@ Run Default
 
         BonusSynapseFile /gpfs/bbp.cscs.ch/project/proj32/BlobStim/proj_test_O1/s2f/proj_nrn.h5
 
+        LFPWeightsPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-plasticity/simulation-quick_v3/lfp_coeffs.h5
+
         CurrentDir .
         OutputRoot output
         TargetFile user.target
@@ -75,6 +77,18 @@ Report rho
                 Unit nd
               Format SONATA
                   Dt 1.0
+           StartTime 0.0
+             EndTime 1000
+}
+
+Report lfp
+{
+              Target miniCompartments
+                Type lfp
+            ReportOn v
+                Unit mV
+              Format SONATA
+                  Dt 0.1
            StartTime 0.0
              EndTime 1000
 }
