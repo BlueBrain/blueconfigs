@@ -1,6 +1,6 @@
 Run Default
 {
-    MorphologyPath /gpfs/bbp.cscs.ch/project/proj59/entities/morphologies/2017.10.31
+    MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v6/morphologies/2017.10.31
     METypePath   /gpfs/bbp.cscs.ch/project/proj64/home/vangeit/modelmanagement/prod.20171103/mm_runs/run/1810912/output/emodels_hoc/
     MEComboInfoFile /gpfs/bbp.cscs.ch/project/proj64/home/vangeit/modelmanagement/prod.20171103/megate_runs/run/6c6d611/output_select/mecombo_emodel.tsv
 
