@@ -14,7 +14,7 @@ Run Default
     Simulator NEURON
     BaseSeed 21800000
     RNGMode Random123
-    ElectrodesPath /gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit
+    #ElectrodesPath /gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit
 
     CurrentDir .
     OutputRoot output
@@ -65,7 +65,7 @@ Report AllCompartmentsMembrane
           Type Summation
       ReportOn i_membrane IClamp
           Unit nA
-        Format Bin
+        Format SONATA
             Dt 1
      StartTime 0
        EndTime 1000
@@ -77,9 +77,9 @@ Report soma
           Type compartment
       ReportOn v
           Unit mV
-        Format Bin
+        Format SONATA
             Dt 0.1
-     StartTime 0
+     StartTime 0.1
        EndTime 1000
 }
 
