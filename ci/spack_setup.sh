@@ -28,7 +28,7 @@ log "Spack settings:
  - SPACK_SYSTEM_CONFIG_PATH: $SPACK_SYSTEM_CONFIG_PATH
  - SPACK_USER_CACHE_PATH: $SPACK_USER_CACHE_PATH"
 
-module use /gpfs/bbp.cscs.ch/ssd/apps/bsd/modules/_meta
+module use /gpfs/bbp.cscs.ch/ssd/apps/bsd/pulls/1765/2022-11-29/config/modules/_meta
 module load unstable git
 
 
