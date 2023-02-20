@@ -69,6 +69,9 @@ variables:
     description: 'RUN weekly large simulation tests with Python Neuromdamus'
   SKIP_DAILY_TESTS:
     description: 'Skip daily tests (mostly for debugging long tests)'
+  SPACK_DEPLOYMENT_SUFFIX:
+    description: Extra path component used when finding deployed software. Set to something like `pulls/1497` use software built for https://github.com/BlueBrain/spack/pull/1497. You probably want to set SPACK_BRANCH to the branch used in the relevant PR if you set this.
+    value: ''
 
 default:
   tags:
