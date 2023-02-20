@@ -60,9 +60,9 @@ spack_setup() (
         install_spack
     fi
 
+    set -e
     source $LOCAL_SPACK/share/spack/setup-env.sh
 
-    set -e
     source "$_THISDIR/spack_patch.sh"
 
     log "Testing Spack and bootstrap if needed"
@@ -71,6 +71,7 @@ spack_setup() (
 
 
 spack_setup || return 1
+set -e
 echo PATH=$PATH
 log "Reloading spack config: source $LOCAL_SPACK/share/spack/setup-env.sh"
 source $LOCAL_SPACK/share/spack/setup-env.sh
