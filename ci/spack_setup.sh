@@ -60,6 +60,7 @@ spack_setup() (
         install_spack
     fi
 
+    set -e
     source $LOCAL_SPACK/share/spack/setup-env.sh
 
     set -e

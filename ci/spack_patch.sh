@@ -16,13 +16,6 @@ main()(
       env -0 | sed -nz '/^CUSTOM_ENV_/d;/^[^=]\+_\(BRANCH\|COMMIT\|TAG\)=.\+/p' | xargs -0t spack configure-pipeline --ignore-packages CI_COMMIT CI_DEFAULT SPACK BLUECONFIGS GITLAB_PIPELINES --write-commit-file=commit-mapping.env
     fi
 
-    # Generate all modules
-    echo "modules:
-  tcl:
-    naming_scheme: '\${PACKAGE}/\${VERSION}'
-    whitelist:
-      - '@:'
-    " > ${SPACK_ROOT}/etc/spack/modules.yaml
     touch $SPACK_ROOT/spack_patched.flag
     echo "Done patching"
 )
