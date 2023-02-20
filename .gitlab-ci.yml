@@ -99,8 +99,6 @@ setup_spack:
     - . commit_variables.env
 
 .test_dry_run:
-  variables:
-    DRY_RUN: $DRY_RUN
   script:
     - if [ "$CI_PIPELINE_SOURCE" == push ]; then DRY_RUN=1; fi
     # Workaround note: Gitlab doesnt support regex with a var in the expression
@@ -110,10 +108,10 @@ setup_spack:
     - if [[ -n $MODEL_NAME && $MODEL_NAME == "common" ]]; then unset DRY_RUN; fi
 
 build_neurodamus:
-  extends: .test_dry_run
   stage: build
   interruptible: true
   variables:
+    DRY_RUN: $DRY_RUN
     bb5_cpus_per_task: 16
     bb5_constraint: cpu
   script:
@@ -130,8 +128,8 @@ build_neurodamus:
 ## Generic test settings
 
 .neurodamus_test:
-  extends: .test_dry_run
   variables:
+    DRY_RUN: $DRY_RUN
     GIT_STRATEGY: none
     bb5_constraint: cpu
   script:
