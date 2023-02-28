@@ -92,6 +92,11 @@ setup_spack:
     -   echo "Using parent commit message to look for branches $PARENT_COMMIT_MESSAGE"
     -   CI_COMMIT_MESSAGE="$PARENT_COMMIT_MESSAGE"
     - fi
+    - set +o pipefail
+    - grep '^[[:alnum:]_]*_BRANCH=' <<< "$CI_COMMIT_MESSAGE" | while read -r l; do echo export $l ; done > commit_variables.env
+    - set -o pipefail
+    - cat commit_variables.env
+    - . commit_variables.env
   script:
     - if [ "$CI_PIPELINE_SOURCE" == push ]; then DRY_RUN=1; fi
     # Workaround note: Gitlab doesnt support regex with a var in the expression
