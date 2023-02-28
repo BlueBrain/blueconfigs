@@ -100,16 +100,6 @@ setup_spack:
     - cat commit_variables.env
     - . commit_variables.env
 
-.test_dry_run:
-  script:
-    - echo $DRY_RUN
-    - if [ "$CI_PIPELINE_SOURCE" == push ]; then DRY_RUN=1; fi
-    # Workaround note: Gitlab doesnt support regex with a var in the expression
-    # Therefore, instead of using rules:if, we do a DRY_RUN on Models not related
-    - if [[ -n $MODEL_NAME && $MODEL_NAME != $ND_VERSION && -z $DRY_RUN ]]; then DRY_RUN=1; fi
-    # If we update "common" test all neurodamus models
-    - if [[ -n $MODEL_NAME && $MODEL_NAME == "common" ]]; then unset DRY_RUN; fi
-
 build_neurodamus:
   stage: build
   interruptible: true
@@ -122,7 +112,6 @@ build_neurodamus:
   script:
       # Tell Git how to re-write BBP GitLab URLs to use a token instead of SSH
     - !reference [.bbp_gitlab_access, script]
-    - !reference [.test_dry_run, script]
     - module purge && unset MODULEPATH
     - export
     - source ./.tests_setup.sh
