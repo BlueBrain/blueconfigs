@@ -101,7 +101,7 @@ setup_spack:
     - if [[ -n $MODEL_NAME && $MODEL_NAME == "common" ]]; then unset DRY_RUN; fi
     # Save the updated DRY_RUN variable to be able to be used by the rest of the stages
     - touch global_env_variables.env
-    - if [[ -n $DRY_RUN ]]; then cat "DRY_RUN=$DRY_RUN" > global_env_variables.env; fi
+    - if [[ -n $DRY_RUN ]]; then echo "DRY_RUN=$DRY_RUN" > global_env_variables.env; fi
     - cat global_env_variables.env
   artifacts:
     when: always
