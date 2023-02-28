@@ -19,7 +19,7 @@ if [[ "$SPACK_ROOT" ]]; then
 else
     # Install spack if we are using this from anywhere else other than CI
     export LOCAL_SPACK=${WORKSPACE}/spack
-    export SPACK_SYSTEM_CONFIG_PATH=/gpfs/bbp.cscs.ch/ssd/apps/bsd/pulls/1765/config  # latest config
+    export SPACK_SYSTEM_CONFIG_PATH=/gpfs/bbp.cscs.ch/ssd/apps/bsd/config  # latest config
     export SPACK_USER_CACHE_PATH=${WORKSPACE}/INSTALL
 fi
 
