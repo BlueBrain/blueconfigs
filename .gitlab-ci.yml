@@ -111,9 +111,11 @@ setup_spack:
 build_neurodamus:
   stage: build
   interruptible: true
+  timeout: three hours
   variables:
     bb5_cpus_per_task: 16
     bb5_constraint: cpu
+    bb5_duration: "3:00:00"
   script:
       # Tell Git how to re-write BBP GitLab URLs to use a token instead of SSH
     - !reference [.bbp_gitlab_access, script]
