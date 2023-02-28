@@ -92,6 +92,8 @@ setup_spack:
     -   echo "Using parent commit message to look for branches $PARENT_COMMIT_MESSAGE"
     -   CI_COMMIT_MESSAGE="$PARENT_COMMIT_MESSAGE"
     - fi
+    # Parse commit message for <project>_BRANCH variables and export them as env variables
+    # to be handled by .spack_setup
     - set +o pipefail
     - grep '^[[:alnum:]_]*_BRANCH=' <<< "$CI_COMMIT_MESSAGE" | while read -r l; do echo export $l ; done > commit_variables.env
     - set -o pipefail
