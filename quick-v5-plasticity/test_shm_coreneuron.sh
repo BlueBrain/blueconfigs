@@ -11,7 +11,7 @@ export OMP_NUM_THREADS=1
 #  - SHM file transfer on a single pass
 #  - SHM file transfer with multicycle model build
 
-module load py-neurodamus
+module load py-neurodamus/develop
 
 # Set the expected output message from the SHM file transfer
 SHM_OUTPUT_MESSAGE="SHM file transfer mode for CoreNEURON enabled"

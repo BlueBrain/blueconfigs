@@ -53,7 +53,7 @@ run_long_test() (
         module purge
         if [ $RUN_PY_TESTS = "yes" ]; then
             echo "Loading python with deps"
-            module load py-neurodamus
+            module load py-neurodamus/develop
         fi
         spack load $spec
     fi

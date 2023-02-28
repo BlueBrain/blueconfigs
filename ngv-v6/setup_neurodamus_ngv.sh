@@ -58,7 +58,7 @@ module load unstable intel hpe-mpi
 module use $modules_dir
 
 module load neurodamus-neocortex
-module load py-neurodamus
+module load py-neurodamus/develop
 " > env_setup.sh
 
 echo "Environment done. To activate please source env_setup.sh "

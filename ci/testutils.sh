@@ -154,10 +154,11 @@ _prepare_test() {
             # olupton 2022-02-03: after BlueBrain/spack#1406 then models depend
             #   on py-neurodamus, but as this is not a run dependency the spack
             #   load command below is not sufficient.
-            which neurodamus &> /dev/null || module load unstable py-neurodamus
+            which neurodamus &> /dev/null || module load unstable py-neurodamus/develop
         fi
         spack load $spec
     fi
+    module av
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
     # Loading bluepy for the libsonata readers
@@ -474,7 +475,7 @@ run_blueconfig() (
     if [ "$RUN_PY_TESTS" != yes ] && _contains "${PY_ONLY_TESTS[@]}" "$testname"; then
         log "TEST $testname is only supported by neurodamus-py. Loading it"
         RUN_PY_TESTS=yes
-        [ "$DRY_RUN" ] || module load py-neurodamus
+        [ "$DRY_RUN" ] || module load py-neurodamus/develop
     fi
 
     if [ "$RUN_PY_TESTS" == "yes" ]; then
