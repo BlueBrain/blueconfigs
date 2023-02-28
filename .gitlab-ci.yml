@@ -92,13 +92,6 @@ setup_spack:
     -   echo "Using parent commit message to look for branches $PARENT_COMMIT_MESSAGE"
     -   CI_COMMIT_MESSAGE="$PARENT_COMMIT_MESSAGE"
     - fi
-    - set +o pipefail
-    - grep '^[[:alnum:]_]*_BRANCH=' <<< "$CI_COMMIT_MESSAGE" | while read -r l; do echo export $l ; done > commit_variables.env
-    - set -o pipefail
-    - cat commit_variables.env
-    - . commit_variables.env
-
-.test_dry_run:
   script:
     - if [ "$CI_PIPELINE_SOURCE" == push ]; then DRY_RUN=1; fi
     # Workaround note: Gitlab doesnt support regex with a var in the expression
@@ -106,6 +99,14 @@ setup_spack:
     - if [[ -n $MODEL_NAME && $MODEL_NAME != $ND_VERSION && -z $DRY_RUN ]]; then DRY_RUN=1; fi
     # If we update "common" test all neurodamus models
     - if [[ -n $MODEL_NAME && $MODEL_NAME == "common" ]]; then unset DRY_RUN; fi
+    # Save the updated DRY_RUN variable to be able to be used by the rest of the stages
+    - if [[ -n $DRY_RUN ]]; cat "DRY_RUN=$DRY_RUN" > global_env_variables.env; fi
+    - cat global_env_variables.env
+  artifacts:
+    when: always
+    paths: [global_env_variables.env]
+    reports:
+      dotenv: global_env_variables.env
 
 build_neurodamus:
   stage: build
@@ -116,7 +117,6 @@ build_neurodamus:
   script:
       # Tell Git how to re-write BBP GitLab URLs to use a token instead of SSH
     - !reference [.bbp_gitlab_access, script]
-    - !reference [.test_dry_run, script]
     - module purge && unset MODULEPATH
     - export
     - source ./.tests_setup.sh
@@ -131,7 +131,6 @@ build_neurodamus:
     GIT_STRATEGY: none
     bb5_constraint: cpu
   script:
-    - !reference [.test_dry_run, script]
     - source ./.tests_setup.sh
     - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
 
