@@ -116,6 +116,7 @@ build_neurodamus:
     bb5_cpus_per_task: 16
     bb5_constraint: cpu
     bb5_duration: "3:00:00"
+    bb5_partition: prod
   script:
       # Tell Git how to re-write BBP GitLab URLs to use a token instead of SSH
     - !reference [.bbp_gitlab_access, script]
