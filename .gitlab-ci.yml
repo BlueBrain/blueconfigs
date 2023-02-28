@@ -114,6 +114,9 @@ build_neurodamus:
     - source ./.tests_setup.sh
     # Needs to be new enough for rewriting to work.
     - module load unstable git
+    # install_neurodamus script will install only the packages related to the
+    # TEST_VERSIONS specified. TEST_VERSIONS are based on MODEL_NAME for the
+    # CI runs launched by the neurodamus models' repos.
     - install_neurodamus
 
 ## Generic test settings
