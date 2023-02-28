@@ -85,6 +85,7 @@ setup_spack:
     # there is no blueconfigs package in Spack. This tells the spack_setup job
     # not to try and modify the non-existent blueconfigs package.
     SPACK_SETUP_IGNORE_PACKAGE_VARIABLES: BLUECONFIGS
+    SPACK_BRANCH: up-the-stream
   before_script:
     - !reference [.spack_setup, before_script]
     # Check commit msg as well for instructions to override spack branches
