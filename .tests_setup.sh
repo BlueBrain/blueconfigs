@@ -17,7 +17,7 @@ export DRY_RUN=${DRY_RUN:-""}  # Dont actually run sims. Default is false
 log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRANCH; RUN_PY_TESTS=$RUN_PY_TESTS" "DBG"
 
 # Test definitions
-BUILD_COMPILER="intel" # also used when constructing reference file paths
+BUILD_COMPILER="intel@2021.4.0" # also used when constructing reference file paths
 BUILD_TYPE="FastDebug" # also used when constructing reference file paths
 BUILD_VERSION="@develop%${BUILD_COMPILER}"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
