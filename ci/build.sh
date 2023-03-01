@@ -38,7 +38,7 @@ done
 spack config add concretizer:unify:when_possible
 spack config add concretizer:reuse:true
 
-spack config add "packages:py-numpy:require:'@1.20.3'"
+spack config add "packages:py-numpy:require:'@1.22.4'"
 spack config add "modules:default:tcl:include:[py-neurodamus@develop,neurodamus-neocortex+ngv]"
 
 spack config blame concretizer
