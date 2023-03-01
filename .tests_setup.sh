@@ -17,7 +17,7 @@ export DRY_RUN=${DRY_RUN:-""}  # Dont actually run sims. Default is false
 log "WORKSPACE=$WORKSPACE; TEST_VERSIONS=$TEST_VERSIONS; SPACK_BRANCH=$SPACK_BRANCH; RUN_PY_TESTS=$RUN_PY_TESTS" "DBG"
 
 # Test definitions
-BUILD_COMPILER="intel@2021.4.0" # also used when constructing reference file paths
+BUILD_COMPILER="intel" # also used when constructing reference file paths
 BUILD_TYPE="FastDebug" # also used when constructing reference file paths
 BUILD_VERSION="@develop%${BUILD_COMPILER}"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
@@ -33,12 +33,12 @@ log "DATADIR=$DATADIR; BASE_OPTIONS=$_BASE_OPTIONS; BUILD_OPTIONS=$BUILD_OPTIONS
 
 declare -A VERSIONS
 # Master is a plain v5+v6 version
-VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION ~plasticity$_BASE_OPTIONS ^$NEURODAMUS_PY_VERSION"
-VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity~coreneuron~synapsetool$EXTRA_VARIANT ^$NEURODAMUS_PY_VERSION"
-VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity$_BASE_OPTIONS ^$NEURODAMUS_PY_VERSION"
-VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $_BASE_OPTIONS ^$NEURODAMUS_PY_VERSION"
-VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $_BASE_OPTIONS ^$NEURODAMUS_PY_VERSION"
-VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $_BASE_OPTIONS ^$NEURODAMUS_PY_VERSION"
+VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION ~plasticity$_BASE_OPTIONS"
+VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
+VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity$_BASE_OPTIONS"
+VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $_BASE_OPTIONS"
+VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $_BASE_OPTIONS"
+VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $_BASE_OPTIONS"
 VERSIONS[ncx_ngv]="neurodamus-neocortex$BUILD_VERSION +ngv+metabolism+synapsetool~plasticity~coreneuron"
 
 # list of simulations to run
