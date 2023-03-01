@@ -139,6 +139,7 @@ build_neurodamus:
     - if [[ -n $MODEL_NAME && $MODEL_NAME != $ND_VERSION ]]; then DRY_RUN=1; fi
     # If we update "common" test all neurodamus models
     - if [[ -n $MODEL_NAME && $MODEL_NAME == "common" ]]; then unset DRY_RUN; fi
+    - unset DRY_RUN
     - source ./.tests_setup.sh
     - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
 
