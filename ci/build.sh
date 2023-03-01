@@ -38,7 +38,7 @@ done
 spack config add concretizer:unify:when_possible
 spack config add concretizer:reuse:true
 
-spack config add "modules:default:tcl:include:[py-neurodamus,neurodamus-hippocampus,neurodamus-neocortex,neurodamus-thalamus,neurodamus-mousify,neuron]"
+spack config add "modules:default:tcl:include:[py-neurodamus@develop,neurodamus-neocortex+ngv]"
 
 spack config get
 
@@ -53,7 +53,8 @@ if [ -z "$DRY_RUN" ]; then
     make -j ${SLURM_CPUS_PER_TASK:-$SLURM_CPUS_PER_NODE}
 fi
 
-spack module tcl refresh -y
+spack_sha=$($SPACK_ROOT/bluebrain/deployment/bin/installed-hashes|awk '/[^^]py-neurodamus/{print $1}')
+spack module tcl refresh -y $spack_sha
 
 log_ok "Neurodamus installed successfully. You may reload spack env to find modules"
 
