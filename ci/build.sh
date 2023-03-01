@@ -31,7 +31,7 @@ if [ "$RUN_PY_TESTS" ]; then
     echo "Installing $NEURODAMUS_PY_VERSION"
     spack spec -I $NEURODAMUS_PY_VERSION
     if [ -z "$DRY_RUN" ]; then
-        spack install --show-log-on-error $NEURODAMUS_PY_VERSION
+        spack install --reuse --show-log-on-error $NEURODAMUS_PY_VERSION
     fi
 fi
 
@@ -39,7 +39,7 @@ for version in $ND_VERSIONS; do
     log "Building ${VERSIONS[$version]} $BUILD_OPTIONS  (version=$version)"
     spack spec -I ${VERSIONS[$version]} $BUILD_OPTIONS
     if [ -z "$DRY_RUN" ]; then
-        spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
+        spack install --reuse --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
     fi
 done
 
