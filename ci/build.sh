@@ -27,22 +27,23 @@ echo "
 Building required Neurodamus versions
 ====================================================================="
 
-if [ "$RUN_PY_TESTS" ]; then
-    echo "Installing $NEURODAMUS_PY_VERSION"
-    spack spec -Il $NEURODAMUS_PY_VERSION
-    if [ -z "$DRY_RUN" ]; then
-        spack install --reuse --show-log-on-error $NEURODAMUS_PY_VERSION
-    fi
-fi
+spack env create --without-view piherrus
+spack env activate piherrus
 
+spack add $NEURODAMUS_PY_VERSION
 for version in $ND_VERSIONS; do
-    log "Building ${VERSIONS[$version]} $BUILD_OPTIONS  (version=$version)"
-    spack spec -Il ${VERSIONS[$version]} $BUILD_OPTIONS
-    if [ -z "$DRY_RUN" ]; then
-        spack install --reuse --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
-    fi
+    spack add ${VERSIONS[$version]} $BUILD_OPTIONS
 done
 
+spack config add concretizer:unify:when_possible
+spack config add concretizer:reuse:true
+
+spack concretize -f
+
+if [ -z "$DRY_RUN" ]; then
+    spack env depfile > Makefile
+    make -j ${SLURM_CPUS_PER_TASK:-$SLURM_CPUS_PER_NODE}
+fi
 
 log_ok "Neurodamus installed successfully. You may reload spack env to find modules"
 
