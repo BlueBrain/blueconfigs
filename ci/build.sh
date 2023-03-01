@@ -53,6 +53,8 @@ if [ -z "$DRY_RUN" ]; then
     make -j ${SLURM_CPUS_PER_TASK:-$SLURM_CPUS_PER_NODE}
 fi
 
+spack module tcl refresh -y
+
 log_ok "Neurodamus installed successfully. You may reload spack env to find modules"
 
 ) #eof install_neurodamus f
