@@ -40,6 +40,12 @@ spack config add concretizer:reuse:true
 
 spack config add "modules:default:tcl:include:[py-neurodamus,neurodamus-hippocampus,neurodamus-neocortex,neurodamu-thalamus,neurodamus-mousify,neuron]"
 
+spack config get
+
+spack config blame concretizer
+spack config blame config
+spack config blame modules
+
 spack concretize -f
 
 if [ -z "$DRY_RUN" ]; then
