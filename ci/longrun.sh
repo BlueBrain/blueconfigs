@@ -44,6 +44,7 @@ run_long_test() (
 
     log "Launching test $testname ($spec)"
 
+    set -e
     # If neurodamus spec not given, check loaded
     if [ -z "$spec" ]; then
         spec=default
@@ -60,6 +61,7 @@ run_long_test() (
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
     module load unstable py-bluepy  # req. for the libsonata readers
+    set +e
 
     nodes=64
     if [ $testname = "thalamus" ]; then

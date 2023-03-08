@@ -27,24 +27,32 @@ echo "
 Building required Neurodamus versions
 ====================================================================="
 
+spack env create --without-view piherrus
+spack env activate piherrus
 
+spack add $NEURODAMUS_PY_VERSION
 for version in $ND_VERSIONS; do
-    log "Building ${VERSIONS[$version]} $BUILD_OPTIONS  (version=$version)"
-    if [ "$DRY_RUN" ]; then
-        spack spec -I ${VERSIONS[$version]} $BUILD_OPTIONS
-    else
-        spack install --show-log-on-error ${VERSIONS[$version]} $BUILD_OPTIONS
-    fi
+    spack add ${VERSIONS[$version]} $BUILD_OPTIONS
 done
 
-if [ "$RUN_PY_TESTS" ]; then
-    echo "Installing also $NEURODAMUS_PY_VERSION"
-    if [ "$DRY_RUN" ]; then
-        spack spec -I $NEURODAMUS_PY_VERSION
-    else
-        spack install --show-log-on-error $NEURODAMUS_PY_VERSION
-    fi
+spack config add concretizer:unify:when_possible
+spack config add concretizer:reuse:false
+
+spack config add "modules:default:tcl:include:[py-neurodamus@develop,neurodamus-neocortex+ngv]"
+
+spack config blame concretizer
+spack config blame config
+spack config blame modules
+
+spack concretize -f
+
+if [ -z "$DRY_RUN" ]; then
+    spack env depfile > Makefile
+    make -j ${SLURM_CPUS_PER_TASK:-$SLURM_CPUS_PER_NODE}
 fi
+
+spack_sha=$($SPACK_ROOT/bluebrain/deployment/bin/installed-hashes|awk '/[^^]py-neurodamus/{print $1}')
+spack module tcl refresh -y $spack_sha
 
 log_ok "Neurodamus installed successfully. You may reload spack env to find modules"
 

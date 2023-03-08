@@ -82,6 +82,7 @@ blue_set() (
         # add before first closing tag
         sed -i "/^$section\b/,/}/s#}#    $entry $newval\n}#" "$blueconf"
     fi
+    set +e
 )
 
 #

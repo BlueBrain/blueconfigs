@@ -147,6 +147,7 @@ _prepare_test() {
     set +x  # Never trace for module load
 
     if [ "$spec" != "default" ]; then
+        set -e
         log "COMMANDS: module purge; spack load $spec" "DBG"
         module purge
         if [ $RUN_PY_TESTS = "yes" ]; then
@@ -157,6 +158,7 @@ _prepare_test() {
             which neurodamus &> /dev/null || module load unstable py-neurodamus
         fi
         spack load $spec
+        set +e
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done

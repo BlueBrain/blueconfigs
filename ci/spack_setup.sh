@@ -1,4 +1,5 @@
 #!/bin/env bash
+set -e
 # NOTE: This file shall be sourced so that important variables are avail to other scripts
 _THISDIR=$(readlink -f $(dirname $BASH_SOURCE))
 source "$_THISDIR/envutils.sh"
@@ -36,7 +37,6 @@ module load unstable git
 
 install_spack() (
     # Install spack if we are using this from anywhere else other than CI
-    set -e
     rm -rf $HOME/.spack   # CLEANUP SPACK CONFIGS
     SPACK_REPO=https://github.com/BlueBrain/spack.git
     SPACK_BRANCH=${SPACK_BRANCH:-"develop"}
@@ -50,7 +50,6 @@ install_spack() (
 
 
 spack_setup() (
-    set -e
     if [[ ! -d "$DATADIR" && ! "$DRY_RUN" ]]; then
       log_error "DATADIR ($DATADIR) not found."
       return 1
@@ -62,7 +61,6 @@ spack_setup() (
 
     source $LOCAL_SPACK/share/spack/setup-env.sh
 
-    set -e
     source "$_THISDIR/spack_patch.sh"
 
     log "Testing Spack and bootstrap if needed"
@@ -75,5 +73,8 @@ echo PATH=$PATH
 log "Reloading spack config: source $LOCAL_SPACK/share/spack/setup-env.sh"
 source $LOCAL_SPACK/share/spack/setup-env.sh
 # used when constructing reference file paths
-BUILD_COMPILER_VERSION=$(spack spec "zlib%${BUILD_COMPILER}" | sed -ne "s#.*%${BUILD_COMPILER}@\([0-9\.]\+\).*#\1#p")
+spack -c "packages:zlib:require:'%${BUILD_COMPILER}'" spec -I zlib
+BUILD_COMPILER_VERSION=$(spack -c "packages:zlib:require:'%${BUILD_COMPILER}'" spec -I zlib | sed -ne "s#.*%${BUILD_COMPILER}@\([0-9\.]\+\).*#\1#p")
 log_ok "Spack environment setup done"
+
+set +e
