@@ -29,7 +29,7 @@ Report compartment
     Type compartment
     ReportOn v
     Unit mV
-    Format Bin
+    Format SONATA
     Dt 1
     StartTime 0
     EndTime 200

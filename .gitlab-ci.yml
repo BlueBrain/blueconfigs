@@ -39,8 +39,6 @@ variables:
     description: 'Which branch of neuron to use for the build.'
   PY_NEURODAMUS_BRANCH:
     description: 'Which branch of py-neurodamus to use for the build.'
-  REPORTINGLIB_BRANCH:
-    description: 'Which branch of reportinglib to use for the build.'
   LIBSONATA_REPORT_BRANCH:
     description: 'Which branch of libsonata-report to use for the build.'
   SYNAPSETOOL_BRANCH:
@@ -99,6 +97,12 @@ setup_spack:
     - set -o pipefail
     - cat commit_variables.env
     - . commit_variables.env
+    # If there are already commits configured for selected projects (from the CI launched by a NEURON PR for example)
+    # we should avoid trying to set again the branches from the blueconfigs branch commit
+    - |
+      for project in "NEURON" "NMODL" "SPACK" "PY_NEURODAMUS" "LIBSONATAREPORT" "NEURODAMUS_CORE" "NEURODAMUS_HIPPOCAMPUS" "NEURODAMUS_MOUSIFY" "NEURODAMUS_NEOCORTEX" "NEURODAMUS_THALAMUS"; do
+      commit_var_name="${project}_COMMIT"; if [[ ! -z ${!commit_var_name} ]]; then unset "${project}_BRANCH"; fi
+      done
 
 build_neurodamus:
   stage: build

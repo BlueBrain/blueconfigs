@@ -72,7 +72,7 @@ Report somas
           Type compartment
       ReportOn v
           Unit mV
-        Format Bin
+        Format SONATA
             Dt 0.1
      StartTime 0
        EndTime 1000
@@ -84,7 +84,7 @@ Report voltages
           Type compartment
       ReportOn v
           Unit mV
-        Format Bin
+        Format SONATA
             Dt 0.1
      StartTime 0
        EndTime 1000
@@ -96,7 +96,7 @@ Report voltages
           Type Summation
       ReportOn i_membrane
           Unit nA
-        Format Bin
+        Format SONATA
             Dt 0.1
      StartTime 0
        EndTime 1000
@@ -108,7 +108,7 @@ Report voltages
           Type compartment
       ReportOn area
           Unit um
-        Format Bin
+        Format SONATA
             Dt 0.1
      StartTime 0
        EndTime 0.1

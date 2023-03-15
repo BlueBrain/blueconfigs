@@ -38,18 +38,6 @@ Report soma
     Type compartment
     ReportOn v
     Unit mV
-    Format Bin
-    Dt 0.1
-    StartTime 0
-    EndTime 1000
-}
-
-Report soma_SONATA
-{
-    Target Mosaic
-    Type compartment
-    ReportOn v
-    Unit mV
     Format SONATA
     Dt 0.1
     StartTime 0
@@ -62,13 +50,13 @@ Report compartment
     Type compartment
     ReportOn v
     Unit mV
-    Format Bin
+    Format SONATA
     Dt 1
     StartTime 0
     EndTime 1000
 }
 
-Report section_axon_SONATA
+Report section_axon
 {
     Target axon_Mosaic
     Type compartment
@@ -80,7 +68,7 @@ Report section_axon_SONATA
     EndTime 1000
 }
 
-Report section_axon_comp_SONATA
+Report section_axon_comp
 {
     Target axon_comp_Mosaic
     Type compartment
@@ -92,7 +80,7 @@ Report section_axon_comp_SONATA
     EndTime 1000
 }
 
-Report summation_section_SONATA
+Report summation_section
 {
     Target axon_comp_Mosaic
     Type Summation

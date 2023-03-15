@@ -61,21 +61,29 @@ check_report_length() (
 
   for rep in $output/*.h5; do
     [[ -f $rep && $rep != $output/out.h5 ]] || continue
-    [ $(set +x; h5ls -r $rep | grep data | awk '{ print $3 }' | tr --delete {,) -eq $length ]
-  done
+    echo " >> >> >> Checking SONATA Report: $rep (len=$length)"
+    actual_len=$(set +x; h5ls -r $rep | grep data | awk '{ print $3 }' | tr --delete {,)
+    if [ $actual_len -ne $length ]; then
+      echo "  ERROR: simulation length: $length != report length: $actual_len"
+      return 1
+    fi
+  done  
 
 )
 
 echo " >> Running FIRST PART"
 run_blueconfig "$config1"
+echo " >> >> Checking report length of FIRST PART"
 check_report_length "$output1" $t_end1
 
 echo " >> Running SECOND PART"
 run_blueconfig "$config2"
+echo " >> >> Checking report length of SECOND PART"
 check_report_length "$output2" $((t_end2 - t_end1))
 
 echo " >> Running THIRD PART"
 run_blueconfig "$config3"
+echo " >> >> Checking report length of THIRD PART"
 check_report_length "$output3" $((t_end3 - t_end2))
 
 # Generate ascii format for the spikes in h5 for all directories

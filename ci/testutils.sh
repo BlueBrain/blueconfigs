@@ -26,6 +26,7 @@ REF_RESULTS["quick-v5-gaps"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simu
 REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick"
 REF_RESULTS["quick-v5-multisplit"]="$EXTENDED_RESULTS/circuit-v5-multisplit/simulation"
 REF_RESULTS["quick-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation-quick_v3"
+REF_RESULTS["quick-v7-plasticity"]="$EXTENDED_RESULTS/circuit-sscx-v7-plasticity/simulation-quick_v1"
 REF_RESULTS["quick-hip-sonata"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-sonata"
 REF_RESULTS["quick-hip-projSeed2"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-projSeed2"
 REF_RESULTS["quick-hip-delayconn"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-delayconn"

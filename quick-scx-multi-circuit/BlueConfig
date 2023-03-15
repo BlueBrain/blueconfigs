@@ -39,7 +39,7 @@ Projection A_to_B
 }
 
 
-#Report soma_SONATA
+#Report soma
 {
         Target Mosaic_A
         Type compartment

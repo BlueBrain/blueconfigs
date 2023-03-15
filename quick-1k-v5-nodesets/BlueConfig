@@ -29,7 +29,7 @@ Report soma
         Type compartment
         ReportOn v
         Unit mV
-        Format Bin
+        Format SONATA
         Dt 0.1
         StartTime 0.0
         EndTime 30000
@@ -41,7 +41,7 @@ Report soma
         Type compartment
         ReportOn v
         Unit mV
-        Format Bin
+        Format SONATA
         Dt 1
         StartTime 0
         EndTime 150
@@ -53,7 +53,7 @@ Report soma
           Type Summation
       ReportOn i_membrane
           Unit nA
-        Format Bin
+        Format SONATA
             Dt 0.1
      StartTime 0
        EndTime 100
@@ -65,7 +65,7 @@ Report soma
           Type compartment
       ReportOn area
           Unit um
-        Format Bin
+        Format SONATA
             Dt 0.1
      StartTime 0
        EndTime 0.1

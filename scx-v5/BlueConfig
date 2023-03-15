@@ -39,7 +39,7 @@ Report soma
              EndTime 1000
 }
 
-Report section_soma_SONATA
+Report section_soma
 {
               Target soma_Mosaic
                 Type compartment
@@ -51,7 +51,7 @@ Report section_soma_SONATA
              EndTime 1000
 }
 
-Report section_soma_comp_SONATA
+Report section_soma_comp
 {
               Target soma_comp_Mosaic
                 Type compartment
@@ -81,7 +81,7 @@ Report gAMPA
                 Type Synapse
             ReportOn GluSynapse.Rho_GB
                 Unit nd
-              Format Bin
+              Format SONATA
                   Dt 100.0
            StartTime 0.0
              EndTime 1000
@@ -93,7 +93,7 @@ Report gAMPA
                 Type Synapse
             ReportOn GluSynapse.Use_GB
                 Unit nd
-              Format Bin
+              Format SONATA
                   Dt 100.0
            StartTime 0.0
              EndTime 1000

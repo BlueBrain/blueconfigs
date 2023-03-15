@@ -35,18 +35,6 @@ Report soma
         Type compartment
         ReportOn v
         Unit mV
-        Format Bin
-        Dt 1.0
-        StartTime 0
-        EndTime 10000
-}
-
-Report soma_SONATA
-{
-        Target Mosaic
-        Type compartment
-        ReportOn v
-        Unit mV
         Format SONATA
         Dt 1.0
         StartTime 0
@@ -59,7 +47,7 @@ Report soma_SONATA
         Type Synapse
         ReportOn ProbAMPANMDA_EMS.tsyn
         Unit nd
-        Format Bin
+        Format SONATA
         Dt 100.0
         StartTime 0.0
         EndTime 1000
@@ -71,7 +59,7 @@ Report soma_SONATA
         Type compartment
         ReportOn v
         Unit mV
-        Format Bin
+        Format SONATA
         Dt 0.25
         StartTime 0
         EndTime 1000
@@ -83,7 +71,7 @@ Report soma_SONATA
         Type compartment
         ReportOn v
         Unit mV
-        Format Bin
+        Format SONATA
         Dt 0.25
         StartTime 0
         EndTime 20000

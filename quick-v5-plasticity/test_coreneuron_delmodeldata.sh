@@ -16,20 +16,7 @@ configfile_bk $1
 outputdir=${2:-output}
 coreneuron_data=$outputdir/coreneuron_input
 blue_comment_section Report $blueconfig
-
-
-#######################################################
-
-echo ">> Test CoreNeuron data removal with neurodamus (hoc)"
 blue_set Simulator CORENEURON $blueconfig
-RUN_PY_TESTS='' run_blueconfig $blueconfig
-
-if [ -d "$coreneuron_data" ]; then
-    log_error "$coreneuron_data should be deleted by default"
-    exit -1
-fi
-
-rm -rf "$outputdir"
 
 #######################################################
 
