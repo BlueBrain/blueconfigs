@@ -164,6 +164,8 @@ q_neocortex:
         TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
       - ND_VERSION: ncx_plasticity
         TESTNAME: [quick-v5-plasticity, sscx-v7-plasticity]
+      - ND_VERSION: ncx_ngv
+        TESTNAME: [multiscale]
 
 q_hippocampus:
   extends: .nd_quick_test
@@ -199,7 +201,7 @@ q_sonata_config:
       - ND_VERSION: thalamus
         TESTNAME: [sonataconf-quick-thalamus]
       - ND_VERSION: ncx_ngv
-        TESTNAME: [multiscale]
+        TESTNAME: [sonataconf-quick-multiscale]
 
 
 # Neurodamus Medium Size tests

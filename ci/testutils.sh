@@ -39,6 +39,7 @@ REF_RESULTS["sonataconf-quick-scx-multi-circuit"]="$EXTENDED_RESULTS/circuit-scx
 REF_RESULTS["sonataconf-quick-ngv-usecase5"]="$EXTENDED_RESULTS/circuit-ngv-usecase5/simulation-sonataconf"
 REF_RESULTS["sonataconf-quick-thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation-sonataconf"
 REF_RESULTS["multiscale"]="$DATADIR/subcellular/blueconfigs_test/reference_files"
+REF_RESULTS["sonataconf-quick-multiscale"]="$DATADIR/subcellular/blueconfigs_test/simulation-sonataconf/reference_files"
 
 _prepare_test() {
     confFile="${1:-BlueConfig}" #either sonata config or BlueConfig
