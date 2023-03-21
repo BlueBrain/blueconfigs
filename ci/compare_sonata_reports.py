@@ -75,7 +75,7 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
             df2_values = df2[node_id].values
             row_names = df[node_id].index
             if not numpy.allclose(df_values, df2_values):
-                print(">>>> Different values for node id " + str(node_id) + " in population " + pop_name + ":")
+                print(f">>>> Different values for node id '{node_id}' in population '{pop_name}':")
                 # Loop through timesteps
                 for i, timestep in enumerate(df_values):
                     if not numpy.allclose(timestep, df2_values[i]):
