@@ -5,6 +5,7 @@ configfile_bk $1
 outputdir=$2
 
 blue_set Simulator CORENEURON $blueconfig
+blue_set KeepModelData True $blueconfig
 head -n 30 $blueconfig
 
 export OMP_NUM_THREADS=1
