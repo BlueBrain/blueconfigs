@@ -2,6 +2,9 @@ import libsonata
 import numpy
 import pandas
 import sys
+from os import path
+import os
+import shutil
 
 """
 Compare 2 SONATA report files
@@ -18,6 +21,11 @@ exit(0) if equals, exit(-1) otherwise
 
 report1 = str(sys.argv[1])
 report2 = str(sys.argv[2])
+dirname = "./output_nmodl/" + path.dirname(report1)
+if not path.exists(dirname):
+    os.makedirs(dirname)
+basename = path.basename(report2)
+shutil.copyfile(report1, dirname + "/" + basename)
 
 elements  = libsonata.ElementReportReader(report1)
 elements2 = libsonata.ElementReportReader(report2)
