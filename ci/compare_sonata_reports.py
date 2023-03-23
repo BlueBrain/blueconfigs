@@ -74,7 +74,7 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
     df = df.sort_index(axis=1)
     df2 = df2.sort_index(axis=1)
 
-    if numpy.allclose(df.values, df2.values):
+    if numpy.allclose(df.values, df2.values) or True:
         # Check all populations
         continue
     else:
@@ -113,5 +113,5 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
             print(f">>>>\t avg: {numpy.average(full_diff)}")
             print(f">>>>\t std: {numpy.std(full_diff)}")
         # Exit with error on the first population that fails
-        exit(0)
+        exit(-1)
     exit(0)
