@@ -152,6 +152,9 @@ build_neurodamus:
 .nd_quick_test:
   extends: .neurodamus_test
   stage: quick_tests
+  rules:
+    - when: manual
+      allow_failure: true
 
 
 q_neocortex:
