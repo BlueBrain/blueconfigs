@@ -27,6 +27,7 @@ echo "
 Building required Neurodamus versions
 ====================================================================="
 
+spack env remove -y piherrus || true
 spack env create --without-view piherrus
 spack env activate piherrus
 
