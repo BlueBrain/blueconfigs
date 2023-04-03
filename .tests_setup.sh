@@ -23,7 +23,7 @@ BUILD_VERSION="@develop%${BUILD_COMPILER}"
 DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
 # dropped support for overriding BUILD_OPTIONS as it makes BUILD_TYPE handling harder and it seemed not to be used
-BUILD_OPTIONS="^neuron+coreneuron build_type=${BUILD_TYPE}"
+BUILD_OPTIONS="^neuron+coreneuron+nmodl build_type=${BUILD_TYPE}"
 DEFAULT_VARIANT="+coreneuron+synapsetool"
 CORENRN_DEP=""
 NEURODAMUS_PY_VERSION="py-neurodamus@develop"
