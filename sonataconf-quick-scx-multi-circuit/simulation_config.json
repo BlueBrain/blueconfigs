@@ -30,7 +30,7 @@
       "node_set": "Mosaic_A"
     }
   },
-  "connection_overrides": {},
+  "connection_overrides": [],
   "reports": {
     "soma": {
       "cells": "Mosaic_A",
