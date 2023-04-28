@@ -67,117 +67,135 @@
       "node_set": "Mosaic"
     }
   },
-  "connection_overrides": {
-    "GluSynapseSwitch": {
+  "connection_overrides": [
+    {
+      "name": "GluSynapseSwitch",
       "source": "Excitatory",
       "target": "Excitatory",
       "weight": 1.0,
       "modoverride": "GluSynapseLegacy",
       "synapse_configure": "cao_CR_GluSynapse = 1.2 %s.Use_d *= 0.158401372855 %s.Use_p *= 0.158401372855"
     },
-    "ConL6Exc-Uni": {
+    {
+      "name": "ConL6Exc-Uni",
       "source": "Excitatory",
       "target": "Layer6",
       "weight": 1.0,
       "spont_minis": 0.04
     },
-    "ConL5Exc-Uni": {
+    {
+      "name": "ConL5Exc-Uni",
       "source": "Excitatory",
       "target": "Layer5",
       "weight": 1.0,
       "spont_minis": 0.067
     },
-    "ConL4Exc-Uni": {
+    {
+      "name": "ConL4Exc-Uni",
       "source": "Excitatory",
       "target": "Layer4",
       "weight": 1.0,
       "spont_minis": 0.072
     },
-    "ConL3Exc-Uni": {
+    {
+      "name": "ConL3Exc-Uni",
       "source": "Excitatory",
       "target": "Layer3",
       "weight": 1.0,
       "spont_minis": 0.122
     },
-    "ConL2Exc-Uni": {
+    {
+      "name": "ConL2Exc-Uni",
       "source": "Excitatory",
       "target": "Layer2",
       "weight": 1.0,
       "spont_minis": 0.26
     },
-    "ConL1Exc-Uni": {
+    {
+      "name": "ConL1Exc-Uni",
       "source": "Excitatory",
       "target": "Layer1",
       "weight": 1.0,
       "spont_minis": 0.63
     },
-    "ConInh-Uni": {
+    {
+      "name": "ConInh-Uni",
       "source": "Inhibitory",
       "target": "Mosaic",
       "weight": 1.0,
       "spont_minis": 0.012
     },
-    "GABAB_erev": {
+    {
+      "name": "GABAB_erev",
       "source": "Inhibitory",
       "target": "Mosaic",
       "weight": 1.0,
       "synapse_configure": "%s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081"
     },
-    "scheme_CaUse_ee": {
+    {
+      "name": "scheme_CaUse_ee",
       "source": "Excitatory",
       "target": "Excitatory",
       "weight": 1.0,
       "synapse_configure": "%s.Use *= 0.158401372855"
     },
-    "scheme_CaUse_e_2_PV_FS": {
+    {
+      "name": "scheme_CaUse_e_2_PV_FS",
       "source": "Excitatory",
       "target": "PV_FS",
       "weight": 1.0,
       "synapse_configure": "%s.Use *= 0.647467256852"
     },
-    "scheme_CaUse_PV_FS_2_e": {
+    {
+      "name": "scheme_CaUse_PV_FS_2_e",
       "source": "PV_FS",
       "target": "Excitatory",
       "weight": 1.0,
       "synapse_configure": "%s.Use *= 0.647467256852"
     },
-    "scheme_CaUse_e_2_DISTAR_INH": {
+    {
+      "name": "scheme_CaUse_e_2_DISTAR_INH",
       "source": "Excitatory",
       "target": "DISTAR_INH",
       "weight": 1.0,
       "synapse_configure": "%s.Use *= 0.158401372855"
     },
-    "scheme_CaUse_DISTAR_INH_2_e": {
+    {
+      "name": "scheme_CaUse_DISTAR_INH_2_e",
       "source": "DISTAR_INH",
       "target": "Excitatory",
       "weight": 1.0,
       "synapse_configure": "%s.Use *= 0.158401372855"
     },
-    "scheme_CaUse_Inh_Inh": {
+    {
+      "name": "scheme_CaUse_Inh_Inh",
       "source": "Inhibitory",
       "target": "Inhibitory",
       "weight": 1.0,
       "synapse_configure": "%s.Use *= 0.402934314853"
     },
-    "scheme_minus1": {
+    {
+      "name": "scheme_minus1",
       "source": "Excitatory",
       "target": "Inhibitory",
       "weight": 1.0,
       "synapse_configure": "%s.NMDA_ratio = 0.8"
     },
-    "scheme1b": {
+    {
+      "name": "scheme1b",
       "source": "Layer1",
       "target": "Excitatory",
       "weight": 1.0,
       "synapse_configure": "%s.GABAB_ratio = 0.75"
     },
-    "scheme2b": {
+    {
+      "name": "scheme2b",
       "source": "L23_NGC",
       "target": "Excitatory",
       "weight": 1.0,
       "synapse_configure": "%s.GABAB_ratio = 0.75"
     }
-  },
+  ],
   "reports": {
     "soma": {
       "cells": "Mosaic",

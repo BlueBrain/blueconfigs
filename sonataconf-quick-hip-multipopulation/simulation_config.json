@@ -22,31 +22,35 @@
     "spikes_sort_order": "by_time"
   },
   "inputs": {},
-  "connection_overrides": {
-    "All-All": {
+  "connection_overrides": [
+    {
+      "name": "All-All",
       "source": "Mosaic",
       "target": "Mosaic",
       "weight": 1.0,
       "spont_minis": 0.01
     },
-    "SC-All": {
+    {
+      "name": "SC-All",
       "source": "HipProjections",
       "target": "Mosaic",
       "weight": 1.0,
       "spont_minis": 0.2,
       "synapse_configure": "%s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5"
     },
-    "AMPA_NMDA": {
+    {
+      "name": "AMPA_NMDA",
       "source": "Excitatory",
       "target": "Mosaic",
       "synapse_configure": "%s.NMDA_ratio = 1.22 %s.tau_r_NMDA = 3.9 %s.tau_d_NMDA = 148.5"
     },
-    "MGGate": {
+    {
+      "name": "MGGate",
       "source": "Excitatory",
       "target": "Mosaic",
       "synapse_configure": "%s.mg = 1.0"
     }
-  },
+  ],
   "reports": {
     "soma": {
       "cells": "Mosaic",
