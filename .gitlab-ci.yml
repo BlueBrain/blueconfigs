@@ -23,6 +23,7 @@ stages:
   - quick_tests
   - medium_size_tests
   - long_tests
+  - nmodl_tests
 
 variables:
   bb5_build_dir: "pipeline"  # Notice: this keeps build dir among jobs! no artifacts needed
@@ -65,6 +66,8 @@ variables:
     description: 'Provide additional environment vars. E.g NEURODAMUS_BRANCH_MASTER=x'
   LONG_RUN:
     description: 'RUN weekly large simulation tests with Python Neuromdamus'
+  NMODL_RUN:
+    description: 'Run only a selection of tests that include CoreNEURON and NMODL'
   SKIP_DAILY_TESTS:
     description: 'Skip daily tests (mostly for debugging long tests)'
   SPACK_DEPLOYMENT_SUFFIX:
@@ -144,6 +147,8 @@ build_neurodamus:
     - if [[ -n $MODEL_NAME && $MODEL_NAME == "common" ]]; then unset DRY_RUN; fi
     - source ./.tests_setup.sh
     - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
+  rules:
+    - if: '$NMODL_RUN == ""'
 
 
 # Neurodamus Quick tests
@@ -272,3 +277,35 @@ long_tests:
       - ND_VERSION: thalamus
         TESTNAME: thalamus
         SIM_TARGET: Mosaic
+
+
+# NMODL related tests
+# ~~~~~~~~~~~~~~~~~~~~~
+
+# Include tests that run with CoreNEURON.
+# Selection of tests that cover most important
+# features seen in Neurodamus simulations and
+# all Neurodamus models.
+
+nmodl_tests:
+  stage: nmodl_tests
+  variables:
+    GIT_STRATEGY: none
+    bb5_constraint: cpu
+  rules:
+    - if: $NMODL_RUN
+  script:
+    - source ./.tests_setup.sh
+    - run_test $TESTNAME "${VERSIONS[$ND_VERSION]}"
+  parallel:
+    matrix:
+      - ND_VERSION: ncx_plasticity
+        TESTNAME:  sscx-v7-plasticity
+      - ND_VERSION: hippocampus
+        TESTNAME: quick-hip-delayconn
+      - ND_VERSION: mousify
+        TESTNAME: mousify
+      - ND_VERSION: thalamus
+        TESTNAME: sonataconf-quick-thalamus
+      - ND_VERSION: neocortex
+        TESTNAME: [sonataconf-quick-scx-multi-circuit, scx-v5-gapjunctions]
