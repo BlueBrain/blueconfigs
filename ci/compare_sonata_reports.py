@@ -101,7 +101,7 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
                                 if abs(new_val) > 0:
                                     rel_diff = abs_diff / abs(new_val)
                                 print(
-                                    "[{:g}(ms)] ref {:.8f} vs output {:.8f} for element_id index {:d} (abs. diff {:.1e} rel. diff {:.1e})".format(
+                                    "[{:g}(ms)] ref {:.16f} vs output {:.16f} for element_id index {:d} (abs. diff {:.1e} rel. diff {:.1e})".format(
                                         row_names[i],
                                         ref_val,
                                         new_val,
