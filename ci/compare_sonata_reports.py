@@ -66,7 +66,14 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
     df = df.sort_index(axis=1)
     df2 = df2.sort_index(axis=1)
 
-    if numpy.allclose(df.values, df2.values):
+    # At the moment then report1 is the reference, so b is the new
+    # value, not the reference.
+    # absolute(a - b) <= (atol + rtol * absolute(b))
+    close_kwargs = {
+        "rtol": 1e-16,
+        "atol": 1e-16,
+    }
+    if numpy.allclose(df.values, df2.values, **close_kwargs):
         # Check all populations
         continue
     else:
@@ -74,16 +81,35 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
             df_values = df[node_id].values
             df2_values = df2[node_id].values
             row_names = df[node_id].index
-            if not numpy.allclose(df_values, df2_values):
-                print(">>>> Different values for node id " + str(node_id) + " in population " + pop_name + ":")
+            if not numpy.allclose(df_values, df2_values, **close_kwargs):
+                print(
+                    ">>>> Different values for node id "
+                    + str(node_id)
+                    + " in population "
+                    + pop_name
+                    + ":"
+                )
                 # Loop through timesteps
                 for i, timestep in enumerate(df_values):
-                    if not numpy.allclose(timestep, df2_values[i]):
+                    if not numpy.allclose(timestep, df2_values[i], **close_kwargs):
                         # Loop through element ids
                         for j, element_value in enumerate(timestep):
-                            if not numpy.allclose(element_value, df2_values[i][j]):
-                                print("[{:g}(ms)] ref {:.8f} vs output {:.8f} for element_id index {:d}".
-                                    format(row_names[i], element_value, df2_values[i][j], j))
+                            ref_val, new_val = element_value, df2_values[i][j]
+                            if not numpy.allclose(ref_val, new_val, **close_kwargs):
+                                abs_diff = abs(ref_val - new_val)
+                                rel_diff = 0.0
+                                if abs(new_val) > 0:
+                                    rel_diff = abs_diff / abs(new_val)
+                                print(
+                                    "[{:g}(ms)] ref {:.8f} vs output {:.8f} for element_id index {:d} (abs. diff {:.1e} rel. diff {:.1e})".format(
+                                        row_names[i],
+                                        ref_val,
+                                        new_val,
+                                        j,
+                                        abs_diff,
+                                        rel_diff,
+                                    )
+                                )
         # Exit with error on the first population that fails
         exit(-1)
     exit(0)
