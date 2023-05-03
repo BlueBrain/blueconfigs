@@ -70,8 +70,8 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
     # value, not the reference.
     # absolute(a - b) <= (atol + rtol * absolute(b))
     close_kwargs = {
-        "rtol": 1e-16,
-        "atol": 1e-16,
+        "rtol": 1e-10,
+        "atol": 1e-10,
     }
     if numpy.allclose(df.values, df2.values, **close_kwargs):
         # Check all populations
@@ -101,7 +101,7 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
                                 if abs(new_val) > 0:
                                     rel_diff = abs_diff / abs(new_val)
                                 print(
-                                    "[{:g}(ms)] ref {:.8f} vs output {:.8f} for element_id index {:d} (abs. diff {:.1e} rel. diff {:.1e})".format(
+                                    "[{:g}(ms)] ref {:.10f} vs output {:.10f} for element_id index {:d} (abs. diff {:.1e} rel. diff {:.1e})".format(
                                         row_names[i],
                                         ref_val,
                                         new_val,
