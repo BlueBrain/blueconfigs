@@ -254,8 +254,14 @@ test_check_results() (
                 echo "Empty report file!"
                 return 1
             fi
+            nameroot=$(basename "${sonata_report}" .h5)
+            arch_report="${nameroot}${coreneuron_suffix}_${BUILD_COMPILER}_${BUILD_COMPILER_VERSION}_${BUILD_TYPE}.h5"
+            ref_file="${ref_results}/${arch_report}"
+            if [[ ! -f "${ref_file}" ]]; then
+              ref_file="${ref_results}/${sonata_report}"
+            fi
             (set -x; python "$_THISDIR/compare_sonata_reports.py" \
-                            "$ref_results/$sonata_report" \
+                            "${ref_file}" \
                             "$output/$sonata_report" \
                             $fraction_sonata_report_compare)
         fi
