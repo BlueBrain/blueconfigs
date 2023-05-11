@@ -20,9 +20,10 @@ Run Default
     OutputRoot output
     TargetFile user.target
 
-    RunMode RR
+    RunMode WholeCell
+    #CircuitTarget O1_Slice 
     CircuitTarget Column1k
-    Duration 60
+    Duration 500 
     Dt 0.025
     ForwardSkip 5000
 }
