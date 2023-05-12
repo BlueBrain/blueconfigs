@@ -9,7 +9,7 @@ Run Default
     BioName /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/bioname
     Atlas http://voxels.nexus.apps.bbp.epfl.ch/api/analytics/atlas/releases/77831ACA-6198-4AA0-82EF-D0475A4E0647
 
-    Simulator NEURON
+    Simulator CORENEURON
     RNGMode Random123
     BaseSeed 719775
 
@@ -17,8 +17,9 @@ Run Default
     OutputRoot output
     TargetFile user.target
 
-    RunMode RR
-    CircuitTarget Mosaic
+    RunMode WholeCell 
+    #CircuitTarget Mosaic
+    CircuitTraget All
     Duration 100
     Dt 0.025
 }
