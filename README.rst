@@ -51,6 +51,16 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**17 May 2023**
+
+* [BBPBGLIB-1020] Updated SONATA reference reports of `quick-v5-gaps`, `quick-v5-multisplit`, `quick-v6`, `scx-1k-v5-newparams`, `thalamus`, `sonataconf-quick-scx-multi-circuit`, `sonataconf-quick-thalamus`, `scx-v5-bonus-minis`, `scx-v5-gapjunctions` and `mousify` to make sure that they are within tolerance with the generated reports after a change in the ProbAMPANMDA_EMS.mod common mod file
+* New reference reports were generated with:
+   - NEURON 9.0.a6 (commit=89f7dab)
+   - CoreNEURON 9.0.a6 (commit=89f7dab)
+   - py-neurodamus 2.15.0
+   - Intel Classic Compiler 2021.7.0
+   - libsonata-report 1.2
+
 **4 May 2023**
 
 * Updated SONATA reference reports of `quick-hip-delayconn`, `quick-v5-plasticity`, `sonataconf-quick-v5-plasticity`, `hip-v6`, `scx-v5-plasticity` and `scx-v5-gapjunctions` to make sure that they are within tolerance with the generated reports after failing for the past months to have an acceptable comparison tolerance that had as a result the files to be out of tolerance with the latest changes in the compiler version and compilation flags
