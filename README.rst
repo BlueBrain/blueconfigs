@@ -51,6 +51,16 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**24 May 2023**
+
+* Updated reference reports of `scx-v5`, `scx-v6`, `scx-1k-v5`, `scx-2k-v6`, `scx-v5-gapjunctions`, `scx-v5-plasticity`, `sonataconf-quick-v5-plasticity`, `quick-v5-plasticity`, `quick-hip-delayconn`, `quick-hip-projSeed2`, `hip-v6` due to change from Intel Classic Compiler 2021.7.1 to Intel oneAPI LLVM based compier 2022.2.1.
+* New reference reports were generated with:
+   - NEURON 9.0.a6 (commit=89f7dab)
+   - CoreNEURON 9.0.a6 (commit=89f7dab)
+   - py-neurodamus 2.15.0
+   - Intel Classic Compiler 2022.2.1
+   - libsonata-report 1.2
+
 **17 May 2023**
 
 * [BBPBGLIB-1020] Updated SONATA reference reports of `quick-v5-gaps`, `quick-v5-multisplit`, `quick-v6`, `scx-1k-v5-newparams`, `thalamus`, `sonataconf-quick-scx-multi-circuit`, `sonataconf-quick-thalamus`, `scx-v5-bonus-minis`, `scx-v5-gapjunctions` and `mousify` to make sure that they are within tolerance with the generated reports after a change in the ProbAMPANMDA_EMS.mod common mod file
@@ -70,3 +80,27 @@ Below are the timestamps of the updates to the reference files:
    - py-neurodamus 2.13.2
    - Intel Classic Compiler 2021.7.0
    - libsonata-report 1.2
+
+
+Reference file updates
+======================
+
+In case we have to update multiple reference files there is an automatic way to do it.
+In the above script to run the tests locally we can add the following before sourcing `.tests_setup.sh`:
+
+.. code-block:: bash
+   export ENABLE_REFERENCE_UPDATES="ON"
+
+Then for every failure in the comparisons with the reference files the new generated files will be placed in the corresponding place.
+
+For the spike reference files this means that there are going to be new `out.sorted` spike files generated that will replace the current ones in the repo. To update them we need to commit the changes and create an MR.
+
+.. warning::
+
+   !!!BE CAREFULL!!!
+
+   For the report reference files the generated reports are going to be copied to the directory where the current reference reports lie. This is normally in `proj12` directory and GPFS and needs EXTREME CAREFULNESS when happening because this might interfere with all the CIs. The new reference reports will be copied to a file named that encodes whether `coreneuron` was enabled, the compiler name, the compiler version and the build type. In case a file exists with the same name THIS FILE WILL BE OVERWRITTEN!
+
+   !!!BE CAREFULL!!!
+
+After doing these changes the changes in the reference files need to be commited in the local git repo of `/gpfs/bbp.cscs.ch/project/proj12/jenkins` and documented in this README.

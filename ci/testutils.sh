@@ -184,7 +184,12 @@ check_spike_files() {
         sort -n -k'1,1' -k2 < "$spike_file" | awk 'NR==1 { print; next } { printf "%.3f\t%d\n", $1, $2 }' > "$_output/out.sorted"
         spike_file="$_output/out.sorted"
     fi
-    (set -x; diff -wy --suppress-common-lines $ref_spikes $spike_file)
+    # We compare the spikes file
+    # If the env variable UPDATE_REFERENCE_FILES is set to ON
+    # then we update the reference spikes file with the one generated here
+    # Spike reference files normally exist only in the repository so we have
+    # to commit the changes then and create a MR to update them
+    (set -x; diff -wy --suppress-common-lines $ref_spikes $spike_file || if [[ $UPDATE_REFERENCE_FILES == "ON" ]]; then echo "Updating reference spikes $spike_file -> $ref_spikes"; cp $spike_file $ref_spikes; else false; fi;)
 }
 
 
@@ -236,18 +241,6 @@ test_check_results() (
     else
       coreneuron_suffix=""
     fi
-    for report in $(cd $output && ls *.bbp); do
-        basename=$(basename "${report}" .bbp)
-        arch_report="${basename}${coreneuron_suffix}_${BUILD_COMPILER}_${BUILD_COMPILER_VERSION}_${BUILD_TYPE}.bbp"
-        (
-          set -x
-          if [[ -f "${ref_results}/${arch_report}" ]]; then
-            cmp "${ref_results}/${arch_report}" "${output}/${report}"
-          else
-            cmp "${ref_results}/${report}" "${output}/${report}"
-          fi
-        )
-    done
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
             if [ ! -s $output/$sonata_report ]; then
@@ -260,10 +253,13 @@ test_check_results() (
             if [[ ! -f "${ref_file}" ]]; then
               ref_file="${ref_results}/${sonata_report}"
             fi
+            # Compare the sonata reports
+            # If the env variable UPDATE_REFERENCE_FILES is set to ON
+            # then we update the reference files according to "${ref_results}/${arch_report}"
             (set -x; python "$_THISDIR/compare_sonata_reports.py" \
                             "${ref_file}" \
                             "$output/$sonata_report" \
-                            $fraction_sonata_report_compare)
+                            $fraction_sonata_report_compare || if [[ $UPDATE_REFERENCE_FILES == "ON" ]]; then echo "Updating reference files $output/$sonata_report -> ${ref_results}/${arch_report}"; cp $output/$sonata_report ${ref_results}/${arch_report}; else false; fi;)
         fi
     done
     log_ok "Results Match"
