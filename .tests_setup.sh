@@ -49,7 +49,7 @@ TESTS[ncx_plasticity]="scx-v5-plasticity quick-v5-plasticity sscx-v7-plasticity 
 TESTS[hippocampus]="hip-v6 hip-v6-mcr4 quick-hip-projSeed2 quick-hip-delayconn quick-hip-multipopulation sonataconf-quick-hip-multipopulation"
 TESTS[thalamus]="thalamus sonataconf-quick-thalamus"
 TESTS[mousify]="mousify quick-mousify-sonata"
-TESTS[ncx_ngv]="sonataconf-quick-multiscale"
+TESTS[ncx_ngv]="multiscale sonataconf-quick-multiscale"
 
 PY_ONLY_TESTS="quick-hip-multipopulation scx-1k-v5-newparams quick-1k-v5-nodesets quick-scx-multi-circuit sscx-v7-plasticity quick-v7-plasticity"
 

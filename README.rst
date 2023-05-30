@@ -53,6 +53,18 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**30 May 2023**
+
+* Updated reference spikes and reports for `scx-v5`, `scx-1k-v5-newparams`, `scx-1k-v5`, `scx-2k-v6`, `scx-v5-plasticity`, `scx-v6`, `quick-v5-multisplit`, `scx-v5-multiplit`, `scx-2k-v6`, `scx-v5-gapjunctions`, `scx-v5-bonus-minis`, `scx-v5-gapjunctions`, `quick-1k-v5-nodesets`, `quick-v5-gaps`, `quick-v5-plasticity`, `sonataconf-quick-scx-multi-circuit`, `sonataconf-quick-v5-plasticity`, `hip-v6`, `hip-v6-mcr4`, `quick-hip-delayconn`, `quick-hip-projSeed2`, `quick-mousify-sonata`, `mousify`, `thalamus`, `sonataconf-quick-thalamus`, `multiscale` and `sonataconf-quick-multiscale`
+* New reference files have `v1` in their name
+* Was done due to reverting a patch that set certain decimal numbers in a call to Import3d: https://github.com/BlueBrain/spack/pull/2013
+* New reference spikes were generated with:
+   - NEURON 9.0.a7 (commit=89f7dab)
+   - CoreNEURON 9.0.a7 (commit=89f7dab)
+   - py-neurodamus 2.15.0
+   - Intel oneAPI Compiler 2022.2.1
+   - libsonata-report 1.2
+
 **25 May 2023**
 
 * Updated reference spikes of long tests for `scx-v5-plasticity`, `quick-hip-multipopulation`, `mousify` and `thalamus`
