@@ -73,6 +73,9 @@ variables:
   SPACK_DEPLOYMENT_SUFFIX:
     description: Extra path component used when finding deployed software. Set to something like `pulls/1497` use software built for https://github.com/BlueBrain/spack/pull/1497. You probably want to set SPACK_BRANCH to the branch used in the relevant PR if you set this.
     value: ''
+  REFERENCE_REPORTS_VERSION:
+    description: Default version of reference reports that we compare with. In case there is no reference file with this version we look for the latest version, no version or just report name.
+    value: '1'
 
 default:
   tags:

@@ -189,6 +189,10 @@ check_spike_files() {
     # then we update the reference spikes file with the one generated here
     # Spike reference files normally exist only in the repository so we have
     # to commit the changes then and create a MR to update them
+    #
+    # TODO: THIS DOESN'T WORK WELL FOR THE LONG TESTS. THOSE REFERENCE SPIKES COME FROM A `proj12` DIRECTORY AND HAVE NO GIT VERSIONING OR VERSIONING
+    # TODO: WE HAVE TO FIGURE OUT A WAY TO VERSION THE SPIKE REPORTS FOR THE LONG TESTS OR AVOID AUTOMATIC UPDATES FOR SPIKES
+    #
     (set -x; diff -wy --suppress-common-lines $ref_spikes $spike_file || if [[ $UPDATE_REFERENCE_FILES == "ON" ]]; then echo "Updating reference spikes $spike_file -> $ref_spikes"; cp $spike_file $ref_spikes; else false; fi;)
 }
 
@@ -248,18 +252,56 @@ test_check_results() (
                 return 1
             fi
             nameroot=$(basename "${sonata_report}" .h5)
-            arch_report="${nameroot}${coreneuron_suffix}_${BUILD_COMPILER}_${BUILD_COMPILER_VERSION}_${BUILD_TYPE}.h5"
-            ref_file="${ref_results}/${arch_report}"
+            arch_suffix="${coreneuron_suffix}_${BUILD_COMPILER}_${BUILD_COMPILER_VERSION}_${BUILD_TYPE}"
+            expected_report_name="${nameroot}_v${REFERENCE_REPORTS_VERSION}${arch_suffix}.h5"
+            ref_file="${ref_results}/${expected_report_name}"
             if [[ ! -f "${ref_file}" ]]; then
-              ref_file="${ref_results}/${sonata_report}"
+                # find file whose version is largest available but less than REFERENCE_REPORTS_VERSION
+                largest_version_less_than_desired_version_filename=""
+                # check whether any "${ref_results}/${nameroot}_v*[0-9]${arch_suffix}.h5" exist otherwise "versioned_files" cannot be set properly
+                if ls ${ref_results}/${nameroot}_v*[0-9]${arch_suffix}.h5 1> /dev/null 2>&1; then
+                    # all the versioned files
+                    versioned_files=(${ref_results}/${nameroot}_v\[0-9\]*${arch_suffix}.h5)
+                    # versions defined in the versioned files
+                    versions=()
+                    # find all the versions
+                    for f in $versioned_files; do
+                        versions+=($(echo $(basename -- $f) | grep -o "_v[0-9]*_" | grep -o "[0-9]*"))
+                    done
+                    # sort the versions
+                    versions=($(echo ${versions[@]} | xargs -n1 | sort -g | xargs))
+                    # find the largest versions which is less than the desired vesion
+                    final_version=""
+                    for v in "${versions[@]}"; do
+                        if [ $v -lt ${REFERENCE_REPORTS_VERSION} ]; then
+                            final_version=$v
+                        else
+                            break
+                        fi
+                    done
+                    if [[ ! -z $final_version ]]; then
+                        largest_version_less_than_desired_version_filename="${nameroot}_v${final_version}${arch_suffix}.h5"
+                    fi
+                fi
+                # if there is a filename whose version is less than REFERENCE_REPORTS_VERSION set ref_file to it
+                if [[ ! -z $largest_version_less_than_desired_version_filename ]]; then
+                    ref_file="${ref_results}/${largest_version_less_than_desired_version_filename}"
+                # else fall back to the file without <_v*> (fallback for reference files before version introduction)
+                elif [[ -f "${ref_results}/${nameroot}${arch_suffix}.h5" ]]; then
+                    ref_file="${ref_results}/${nameroot}${arch_suffix}.h5"
+                # if it doesn't exist just use the plain <sonata_report> file (fallback for old reference files)
+                else
+                    ref_file="${ref_results}/${sonata_report}"
+                fi
             fi
             # Compare the sonata reports
             # If the env variable UPDATE_REFERENCE_FILES is set to ON
             # then we update the reference files according to "${ref_results}/${arch_report}"
+            # If a file with the expected name exists then avoid overriding it. If it needs to change then there should be a new version
             (set -x; python "$_THISDIR/compare_sonata_reports.py" \
                             "${ref_file}" \
                             "$output/$sonata_report" \
-                            $fraction_sonata_report_compare || if [[ $UPDATE_REFERENCE_FILES == "ON" ]]; then echo "Updating reference files $output/$sonata_report -> ${ref_results}/${arch_report}"; cp $output/$sonata_report ${ref_results}/${arch_report}; else false; fi;)
+                            $fraction_sonata_report_compare || if [[ $UPDATE_REFERENCE_FILES == "ON" ]] && [[ ! -f "${ref_results}/${expected_report_name}" ]]; then echo "Updating reference files $output/$sonata_report -> ${ref_results}/${expected_report_name}"; cp $output/$sonata_report ${ref_results}/${expected_report_name}; else false; fi;)
         fi
     done
     log_ok "Results Match"
