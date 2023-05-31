@@ -75,7 +75,7 @@ variables:
     value: ''
   REFERENCE_REPORTS_VERSION:
     description: Default version of reference reports that we compare with. In case there is no reference file with this version we look for the latest version, no version or just report name.
-    value: '1'
+    value: '2'
 
 default:
   tags:
