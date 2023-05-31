@@ -53,6 +53,19 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**31 May 2023**
+
+* Updated reference reports for `mousify`, `thalamus`, `sonataconf-quick-thalamus`, `multiscale` and `sonataconf-quick-multiscale`
+* New reference files have `v3` in their name
+* Was done due to updates in `slope_mg` and `scale_mg` variables in https://bbpgitlab.epfl.ch/hpc/sim/models/neocortex/-/merge_requests/16
+* Move changes in `slope_mg` and `scale_mg` only to `neocortex`: https://bbpgitlab.epfl.ch/hpc/sim/models/common/-/merge_requests/12
+* New reference spikes were generated with:
+   - NEURON 9.0.a8 (commit=89f7dab)
+   - CoreNEURON 9.0.a8 (commit=89f7dab)
+   - py-neurodamus 2.15.0
+   - Intel oneAPI Compiler 2022.2.1
+   - libsonata-report 1.2
+
 **30 May 2023**
 
 * Updated reference spikes and reports for `scx-1k-v5-newparams`, `quick-1k-v5-nodesets`, `scx-1k-v5`, `scx-2k-v6`, `scx-v5-bonus-minis`, `scx-v5-gapjunctions`, `scx-v5`, `quick-v6`, `scx-v6`, `hip-v6-mcr4`, `quick-hip-delayconn`, `quick-hip-projSeed2`, `hip-v6`, `mousify`, `quick-mousify-sonata`, `sonataconf-quick-scx-multi-circuit`, `quick-v5-gaps`, `sonataconf-quick-v5-plasticity`, `quick-v5-plasticity`, `scx-v5-plasticity`, `sonataconf-quick-thalamus`, `thalamus`, `quick-v5-multisplit`, `multiscale` and `sonataconf-quick-multiscale`
@@ -126,7 +139,7 @@ In the above script to run the tests locally we can add the following before sou
 
 .. code-block:: bash
 
-    export ENABLE_REFERENCE_UPDATES="ON"
+    export UPDATE_REFERENCE_FILES="ON"
 
 Then for every failure in the comparisons with the reference files the new generated files will be placed in the corresponding place.
 

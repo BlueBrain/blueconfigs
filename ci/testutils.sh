@@ -37,7 +37,7 @@ REF_RESULTS["sonataconf-quick-hip-multipopulation"]="$EXTENDED_RESULTS/circuit-h
 REF_RESULTS["sonataconf-quick-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation-quick-sonataconf"
 REF_RESULTS["sonataconf-quick-scx-multi-circuit"]="$EXTENDED_RESULTS/circuit-scx-multicircuit/simulation-sonataconf_v1"
 REF_RESULTS["sonataconf-quick-ngv-usecase5"]="$EXTENDED_RESULTS/circuit-ngv-usecase5/simulation-sonataconf"
-REF_RESULTS["sonataconf-quick-thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation-sonataconf_v1"
+REF_RESULTS["sonataconf-quick-thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation-sonataconf_v3"
 REF_RESULTS["multiscale"]="$DATADIR/subcellular/blueconfigs_test/reference_files"
 REF_RESULTS["sonataconf-quick-multiscale"]="$DATADIR/subcellular/blueconfigs_test/simulation-sonataconf/reference_files"
 
