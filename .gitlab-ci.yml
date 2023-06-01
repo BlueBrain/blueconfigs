@@ -282,7 +282,6 @@ long_tests:
       when: manual
       allow_failure: true
     - if: '$CI_PIPELINE_SOURCE == "web" && $LONG_RUN == "yes"'
-      allow_failure: true
     # - Otherwise dont even show the option
 
 
