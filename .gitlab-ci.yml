@@ -275,6 +275,16 @@ long_tests:
       - ND_VERSION: thalamus
         TESTNAME: thalamus
         SIM_TARGET: Mosaic
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $LONG_RUN == "yes"'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: manual
+      allow_failure: true
+    - if: '$CI_PIPELINE_SOURCE == "trigger" && $LONG_RUN == "yes"'
+      allow_failure: true
+    # - Otherwise dont even show the option
+
 
 
 # NMODL related tests
