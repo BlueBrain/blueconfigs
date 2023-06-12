@@ -24,7 +24,8 @@
                     "astrocytes": {
                         "type": "astrocyte",
                         "morphologies_dir": "$BASE_DIR/astrocytes/morphologies/astrocytes/h5",
-                        "biophysical_neuron_models_dir": "$BASE_DIR/emodels"
+                        "biophysical_neuron_models_dir": "$BASE_DIR/emodels",
+                        "microdomains_file": "PLACEHOLDER"
                     }
                 }
             },
@@ -32,7 +33,9 @@
                 "nodes_file": "$BASE_DIR/vasculature/nodes.h5",
                 "populations": {
                     "vasculature": {
-                        "type": "vasculature"
+                        "type": "vasculature",
+                        "vasculature_file": "PLACEHOLDER",
+                        "vasculature_mesh": "PLACEHOLDER"
                     }
                 }
             }
@@ -58,7 +61,8 @@
                 "edges_file": "$BASE_DIR/vasculature/edges.h5",
                 "populations": {
                     "gliovascular": {
-                        "type": "endfoot"
+                        "type": "endfoot",
+                        "endfeet_meshes_file" : "PLACEHOLDER"
                     }
                 }
             }
