@@ -15,8 +15,11 @@ Run locally
 
     export HOME=`pwd`
     export SALLOC_ACCOUNT=proj16
+    # values can be neocortex, ncx_bare, ncx_plasticity, hippocampus, thalamus, mousify or ncx_ngv
+    # if none is set it will run all tests
     export TEST_VERSIONS="ncx_plasticity"
 
+    # The next steps are useful if you don't run when a spack is active
     export SPACK_BRANCH=my_spack_branch
     export <SPACK_PACKAGE_NAME>_BRANCH=my_package_branch
     export <SPACK_PACKAGE_NAME>_TAG=my_package_tag
@@ -33,6 +36,14 @@ Run locally
     run_all_tests
     # Run only one specific test with the proper spec
     run_test sonataconf-quick-v5-plasticity "${VERSIONS[ncx_plasticity]}"
+
+
+Gitlab CI
+=========
+
+The default run on Merge Request is a dry run.
+Launch by hand to have a full run.
+You can set: `SPACK_BRANCH` and `NEURON_BRANCH` to tweak the build.
 
 
 Reference files
