@@ -5,13 +5,13 @@ Run Default
     MorphologyPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/morphologies
     METypePath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/ccells
     CircuitPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional
-    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional/newparams
+    nrnPath /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-1k/touches/functional/newparams/edges.h5
 
     CurrentDir   .
     OutputRoot   output
 
     TargetFile user.target
-    CircuitTarget Column
+    CircuitTarget default:Column
     Simulator NEURON
     RNGMode Random123
     RunMode RR

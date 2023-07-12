@@ -18,15 +18,14 @@ Run Default
     TargetFile user.target
 
     RunMode RR
-    CircuitTarget subset
+    CircuitTarget All:subset
     Duration 50
     Dt 0.025
 }
 
 Projection All
 {
-    Path /gpfs/bbp.cscs.ch/project/proj68/circuits/O1/20190307/connectome/functional/All/circuit-aff.syn2
-    Source All
+    Path /gpfs/bbp.cscs.ch/project/proj68/circuits/O1/20190307/sonata/networks/functional/All.edges-aff.h5
 }
 
 Report soma
