@@ -29,7 +29,7 @@ log "Spack settings:
  - SPACK_SYSTEM_CONFIG_PATH: $SPACK_SYSTEM_CONFIG_PATH
  - SPACK_USER_CACHE_PATH: $SPACK_USER_CACHE_PATH"
 
-module use /gpfs/bbp.cscs.ch/ssd/apps/bsd/modules/_meta
+. /gpfs/bbp.cscs.ch/ssd/apps/bsd/config/modules.sh
 module load unstable git
 
 
@@ -44,8 +44,6 @@ install_spack() (
     cd $WORKSPACE
     log "Installing SPACK. Cloning $SPACK_REPO spack --depth 1 -b $SPACK_BRANCH"
     git clone -c feature.manyFiles=true $SPACK_REPO spack --depth 1 -b $SPACK_BRANCH
-    rm -f spack/etc/spack/*.yaml
-    cp spack/bluebrain/sysconfig/bluebrain5/*.yaml spack/etc/spack/
 )
 
 
