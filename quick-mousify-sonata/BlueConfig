@@ -26,14 +26,14 @@ Run Default
 Projection A@left
 {
     #Path /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional/A@left/circuit-aff.syn2
-    Path /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional/A@left/edges-aff.sonata
+    Path /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-n34-mousify/simulation/circuit_data/edges-aff-left.h5
     Source A@left
 }
 
 Projection A@right
 {
     #Path /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional/A@right/circuit-aff.syn2
-    Path /gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/connectome/functional/A@right/edges-aff.sonata
+    Path /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-n34-mousify/simulation/circuit_data/edges-aff-right.h5
     Source A@right
 }
 

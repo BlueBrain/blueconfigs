@@ -38,13 +38,13 @@ Report compartment
 
 Projection SC
 {
-    Path /gpfs/bbp.cscs.ch/project/proj112/circuits/CA1.O1/20200424/projections/SC/v3/CA1_20200424_SC_v3_edges.sonata
+    Path /gpfs/bbp.cscs.ch/project/proj112/circuits/CA1.O1/20200424/projections/SC/v3/CA1_20200424_SC_v3_edges.h5
     PopulationID 1
 }
 
 Connection SC_INT
 {
-    Source SC
+    Source hippocampus_projections:SC
     Destination INT
     SynapseConfigure %s.Use = 0.212 %s.tau_r_NMDA = 0.4 %s.tau_d_NMDA = 1.5
     Weight 1.0
@@ -53,7 +53,7 @@ Connection SC_INT
 
 Connection SC_PC
 {
-    Source SC
+    Source hippocampus_projections:SC
     Destination SP_PC
     SynapseConfigure %s.Use = 0.212 %s.tau_r_NMDA = 0.4 %s.tau_d_NMDA = 1.5
     Weight 1.0
