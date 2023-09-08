@@ -48,6 +48,7 @@ spack config blame modules
 spack concretize -f
 
 if [ -z "$DRY_RUN" ]; then
+    spack fetch -m
     spack env depfile > Makefile
     make -j ${SLURM_CPUS_PER_TASK:-$SLURM_CPUS_PER_NODE}
 fi
