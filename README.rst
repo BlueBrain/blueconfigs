@@ -28,7 +28,7 @@ Run locally
     export RUN_PY_TESTS='yes'
     export RUN_HOC_TESTS='no'
 
-    export REFERENCE_REPORTS_VERSION="<latest_version_number>"
+    export REFERENCE_REPORTS_VERSION="<latest_version_number>" # check .gitlab-ci.yaml default value
 
     source .tests_setup.sh
     install_neurodamus
@@ -63,6 +63,19 @@ Currently, the reports are all in SONATA form and their naming convention is `<r
 Note: There are cases where for some reason CoreNEURON reports have slightly different results compared to NEURON due to the compilation flags being used and the additional code optimizations.
 
 Below are the timestamps of the updates to the reference files:
+
+**10 Oct 2023**
+
+* Updated reference reports for most of  `thalamus`, `hippocampus` and `neocortex` simulations
+* New reference files have `v4` in their name
+* Was done due to updates in NEURON related to eigen: https://github.com/neuronsimulator/nrn/pull/2470 and https://github.com/neuronsimulator/nrn/pull/2491
+   - Branch was created with both changes in order to update the refereces: https://github.com/neuronsimulator/nrn/commits/get_results_from
+* New reference spikes were generated with:
+   - NEURON 9.0.a8 (commit=3ec979364) - branch mentioned avobe
+   - CoreNEURON 9.0.a8 (commit=3ec979364)
+   - py-neurodamus 2.16.3
+   - Intel oneAPI Compiler 2022.2.1
+   - libsonata-report 1.2
 
 **31 May 2023**
 
@@ -151,16 +164,33 @@ In the above script to run the tests locally we can add the following before sou
 .. code-block:: bash
 
     export UPDATE_REFERENCE_FILES="ON"
+    export REFERENCE_REPORTS_VERSION="<new_version>"
 
-Then for every failure in the comparisons with the reference files the new generated files will be placed in the corresponding place.
+Then for every failure in the comparisons with the reference files the new generated files will be placed in the corresponding place with the name `<report_name><_v$REFERENCE_REPORTS_VERSION><_coreneuron>_<compiler_name>_<compiler_version>_<build_type>.h5`.
+For instance:
 
-For the spike reference files this means that there are going to be new `out.sorted` spike files generated that will replace the current ones in the repo. To update them we need to commit the changes and create an MR.
+.. code-block:: bash
+
+    out_v4_coreneuron_oneapi_2022.2.1_FastDebug.h5
+    out_v4_oneapi_2022.2.1_FastDebug.h5
+    soma_v2_coreneuron_oneapi_2022.2.1_FastDebug.h5
+    soma_v2_oneapi_2022.2.1_FastDebug.h5
+
+In addition to this, a new _fasthoc directory is required for the quick-v6 simulation. This can be achieved by loading the local neurodamus used to run these simulations.
+This assumes that .test_setup.sh has been sourced:
+
+.. code-block:: bash
+
+    spack load neurodamus-neocortex@develop%oneapi ~plasticity+coreneuron+synapsetool
+    hocify /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/morphologies/ -v --output-dir=/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/morphologies/_fasthoc_<new_version>
+
+Subsequently, update the file `quick-v6/test_quick_v6_fasthoc.sh` with the newly generated `_fasthoc` folder.
 
 .. warning::
 
    !!!BE CAREFULL!!!
 
-   For the report reference files the generated reports are going to be copied to the directory where the current reference reports lie. This is normally in `proj12` directory and GPFS and needs EXTREME CAREFULNESS when happening because this might interfere with all the CIs. The new reference reports will be copied to a file named that encodes whether `coreneuron` was enabled, the compiler name, the compiler version and the build type. In case a file exists with the same name THIS FILE WILL BE OVERWRITTEN!
+   For the report reference files the generated reports are going to be copied to the directory where the current reference reports lie. This is normally in `proj12` directory and GPFS and needs EXTREME CAREFULNESS when happening because this might interfere with all the CIs. The new reference reports will be copied to a file named that encodes whether `coreneuron` was enabled, the compiler name, the compiler version and the build type.
 
    !!!BE CAREFULL!!!
 

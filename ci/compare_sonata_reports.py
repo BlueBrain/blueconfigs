@@ -47,7 +47,7 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
         print("partially compare %s nodes" % n_sample)
         ids = node_ids[:n_sample]
         data_frame = population_elements.get(ids)
-        data_frame2 = population_elements.get(ids)
+        data_frame2 = population_elements2.get(ids)
     else:
         data_frame = population_elements.get()
         data_frame2 = population_elements2.get()
@@ -110,6 +110,8 @@ for pop_name, pop_name2 in zip(elements.get_population_names(), elements2.get_po
                                         rel_diff,
                                     )
                                 )
+                        # Exit with error on the first timestep that fails
+                        exit(-1)
         # Exit with error on the first population that fails
         exit(-1)
     exit(0)

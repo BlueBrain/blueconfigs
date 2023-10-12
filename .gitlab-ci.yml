@@ -75,7 +75,7 @@ variables:
     value: ''
   REFERENCE_REPORTS_VERSION:
     description: Default version of reference reports that we compare with. In case there is no reference file with this version we look for the latest version, no version or just report name.
-    value: '3'
+    value: '4'
 
 default:
   tags:
@@ -276,7 +276,7 @@ long_tests:
         SIM_TARGET: hippocampus_neurons:Mosaic
       - ND_VERSION: mousify
         TESTNAME: mousify
-        SIM_TARGET: Layer45
+        SIM_TARGET: All:Layer45
       - ND_VERSION: thalamus
         TESTNAME: thalamus
         SIM_TARGET: Mosaic

@@ -2,7 +2,7 @@ Run Default
 {
 
     CircuitPath /gpfs/bbp.cscs.ch/project/proj83/circuits/Bio_M/20200805
-    nrnPath /gpfs/bbp.cscs.ch/project/proj83/circuits/sscx-v7-plasticity/edges.sonata
+    nrnPath /gpfs/bbp.cscs.ch/project/proj83/circuits/sscx-v7-plasticity/edges.h5
     MorphologyPath /gpfs/bbp.cscs.ch/project/proj83/morphologies/fixed_ais_L23PC_20201210/ascii
     MorphologyType asc
     METypePath /gpfs/bbp.cscs.ch/project/proj83/singlecell/release_2020-07-31/hoc

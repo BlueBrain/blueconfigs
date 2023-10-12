@@ -18,6 +18,7 @@ REF_RESULTS["scx-2k-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_v2"
 REF_RESULTS["scx-v5-gapjunctions"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simulation_v4"
 REF_RESULTS["scx-v5-bonus-minis"]="$EXTENDED_RESULTS/circuit-scx-v5-bonus-minis/simulation_v1"
 REF_RESULTS["scx-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation_v3"
+REF_RESULTS["sscx-v7-plasticity"]="$EXTENDED_RESULTS/circuit-sscx-v7-plasticity/simulation"
 REF_RESULTS["hip-v6"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation_v2"
 REF_RESULTS["hip-v6-mcr4"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-mcr4"
 REF_RESULTS["thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation_v1"
@@ -26,6 +27,7 @@ REF_RESULTS["quick-v5-gaps"]="$EXTENDED_RESULTS/circuit-scx-v5-gapjunctions/simu
 REF_RESULTS["quick-v6"]="$EXTENDED_RESULTS/circuit-2k/simulation_quick_v1"
 REF_RESULTS["quick-v5-multisplit"]="$EXTENDED_RESULTS/circuit-v5-multisplit/simulation_v1"
 REF_RESULTS["quick-v5-plasticity"]="$EXTENDED_RESULTS/circuit-scx-v5-plasticity/simulation-quick_v3"
+REF_RESULTS["quick-scx-multi-circuit"]="$EXTENDED_RESULTS/circuit-scx-multicircuit/simulation"
 REF_RESULTS["quick-v7-plasticity"]="$EXTENDED_RESULTS/circuit-sscx-v7-plasticity/simulation-quick_v1"
 REF_RESULTS["quick-hip-sonata"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-sonata"
 REF_RESULTS["quick-hip-projSeed2"]="$EXTENDED_RESULTS/circuit-hip-v6/simulation-quick-projSeed2"
@@ -171,6 +173,46 @@ _prepare_test() {
     set -$_tsetbk  # reenable disabled flags
 }
 
+get_reference_file() {
+    local report_name=$1
+    local ref_results=$2
+    local coreneuron_suffix=$3
+
+    local nameroot=$(basename "${report_name}" .h5)
+    local arch_suffix="${coreneuron_suffix}_${BUILD_COMPILER}_${BUILD_COMPILER_VERSION}_${BUILD_TYPE}"
+    local expected_report_name="${nameroot}_v${REFERENCE_REPORTS_VERSION}${arch_suffix}.h5"
+    local ref_file="${ref_results}/${expected_report_name}"
+    if [[ ! -f "${ref_file}" ]]; then
+        local largest_version_less_than_desired_version_filename=""
+        if ls ${ref_results}/${nameroot}_v*[0-9]${arch_suffix}.h5 1> /dev/null 2>&1; then
+            local versioned_files=(${ref_results}/${nameroot}_v\[0-9\]*${arch_suffix}.h5)
+            local versions=()
+            for f in $versioned_files; do
+                versions+=($(echo $(basename -- $f) | grep -o "_v[0-9]*_" | grep -o "[0-9]*"))
+            done
+            versions=($(echo ${versions[@]} | xargs -n1 | sort -g | xargs))
+            local final_version=""
+            for v in "${versions[@]}"; do
+                if [ $v -lt ${REFERENCE_REPORTS_VERSION} ]; then
+                    final_version=$v
+                else
+                    break
+                fi
+            done
+            if [[ ! -z $final_version ]]; then
+                largest_version_less_than_desired_version_filename="${nameroot}_v${final_version}${arch_suffix}.h5"
+            fi
+        fi
+        if [[ ! -z $largest_version_less_than_desired_version_filename ]]; then
+            ref_file="${ref_results}/${largest_version_less_than_desired_version_filename}"
+        elif [[ -f "${ref_results}/${nameroot}${arch_suffix}.h5" ]]; then
+            ref_file="${ref_results}/${nameroot}${arch_suffix}.h5"
+        else
+            ref_file="${ref_results}/${report_name}"
+        fi
+    fi
+    echo "$ref_file $expected_report_name"
+}
 
 check_spike_files() {
     local spike_file="$1"
@@ -193,7 +235,17 @@ check_spike_files() {
     # TODO: THIS DOESN'T WORK WELL FOR THE LONG TESTS. THOSE REFERENCE SPIKES COME FROM A `proj12` DIRECTORY AND HAVE NO GIT VERSIONING OR VERSIONING
     # TODO: WE HAVE TO FIGURE OUT A WAY TO VERSION THE SPIKE REPORTS FOR THE LONG TESTS OR AVOID AUTOMATIC UPDATES FOR SPIKES
     #
-    (set -x; diff -wy --suppress-common-lines $ref_spikes $spike_file || if [[ $UPDATE_REFERENCE_FILES == "ON" ]]; then echo "Updating reference spikes $spike_file -> $ref_spikes"; cp $spike_file $ref_spikes; else false; fi;)
+    (
+        set -x
+        diff -wy --suppress-common-lines $ref_spikes $spike_file ||
+        if [[ $UPDATE_REFERENCE_FILES == "ON" ]];
+        then
+            echo "Updating reference spikes $spike_file -> $ref_spikes"
+            cp $spike_file $ref_spikes
+        else
+            false
+        fi
+    )
 }
 
 
@@ -201,11 +253,7 @@ test_check_results() (
     set -e
     local output="$1"
     local ref_results=${2:-${REF_RESULTS[$(basename "$PWD")]}}
-    local ref_spikes="${3:-out.sorted}"
     local fraction_sonata_report_compare="$4"
-    if [ -z "$3" ] && [ -f "$output/ref_spikes.txt" ]; then
-        ref_spikes=$(<"$output/ref_spikes.txt")
-    fi
     # Print nice msg on error
     trap "(set +x; log_error \"Results DON'T Match\"; exit 1)" ERR SIGINT SIGTERM
 
@@ -222,78 +270,42 @@ test_check_results() (
     # load libsonata now since its required for new comparison tools
     module load unstable py-libsonata python-dev
 
-    if [[ $ref_spikes == *"out.h5" ]] && [ -f $ref_spikes ]; then
-        (set -x; python "$_THISDIR/compare_sonata_spikes.py" \
-                        "$output/out.h5" \
-                        "$ref_spikes")
-    else
-        check_spike_files $output/out.dat "$ref_spikes"
-
-        if [ -f $output/out_SONATA.dat ]; then
-            check_spike_files $output/out_SONATA.dat "$ref_spikes"
-        elif [ -f $output/out.h5 ]; then
-            (set -x; python "$_THISDIR/generate_sonata_out.py" \
-                            "$output/out.h5" \
-                            "$output/out_SONATA.dat")
-            check_spike_files $output/out_SONATA.dat "$ref_spikes"
-        fi
-    fi
-
-    # compare reports
+    # Check if is a coreneuron simulation
     if [[ "${output}" == *"coreneuron"* ]]; then
       coreneuron_suffix="_coreneuron"
     else
       coreneuron_suffix=""
     fi
+
+    local ref_file
+    local expected_report_name
+    # Check spike files
+    if [ -f "$output/ref_spikes.txt" ]; then
+        ref_spikes=$(<"$output/ref_spikes.txt")
+        check_spike_files $output/out.dat "$ref_spikes"
+    else
+        local spike_report="out.h5"
+        read -r ref_file expected_report_name <<< $(get_reference_file "$spike_report" "$ref_results" "$coreneuron_suffix")
+        (set -x; python "$_THISDIR/compare_sonata_spikes.py" \
+                        "$output/$spike_report" \
+                        "${ref_file}" ||
+                        if [[ $UPDATE_REFERENCE_FILES == "ON" ]] &&
+                            [[ ! -f "${ref_results}/${expected_report_name}" ]];
+                        then
+                            echo "Updating reference files $output/$spike_report -> ${ref_results}/${expected_report_name}";
+                            cp "$output/out.h5" ${ref_results}/${expected_report_name};
+                        else
+                            false;
+                        fi;)
+    fi
+    # Check the rest of the reports
     for sonata_report in $(cd $output && ls *.h5); do
         if [ "$sonata_report" != "out.h5" ]; then
             if [ ! -s $output/$sonata_report ]; then
                 echo "Empty report file!"
                 return 1
             fi
-            nameroot=$(basename "${sonata_report}" .h5)
-            arch_suffix="${coreneuron_suffix}_${BUILD_COMPILER}_${BUILD_COMPILER_VERSION}_${BUILD_TYPE}"
-            expected_report_name="${nameroot}_v${REFERENCE_REPORTS_VERSION}${arch_suffix}.h5"
-            ref_file="${ref_results}/${expected_report_name}"
-            if [[ ! -f "${ref_file}" ]]; then
-                # find file whose version is largest available but less than REFERENCE_REPORTS_VERSION
-                largest_version_less_than_desired_version_filename=""
-                # check whether any "${ref_results}/${nameroot}_v*[0-9]${arch_suffix}.h5" exist otherwise "versioned_files" cannot be set properly
-                if ls ${ref_results}/${nameroot}_v*[0-9]${arch_suffix}.h5 1> /dev/null 2>&1; then
-                    # all the versioned files
-                    versioned_files=(${ref_results}/${nameroot}_v\[0-9\]*${arch_suffix}.h5)
-                    # versions defined in the versioned files
-                    versions=()
-                    # find all the versions
-                    for f in $versioned_files; do
-                        versions+=($(echo $(basename -- $f) | grep -o "_v[0-9]*_" | grep -o "[0-9]*"))
-                    done
-                    # sort the versions
-                    versions=($(echo ${versions[@]} | xargs -n1 | sort -g | xargs))
-                    # find the largest versions which is less than the desired vesion
-                    final_version=""
-                    for v in "${versions[@]}"; do
-                        if [ $v -lt ${REFERENCE_REPORTS_VERSION} ]; then
-                            final_version=$v
-                        else
-                            break
-                        fi
-                    done
-                    if [[ ! -z $final_version ]]; then
-                        largest_version_less_than_desired_version_filename="${nameroot}_v${final_version}${arch_suffix}.h5"
-                    fi
-                fi
-                # if there is a filename whose version is less than REFERENCE_REPORTS_VERSION set ref_file to it
-                if [[ ! -z $largest_version_less_than_desired_version_filename ]]; then
-                    ref_file="${ref_results}/${largest_version_less_than_desired_version_filename}"
-                # else fall back to the file without <_v*> (fallback for reference files before version introduction)
-                elif [[ -f "${ref_results}/${nameroot}${arch_suffix}.h5" ]]; then
-                    ref_file="${ref_results}/${nameroot}${arch_suffix}.h5"
-                # if it doesn't exist just use the plain <sonata_report> file (fallback for old reference files)
-                else
-                    ref_file="${ref_results}/${sonata_report}"
-                fi
-            fi
+            read -r ref_file expected_report_name <<< $(get_reference_file "$sonata_report" "$ref_results" "$coreneuron_suffix")
             # Compare the sonata reports
             # If the env variable UPDATE_REFERENCE_FILES is set to ON
             # then we update the reference files according to "${ref_results}/${arch_report}"
@@ -301,7 +313,15 @@ test_check_results() (
             (set -x; python "$_THISDIR/compare_sonata_reports.py" \
                             "${ref_file}" \
                             "$output/$sonata_report" \
-                            $fraction_sonata_report_compare || if [[ $UPDATE_REFERENCE_FILES == "ON" ]] && [[ ! -f "${ref_results}/${expected_report_name}" ]]; then echo "Updating reference files $output/$sonata_report -> ${ref_results}/${expected_report_name}"; cp $output/$sonata_report ${ref_results}/${expected_report_name}; else false; fi;)
+                            $fraction_sonata_report_compare ||
+                            if [[ $UPDATE_REFERENCE_FILES == "ON" ]] &&
+                               [[ ! -f "${ref_results}/${expected_report_name}" ]];
+                            then
+                                echo "Updating reference files $output/$sonata_report -> ${ref_results}/${expected_report_name}";
+                                cp $output/$sonata_report ${ref_results}/${expected_report_name};
+                            else
+                                false;
+                            fi;)
         fi
     done
     log_ok "Results Match"
@@ -370,11 +390,7 @@ run_test() (
     # Single BlueConfig if it's the default will run directly in foreground
     if [ ${#configsrc[@]} -eq 1 ] && [ ${blueconfigs[$configsrc]} != "none" ]; then
         run_blueconfig "$configsrc"
-        if [[ $configsrc == *json ]]; then
-            test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}" "${REF_RESULTS[$testname]}/out.h5"
-        else
-            test_check_results "${outputs[$configsrc]}"
-        fi
+        test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
         log_ok "Tests $testname successful\n" "PASS"
         return 0
     fi
