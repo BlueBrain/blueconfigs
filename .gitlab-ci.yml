@@ -246,8 +246,9 @@ thalamus:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: manual
       allow_failure: true
-    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: '$CI_PIPELINE_SOURCE == "web" && $LONG_RUN == "yes"'
       when: manual
+      allow_failure: true
     # - Otherwise dont even show the option
 
 long_tests:
