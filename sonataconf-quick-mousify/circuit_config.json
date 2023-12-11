@@ -1,0 +1,46 @@
+{
+  "manifest": {
+    "$BASE_DIR": "/gpfs/bbp.cscs.ch/project/proj68/circuits/test-n34/20190514/sonata",
+    "$NETWORK_NODES_DIR": "$BASE_DIR/networks/nodes",
+    "$NETWORK_EDGES_DIR": "$BASE_DIR/networks/edges/functional"
+  },
+  "components": {
+    "morphologies_dir": "$BASE_DIR/components/morphologies",
+    "biophysical_neuron_models_dir": "$BASE_DIR/components/biophysical_neuron_models/hoc"
+  },
+  "node_sets_file": "$NETWORK_NODES_DIR/All/node_sets.json",  
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$NETWORK_NODES_DIR/All/nodes.h5",
+        "node_types_file": null,
+        "node_sets_file": "$NETWORK_NODES_DIR/All/node_sets.json",
+        "populations": {
+          "All": {
+            "type": "biophysical"
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "edges_file": "$NETWORK_EDGES_DIR/A@left/edges-aff.h5",
+        "edge_types_file": null,
+        "populations" :{
+          "A@left": {
+            "type": "chemical"
+          }
+        }
+      },
+      {
+        "edges_file": "$NETWORK_EDGES_DIR/A@right/edges-aff.h5",
+        "edge_types_file": null,
+        "populations": {
+          "A@right": {
+            "type": "chemical"
+          }    
+        }
+      }
+    ]
+  }
+}

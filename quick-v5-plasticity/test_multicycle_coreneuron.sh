@@ -24,7 +24,7 @@ blue_set Simulator CORENEURON $blueconfig
 blue_set OutputRoot "${outputdir}_bc" $blueconfig # Save output in different folder to compare later
 head -n30 $blueconfig
 
-run_blueconfig $blueconfig
+run_simulation $blueconfig
 
 # Compare the results of the Neurodamus HOC simulation first
 test_check_results "${outputdir}_bc" "${REF_RESULTS["quick-v5-plasticity"]}"
@@ -37,7 +37,7 @@ module load py-neurodamus
 
 blue_set Simulator CORENEURON ${blueconfig}_py
 blue_set CircuitTarget mini50 ${blueconfig}_py
-RUN_PY_TESTS=yes run_blueconfig "${blueconfig}_py" "--modelbuilding-steps=3"
+RUN_PY_TESTS=yes run_simulation "${blueconfig}_py" "--modelbuilding-steps=3"
 # Skip result check as CircuitTarget is changed
 mkdir -p "$outputdir"
 touch "$outputdir/.exception.expected"

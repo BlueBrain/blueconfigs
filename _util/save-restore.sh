@@ -72,17 +72,17 @@ check_report_length() (
 )
 
 echo " >> Running FIRST PART"
-run_blueconfig "$config1"
+run_simulation "$config1"
 echo " >> >> Checking report length of FIRST PART"
 check_report_length "$output1" $t_end1
 
 echo " >> Running SECOND PART"
-run_blueconfig "$config2"
+run_simulation "$config2"
 echo " >> >> Checking report length of SECOND PART"
 check_report_length "$output2" $((t_end2 - t_end1))
 
 echo " >> Running THIRD PART"
-run_blueconfig "$config3"
+run_simulation "$config3"
 echo " >> >> Checking report length of THIRD PART"
 check_report_length "$output3" $((t_end3 - t_end2))
 

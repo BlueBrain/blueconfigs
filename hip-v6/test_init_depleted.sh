@@ -12,7 +12,7 @@ fi
 blue_comment_section Report $blueconfig
 blue_set CircuitTarget mini420 $blueconfig
 blue_set SYNAPSES__init_depleted 1 $blueconfig Conditions
-run_blueconfig $blueconfig
+run_simulation $blueconfig
 
 # Let the framework check against different reference spikes
 echo "out.initdepleted.sorted" > $outputdir/ref_spikes.txt

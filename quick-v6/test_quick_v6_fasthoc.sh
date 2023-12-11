@@ -14,5 +14,5 @@ metype_path=$(blue_get METypePath)
 metype_path=${metype_path/\/hoc/\/fasthoc}
 blue_set METypePath $metype_path $blueconfig
 
-run_blueconfig $blueconfig
+run_simulation $blueconfig
 

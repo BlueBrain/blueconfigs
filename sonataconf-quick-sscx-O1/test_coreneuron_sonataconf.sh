@@ -1,0 +1,1 @@
+../_util/test_coreneuron_sonataconf.sh

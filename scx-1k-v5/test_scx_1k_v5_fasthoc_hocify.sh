@@ -15,5 +15,5 @@ hocify $morpho_path --output-dir=$fasthoc_path --verbose
 blue_set MorphologyPath $fasthoc_path $blueconfig
 blue_set MorphologyType hoc $blueconfig
 
-run_blueconfig $blueconfig
+run_simulation $blueconfig
 

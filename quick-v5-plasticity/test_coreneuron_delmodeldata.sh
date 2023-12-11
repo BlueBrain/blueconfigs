@@ -22,7 +22,7 @@ blue_set Simulator CORENEURON $blueconfig
 
 echo ">> Test CoreNeuron data removal with neurodamus-py"
 module load py-neurodamus
-RUN_PY_TESTS=yes run_blueconfig $blueconfig
+RUN_PY_TESTS=yes run_simulation $blueconfig
 
 if [ -d "$coreneuron_data" ]; then
     log_error  "$coreneuron_data should be deleted by default"
@@ -34,7 +34,7 @@ rm -rf "$outputdir"
 #######################################################
 
 echo ">> Test CoreNeuron data preserve with neurodamus-py --keep-build"
-RUN_PY_TESTS=yes run_blueconfig $blueconfig "--keep-build"
+RUN_PY_TESTS=yes run_simulation $blueconfig "--keep-build"
 
 # Check if intermediate data is kept after run
 if [ -d "$coreneuron_data" ]; then
@@ -50,7 +50,7 @@ rm -rf "$outputdir"
 
 echo ">> Test CoreNeuron data preserve with neurodamus(Hoc / Py) BlueConfig KeepModelData"
 blue_set KeepModelData True $blueconfig
-run_blueconfig $blueconfig
+run_simulation $blueconfig
 
 # Check if intermediate data is kept after run
 if [ -d $coreneuron_data ]; then

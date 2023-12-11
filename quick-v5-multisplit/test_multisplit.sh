@@ -8,4 +8,4 @@ blue_set RunMode LoadBalance $blueconfig
 # Clear eventual leftovers from previous run
 rm -rf cx*
 
-run_blueconfig $blueconfig
+run_simulation $blueconfig

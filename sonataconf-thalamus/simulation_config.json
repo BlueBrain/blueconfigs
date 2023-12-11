@@ -1,0 +1,266 @@
+{
+  "version": 1,
+  "manifest": {
+    "$OUTPUT_DIR": "./output_sonata",
+    "$INPUT_DIR": "/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-thalamus/simulation-sonataconf"
+  },
+  "run": {
+    "dt": 0.025,
+    "forward_skip": 5001,
+    "tstop": 100.0,
+    "random_seed": 0
+  },
+  "conditions": {
+    "v_init": -65,
+    "randomize_gaba_rise_time": true
+  },
+  "target_simulator": "NEURON",
+  "network": "/gpfs/bbp.cscs.ch/project/proj12/SIT/thalamus_sonata/circuit_sonata.json",
+  "node_sets_file": "user_node_sets.json",
+  "node_set": "mc2_Column_sub1000",
+  "output": {
+    "output_dir": "$OUTPUT_DIR",
+    "spikes_file": "out.h5"
+  },
+  "reports": {
+    "soma_report": {
+      "cells": "mc2_Column",
+      "variable_name": "v",
+      "sections": "soma",
+      "type": "compartment",
+      "dt": 0.1,
+      "start_time": 0,
+      "end_time": 4000
+    }
+  },
+  "inputs": {
+    "HoldRt": {
+      "module": "noise",
+      "mean_percent": 0.0,
+      "variance": 0.001,
+      "delay": 0.0,
+      "duration": 5000.0,
+      "input_type": "current_clamp",
+      "node_set": "Rt_RC"
+    },
+    "HoldTC": {
+      "module": "noise",
+      "mean_percent": 0.0,
+      "variance": 0.001,
+      "delay": 0.0,
+      "duration": 5000.0,
+      "input_type": "current_clamp",
+      "node_set": "VPL_TC"
+    },
+    "HoldIN": {
+      "module": "noise",
+      "mean_percent": 0.0,
+      "variance": 0.001,
+      "delay": 0.0,
+      "duration": 5000.0,
+      "input_type": "current_clamp",
+      "node_set": "VPL_IN"
+    },
+    "spikeReplay_ml_noise": {
+      "module": "synapse_replay",
+      "delay": 0.0,
+      "duration": 40000.0,
+      "input_type": "spikes",
+      "spike_file": "$INPUT_DIR/ml_noise_rawgid.dat",
+      "source": "ML_afferents",
+      "node_set": "Mosaic"
+    },
+    "spikeReplay_ct_noise": {
+      "module": "synapse_replay",
+      "delay": 0.0,
+      "duration": 40000.0,
+      "input_type": "spikes",
+      "spike_file": "$INPUT_DIR/ct_noise_rawgid.dat",
+      "source": "CT_afferents",
+      "node_set": "Mosaic"
+    },
+    "spikeReplay_ml_sensory": {
+      "module": "synapse_replay",
+      "delay": 0.0,
+      "duration": 40000.0,
+      "input_type": "spikes",
+      "spike_file": "$INPUT_DIR/ml_sensory.dat",
+      "source": "ML_afferents",
+      "node_set": "Mosaic"
+    }
+  },
+  "connection_overrides": [
+    {
+      "name": "ConInh-Uni",
+      "source": "Inhibitory",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "spont_minis": 0.01
+    },
+    {
+      "name": "ConL3Exc-Uni",
+      "source": "Excitatory",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "spont_minis": 0.01
+    },
+    {
+      "name": "ML_all",
+      "source": "ML_afferents",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "spont_minis": 0.01
+    },
+    {
+      "name": "CT_all",
+      "source": "CT_afferents",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "spont_minis": 0.01
+    },
+    {
+      "name": "GABAB_erev",
+      "source": "Inhibitory",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "synapse_configure": "%s.e_GABAA = -82.0 %s.e_GABAB = -97.0 tau_d_GABAB_ProbGABAAB_EMS = 77"
+    },
+    {
+      "name": "GABAB_erev_Rt_TC",
+      "source": "Rt_RC",
+      "target": "VPL_TC",
+      "weight": 1.0,
+      "synapse_configure": "%s.e_GABAA = -94.0 %s.e_GABAB = -97.0"
+    },
+    {
+      "name": "GABAB_erev_IN_TC",
+      "source": "VPL_IN",
+      "target": "VPL_TC",
+      "weight": 1.0,
+      "synapse_configure": "%s.e_GABAA = -94.0 %s.e_GABAB = -97.0"
+    },
+    {
+      "name": "MGGate",
+      "source": "Excitatory",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "synapse_configure": "%s.mg = 1.0"
+    },
+    {
+      "name": "scheme_CaUse_e_2_Other_Inh",
+      "source": "Excitatory",
+      "target": "Inhibitory",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.4029343148532312"
+    },
+    {
+      "name": "scheme_CaUse_Other_Inh_2_e",
+      "source": "Inhibitory",
+      "target": "Excitatory",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.4029343148532312"
+    },
+    {
+      "name": "scheme_CaUse_Inh_Inh",
+      "source": "Inhibitory",
+      "target": "Inhibitory",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.4029343148532312"
+    },
+    {
+      "name": "scheme_CaUse_ML",
+      "source": "ML_afferents",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.4029343148532312"
+    },
+    {
+      "name": "scheme_CaUse_CT",
+      "source": "CT_afferents",
+      "target": "Mosaic",
+      "weight": 1.0,
+      "synapse_configure": "%s.Use *= 0.4029343148532312"
+    },
+    {
+      "name": "scheme1b",
+      "source": "Inhibitory",
+      "target": "Excitatory",
+      "weight": 1.0,
+      "synapse_configure": "%s.GABAB_ratio = 0.0"
+    },
+    {
+      "name": "scheme2b",
+      "source": "Inhibitory",
+      "target": "Inhibitory",
+      "weight": 1.0,
+      "synapse_configure": "%s.GABAB_ratio = 0.0"
+    },
+    {
+      "name": "Rt_IN_GABAB_ratio",
+      "source": "Rt_RC",
+      "target": "VPL_IN",
+      "weight": 1.0,
+      "synapse_configure": "%s.GABAB_ratio = 0.0"
+    },
+    {
+      "name": "Rt_TC_GABAB_ratio",
+      "source": "Rt_RC",
+      "target": "VPL_TC",
+      "weight": 1.0,
+      "synapse_configure": "%s.GABAB_ratio = 0.0"
+    },
+    {
+      "name": "scheme_nmda_e2i",
+      "source": "Excitatory",
+      "target": "Inhibitory",
+      "weight": 1.0,
+      "synapse_configure": "%s.NMDA_ratio = 0.57"
+    },
+    {
+      "name": "TC_Rt_NMDA",
+      "source": "VPL_TC",
+      "target": "Rt_RC",
+      "weight": 1.0,
+      "synapse_configure": "%s.NMDA_ratio = 0.57"
+    },
+    {
+      "name": "CT_NMDA",
+      "source": "CT_afferents",
+      "target": "Rt_RC",
+      "weight": 1.0,
+      "synapse_configure": "%s.NMDA_ratio = 0.99"
+    },
+    {
+      "name": "CT2TC_NMDA",
+      "source": "CT_afferents",
+      "target": "VPL_TC",
+      "weight": 1.0,
+      "synapse_configure": "%s.NMDA_ratio = 1.91"
+    },
+    {
+      "name": "ML_TC_NMDA",
+      "source": "ML_afferents",
+      "target": "VPL_TC",
+      "weight": 1.0,
+      "synapse_configure": "%s.NMDA_ratio = 0.41"
+    },
+    {
+      "name": "modifyTC2TC",
+      "source": "VPL_TC",
+      "target": "VPL_TC",
+      "weight": 0.0
+    },
+    {
+      "name": "modifyTC2IN",
+      "source": "VPL_TC",
+      "target": "VPL_IN",
+      "weight": 0.0
+    },
+    {
+      "name": "modifyML2Rt",
+      "source": "ML_afferents",
+      "target": "Rt_RC",
+      "weight": 0.0
+    }
+  ]
+}

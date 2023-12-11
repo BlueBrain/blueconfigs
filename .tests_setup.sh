@@ -24,7 +24,7 @@ DATADIR="/gpfs/bbp.cscs.ch/project/proj12/jenkins"
 EXTRA_VARIANT="$ND_VARIANT"
 # dropped support for overriding BUILD_OPTIONS as it makes BUILD_TYPE handling harder and it seemed not to be used
 BUILD_OPTIONS="^neuron+coreneuron build_type=${BUILD_TYPE}"
-DEFAULT_VARIANT="+coreneuron+synapsetool"
+DEFAULT_VARIANT="+coreneuron"
 CORENRN_DEP=""
 NEURODAMUS_PY_VERSION="py-neurodamus@develop"
 _BASE_OPTIONS="$DEFAULT_VARIANT$EXTRA_VARIANT $CORENRN_DEP"
@@ -43,15 +43,13 @@ VERSIONS[ncx_ngv]="neurodamus-neocortex$BUILD_VERSION +ngv+metabolism+synapsetoo
 
 # list of simulations to run
 declare -A TESTS
-TESTS[neocortex]="scx-v5 scx-v6 scx-1k-v5 scx-1k-v5-newparams scx-2k-v6 scx-v5-gapjunctions scx-v5-bonus-minis quick-1k-v5-nodesets quick-scx-multi-circuit sonataconf-quick-scx-multi-circuit"
+TESTS[neocortex]="sonataconf-scx-v5-uhill-conductance-scale sonataconf-quick-scx-multi-circuit sonataconf-sscx-O1 sonataconf-quick-sscx-O1"
 TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit"
-TESTS[ncx_plasticity]="scx-v5-plasticity quick-v5-plasticity sscx-v7-plasticity quick-v7-plasticity sonataconf-quick-v5-plasticity"
-TESTS[hippocampus]="hip-v6 hip-v6-mcr4 quick-hip-projSeed2 quick-hip-delayconn quick-hip-multipopulation sonataconf-quick-hip-multipopulation"
-TESTS[thalamus]="thalamus sonataconf-quick-thalamus"
-TESTS[mousify]="mousify quick-mousify-sonata"
-TESTS[ncx_ngv]="multiscale sonataconf-quick-multiscale"
-
-PY_ONLY_TESTS="quick-hip-multipopulation scx-1k-v5-newparams quick-1k-v5-nodesets quick-scx-multi-circuit sscx-v7-plasticity quick-v7-plasticity"
+TESTS[ncx_plasticity]="sonataconf-sscx-v7-plasticity sonataconf-quick-v5-plasticity"
+TESTS[hippocampus]="sonataconf-quick-hip-multipopulation sonataconf-hippocampus"
+TESTS[thalamus]="sonataconf-quick-thalamus sonataconf-thalamus"
+TESTS[mousify]="sonataconf-quick-mousify"
+TESTS[ncx_ngv]="sonataconf-quick-multiscale"
 
 # Prepare spack (install+env)
 source ci/spack_setup.sh || return $?

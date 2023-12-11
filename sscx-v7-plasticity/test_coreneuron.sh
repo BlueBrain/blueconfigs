@@ -8,4 +8,4 @@ blue_set Simulator CORENEURON $blueconfig
 blue_comment RunMode $blueconfig
 
 export OMP_NUM_THREADS=1
-run_blueconfig "$blueconfig"
+run_simulation "$blueconfig"

@@ -13,8 +13,8 @@ blue_comment_section Report $blueconfig
 export ND_DEBUG_CONN="62798"
 
 export OMP_NUM_THREADS=1
-RUN_PY_TESTS=yes run_blueconfig $blueconfig "--simulate-model=OFF"
+RUN_PY_TESTS=yes run_simulation $blueconfig "--simulate-model=OFF"
 
-RUN_PY_TESTS=yes run_blueconfig $blueconfig | tee ${outdir}/sim.log
+RUN_PY_TESTS=yes run_simulation $blueconfig | tee ${outdir}/sim.log
 
 grep 'SIMULATION (SKIP MODEL BUILD)' ${outdir}/sim.log

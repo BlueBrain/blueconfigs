@@ -54,7 +54,7 @@ _run_test() (
     version=$1  # bare, gaps, replay
     refresults=$DATADIR/cellular/circuit-scx-v5-gapjunctions/simulation_partial
     set -x
-    run_blueconfig BlueConfig.$version
+    run_simulation BlueConfig.$version
     test_check_results output_$version $refresults/output_$version partial_tests/out_$version.sorted
 )
 

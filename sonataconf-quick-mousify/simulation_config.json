@@ -1,0 +1,71 @@
+{
+    "manifest": {
+        "$CURRENT_DIR": "."
+    },
+    "run": {
+        "random_seed": 719775,
+        "tstop": 100.0,
+        "dt": 0.025
+    },
+    "network": "circuit_config.json",
+    "target_simulator": "NEURON",
+    "node_set": "All",
+    "node_sets_file": "user_node_sets.json",
+    "output": {
+        "output_dir": "$CURRENT_DIR/output"
+    },
+    "connection_overrides": [
+        {
+            "source": "All",
+            "target": "All",
+            "weight": 1.0,
+            "name": "All"
+        },
+        {
+            "source": "Inhibitory",
+            "target": "All",
+            "weight": 1.0,
+            "synapse_configure": "%s.e_GABAA = -80.0 %s.e_GABAB = -75.8354310081",
+            "name": "GABAB_erev"
+        },
+        {
+            "source": "Excitatory",
+            "target": "Excitatory",
+            "weight": 1.0,
+            "synapse_configure": "%s.Use *= 0.0777210800234",
+            "name": "scheme_CaUse_ee"
+        },
+        {
+            "source": "Inhibitory",
+            "target": "Inhibitory",
+            "weight": 1.0,
+            "synapse_configure": "%s.Use *= 0.264485052596",
+            "name": "scheme_CaUse_Inh_Inh"
+        },
+        {
+            "source": "Excitatory",
+            "target": "Excitatory",
+            "weight": 1.0,
+            "synapse_configure": "%s.NMDA_ratio = 0.4",
+            "name": "scheme_nmda_e2e"
+        },
+        {
+            "source": "Excitatory",
+            "target": "Inhibitory",
+            "weight": 1.0,
+            "synapse_configure": "%s.NMDA_ratio = 0.8",
+            "name": "scheme_nmda_e2i"
+        }
+    ],
+    "reports": {
+        "compartments": {
+            "cells": "All",
+            "type": "compartment",
+            "variable_name": "v",
+            "unit": "mV",
+            "dt": 0.25,
+            "start_time": 0.0,
+            "end_time": 1000.0
+        }
+    }
+}

@@ -167,49 +167,32 @@ q_neocortex:
   parallel:
     matrix:
       - ND_VERSION: neocortex
-        TESTNAME: [quick-v5-gaps, scx-1k-v5, quick-v6, quick-v5-multisplit]
-      - ND_VERSION: neocortex
-        TESTNAME: [scx-1k-v5-newparams, quick-1k-v5-nodesets, quick-scx-multi-circuit]
+        TESTNAME: [sonataconf-quick-scx-multi-circuit, sonataconf-quick-sscx-O1]
       - ND_VERSION: ncx_plasticity
-        TESTNAME: [quick-v5-plasticity, sscx-v7-plasticity]
+        TESTNAME: [sonataconf-quick-v5-plasticity, sonataconf-sscx-v7-plasticity]
       - ND_VERSION: ncx_ngv
-        TESTNAME: [multiscale]
+        TESTNAME: [sonataconf-quick-multiscale]
 
 q_hippocampus:
   extends: .nd_quick_test
   parallel:
     matrix:
       - ND_VERSION: hippocampus
-        TESTNAME: [quick-hip-projSeed2, quick-hip-multipopulation, quick-hip-delayconn]
+        TESTNAME: [sonataconf-quick-hip-multipopulation]
 
 q_thalamus:
   extends: .nd_quick_test
   parallel:
     matrix:
       - ND_VERSION: thalamus
-        TESTNAME: thalamus
+        TESTNAME: sonataconf-quick-thalamus
 
 q_mousify:
   extends: .nd_quick_test
   parallel:
     matrix:
       - ND_VERSION: mousify
-        TESTNAME: quick-mousify-sonata
-
-q_sonata_config:
-  extends: .nd_quick_test
-  parallel:
-    matrix:
-      - ND_VERSION: ncx_plasticity
-        TESTNAME: [sonataconf-quick-v5-plasticity]
-      - ND_VERSION: neocortex
-        TESTNAME: [sonataconf-quick-scx-multi-circuit]
-      - ND_VERSION: hippocampus
-        TESTNAME: [sonataconf-quick-hip-multipopulation]
-      - ND_VERSION: thalamus
-        TESTNAME: [sonataconf-quick-thalamus]
-      - ND_VERSION: ncx_ngv
-        TESTNAME: [sonataconf-quick-multiscale]
+        TESTNAME: sonataconf-quick-mousify
 
 
 # Neurodamus Medium Size tests
@@ -224,23 +207,24 @@ neocortex:
   parallel:
     matrix:
       - ND_VERSION: neocortex
-        TESTNAME: [scx-v5-gapjunctions, scx-v5-bonus-minis]
-      - ND_VERSION: ncx_plasticity
-        TESTNAME: [scx-v5-plasticity]
+        TESTNAME: [sonataconf-sscx-O1, sonataconf-scx-v5-uhill-conductance-scale]
+      # TODO: Add a medium test for neocortetx-plasticity from scientists
+      # - ND_VERSION: ncx_plasticity
+      #   TESTNAME: [sonataconf-scx-v5]
 
 hippocampus:
   extends: .nd_medium_test
   parallel:
     matrix:
       - ND_VERSION: hippocampus
-        TESTNAME: [hip-v6, hip-v6-mcr4]
+        TESTNAME: [sonataconf-hippocampus]
 
-mousify:
+thalamus:
   extends: .nd_medium_test
-  variables:
-    ND_VERSION: mousify
-    TESTNAME: mousify
-
+  parallel:
+    matrix:
+      - ND_VERSION: thalamus
+        TESTNAME: [sonataconf-thalamus]
 
 # Neurodamus Long tests
 # ~~~~~~~~~~~~~~~~~~~~~
@@ -262,24 +246,23 @@ mousify:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: manual
       allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: manual
     # - Otherwise dont even show the option
 
 long_tests:
   extends: .nd_long_test
   parallel:
     matrix:
-      - ND_VERSION: ncx_plasticity
-        TESTNAME:  scx-v5-plasticity
-        SIM_TARGET: mc0_Column
+      - ND_VERSION: neocortex
+        TESTNAME:  sonataconf-sscx-O1
+        SIM_TARGET: hex0 # 30K
       - ND_VERSION: hippocampus
-        TESTNAME: quick-hip-multipopulation
-        SIM_TARGET: hippocampus_neurons:Mosaic
-      - ND_VERSION: mousify
-        TESTNAME: mousify
-        SIM_TARGET: All:Layer45
+        TESTNAME: sonataconf-hippocampus
+        SIM_TARGET: slice10 # 12K
       - ND_VERSION: thalamus
-        TESTNAME: thalamus
-        SIM_TARGET: Mosaic
+        TESTNAME: sonataconf-thalamus
+        SIM_TARGET: mc2_Column #14K
 
 
 # NMODL related tests
@@ -303,12 +286,12 @@ nmodl_tests:
   parallel:
     matrix:
       - ND_VERSION: ncx_plasticity
-        TESTNAME:  sscx-v7-plasticity
+        TESTNAME:  sonataconf-sscx-v7-plasticity
       - ND_VERSION: hippocampus
-        TESTNAME: quick-hip-delayconn
+        TESTNAME: sonataconf-quick-hip-multipopulation
       - ND_VERSION: mousify
-        TESTNAME: mousify
+        TESTNAME: sonataconf-quick-mousify
       - ND_VERSION: thalamus
         TESTNAME: sonataconf-quick-thalamus
       - ND_VERSION: neocortex
-        TESTNAME: [sonataconf-quick-scx-multi-circuit, scx-v5-gapjunctions]
+        TESTNAME: [sonataconf-quick-scx-multi-circuit, sonataconf-sscx-O1]

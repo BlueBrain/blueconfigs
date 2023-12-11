@@ -42,6 +42,13 @@ REF_RESULTS["sonataconf-quick-ngv-usecase5"]="$EXTENDED_RESULTS/circuit-ngv-usec
 REF_RESULTS["sonataconf-quick-thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation-sonataconf_v3"
 REF_RESULTS["multiscale"]="$DATADIR/subcellular/blueconfigs_test/reference_files"
 REF_RESULTS["sonataconf-quick-multiscale"]="$DATADIR/subcellular/blueconfigs_test/simulation-sonataconf/reference_files"
+REF_RESULTS["sonataconf-sscx-v7-plasticity"]="$EXTENDED_RESULTS/circuit-sscx-v7-plasticity/simulation-sonataconf"
+REF_RESULTS["sonataconf-quick-mousify"]="$EXTENDED_RESULTS/circuit-n34-mousify/simulation-sonataconf"
+REF_RESULTS["sonataconf-scx-v5-uhill-conductance-scale"]="$EXTENDED_RESULTS/circuit-scx-v5-sonata/simulation-uhill-conductance-scale"
+REF_RESULTS["sonataconf-sscx-O1"]="$EXTENDED_RESULTS/circuit-sscx-O1/simulation-1k"
+REF_RESULTS["sonataconf-quick-sscx-O1"]="$EXTENDED_RESULTS/circuit-sscx-O1/simulation-quick"
+REF_RESULTS["sonataconf-thalamus"]="$EXTENDED_RESULTS/circuit-thalamus/simulation-sonataconf-1k"
+REF_RESULTS["sonataconf-hippocampus"]="$EXTENDED_RESULTS/circuit-hip-sonata/simulation-sonataconf-1k"
 
 _prepare_test() {
     confFile="${1:-BlueConfig}" #either sonata config or BlueConfig
@@ -389,7 +396,7 @@ run_test() (
 
     # Single BlueConfig if it's the default will run directly in foreground
     if [ ${#configsrc[@]} -eq 1 ] && [ ${blueconfigs[$configsrc]} != "none" ]; then
-        run_blueconfig "$configsrc"
+        run_simulation "$configsrc"
         test_check_results "${outputs[$configsrc]}" "${REF_RESULTS[$testname]}"
         log_ok "Tests $testname successful\n" "PASS"
         return 0
@@ -421,7 +428,7 @@ run_test() (
             if [ -z "$baseconfig" ]; then
                 baseconfig="$src"
             else
-                run_blueconfig "$configfile" &> _$src.log &
+                run_simulation "$configfile" &> _$src.log &
                 pids[$src]=$!
             fi
         fi
@@ -434,7 +441,7 @@ run_test() (
     # Base one runs in foreground
     if [ -n "$baseconfig" ]; then
         echo; log "Base BlueConfig launch: $baseconfig"
-        run_blueconfig "$baseconfig" # understands $DRY_RUN
+        run_simulation "$baseconfig" # understands $DRY_RUN
         log "Simulation Finished: $baseconfig"
         if [[ $baseconfig == *json ]]; then
             _test_results "${outputs[$baseconfig]}" "${REF_RESULTS[$testname]}" "${REF_RESULTS[$testname]}/out.h5"
@@ -499,7 +506,7 @@ run_test_debug() (
         if [ ${src:(-3)} = .sh ]; then
             (source ./$src "$configfile" "${outputs[$src]}")
         else
-            run_blueconfig "$configfile"
+            run_simulation "$configfile"
         fi
         test_check_results "${outputs[$src]}" "${REF_RESULTS[$testname]}"
     done
@@ -508,11 +515,11 @@ run_test_debug() (
 
 
 #
-# Run neurodmus directly on a given blueconfig
+# Run neurodmus directly on a given config file
 #
-# @param configFile: (optional) The BlueConfig for the simulation
+# @param configFile: (optional) The config file for the simulation
 #
-run_blueconfig() (
+run_simulation() (
     set -e
     configfile=${1:-"BlueConfig"}
     if [[ $configfile == *json* ]] ; then

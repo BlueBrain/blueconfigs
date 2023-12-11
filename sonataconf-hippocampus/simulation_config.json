@@ -1,0 +1,97 @@
+{
+    "run": {
+        "random_seed": 10,
+        "dt": 0.025,
+        "tstop": 50.0
+    },
+    "conditions": {
+        "extracellular_calcium": 2.4
+    },
+    "network": "circuit_config.json",
+    "node_sets_file": "user_node_sets.json",
+    "target_simulator": "NEURON",
+    "node_set": "slice10_sub1000",
+    "output": {
+        "output_dir": "output_sonata"
+    },
+    "inputs": {
+        "external_spikes_inject_to_pc": {
+            "source":"CA3_SP_PC",
+            "node_set": "Excitatory",
+            "input_type": "spikes",
+            "delay": 0.0,
+            "duration": 1500.0,
+            "module": "synapse_replay",
+            "spike_file": "in_spikes.dat"
+        }
+    },
+    "connection_overrides": [
+        {
+            "source": "Excitatory",
+            "target": "Mosaic",
+            "weight": 1.0,
+            "spont_minis": 0.0,
+            "name": "Exc-All"
+        },
+        {
+            "source": "Inhibitory",
+            "target": "Mosaic",
+            "weight": 1.0,
+            "spont_minis": 0.0,
+            "name": "Inh-All"
+        },
+        {
+            "source": "Excitatory",
+            "target": "Excitatory",
+            "synapse_configure": "%s.tau_r_NMDA = 2.93 %s.tau_d_NMDA = 148.5",
+            "name": "NMDA_EE"
+        },
+        {
+            "source": "Excitatory",
+            "target": "nonCCK",
+            "synapse_configure": "%s.tau_r_NMDA = 2.93 %s.tau_d_NMDA = 148.5",
+            "name": "NMDA_MGE"
+        },
+        {
+            "source": "Excitatory",
+            "target": "CCK",
+            "synapse_configure": "%s.tau_r_NMDA = 2.93 %s.tau_d_NMDA = 298.75",
+            "name": "NMDA_CGE"
+        },
+        {
+            "source": "CA3_SP_PC",
+            "target": "Excitatory",
+            "synapse_configure": "%s.tau_r_AMPA = 0.4 %s.tau_r_NMDA = 2.93 %s.tau_d_NMDA = 148.5",
+            "name": "SC-Exc"
+        },
+        {
+            "source": "CA3_SP_PC",
+            "target": "Inhibitory",
+            "synapse_configure": "%s.tau_r_AMPA = 0.1 %s.tau_r_NMDA = 2.93 %s.tau_d_NMDA = 154.6",
+            "name": "SC-Inh"
+        },
+        {
+            "source": "Excitatory",
+            "target": "Mosaic",
+            "synapse_configure": "%s.mg = 1.4",
+            "name": "MGGate"
+        },
+        {
+            "source": "CA3_SP_PC",
+            "target": "Mosaic",
+            "synapse_configure": "%s.mg = 1.4",
+            "name": "MGGateSC"
+        }
+    ],
+    "reports": {
+        "soma": {
+            "cells": "Mosaic",
+            "type": "compartment",
+            "variable_name": "v",
+            "unit": "mV",
+            "dt": 0.025,
+            "start_time": 0.0,
+            "end_time": 1500.0
+        }
+    }
+}

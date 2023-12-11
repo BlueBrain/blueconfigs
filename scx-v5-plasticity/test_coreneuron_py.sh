@@ -10,5 +10,5 @@ outputdir=$2
 blue_set Simulator CORENEURON $blueconfig
 
 export OMP_NUM_THREADS=1
-RUN_PY_TESTS=yes run_blueconfig $blueconfig
+RUN_PY_TESTS=yes run_simulation $blueconfig
 

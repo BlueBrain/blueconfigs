@@ -1,0 +1,75 @@
+{
+    "manifest": {
+        "$CURRENT_DIR": "."
+    },
+    "run": {
+        "random_seed": 0,
+        "tstop": 100.0,
+        "dt": 0.025,
+        "spike_threshold": -35.0
+    },
+    "conditions": {
+        "extracellular_calcium": 2,
+        "v_init": -80.0,
+        "celsius": 36.0,
+        "spike_location": "AIS",
+        "mechanisms": {
+            "ProbAMPANMDA_EMS": {},
+            "ProbGABAAB_EMS": {},
+            "GluSynapse": {}
+        }
+    },
+    "network": "/gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1-sonata/sonata-uhill-conductance-scale/circuit_config.json",
+    "node_set": "Column",
+    "node_sets_file": "node_sets.json",
+    "target_simulator": "NEURON",
+    "output": {
+        "output_dir": "$CURRENT_DIR/output"
+    },
+    "inputs": {
+        "hypampIntoMosaic": {
+            "node_set": "Column",
+            "input_type": "current_clamp",
+            "module": "hyperpolarizing",
+            "delay": 0.0,
+            "duration": 1000.0
+        },
+        "depIntoMosaic": {
+            "node_set": "Column",
+            "input_type": "current_clamp",
+            "module": "relative_linear",
+            "percent_start": 80.0,
+            "delay": 0.0,
+            "duration": 1000.0
+        },
+        "pInj2": {
+            "node_set": "Column",
+            "input_type": "current_clamp",
+            "module": "noise",
+            "mean_percent": 50.0,
+            "variance": 2.5,
+            "delay": 0.0,
+            "duration": 100.0
+        }
+    },
+    "reports": {
+        "soma": {
+            "cells": "Column",
+            "type": "compartment",
+            "variable_name": "v",
+            "unit": "mV",
+            "dt": 0.1,
+            "start_time": 0.0,
+            "end_time": 50.0
+        },
+        "compartments": {
+            "cells": "MiniColumn_712_10cell",
+            "type": "compartment",
+            "variable_name": "v",
+            "unit": "mV",
+            "dt": 1.0,
+            "start_time": 0.0,
+            "end_time": 50.0
+        }
+    }
+}

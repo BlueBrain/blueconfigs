@@ -18,12 +18,12 @@ echo "
 >> Setting Target to MiniColumn_1"
 rm -rf sim_conf/cx* sim_conf/_loadbal_* mcomplex.dat
 blue_set CircuitTarget MiniColumn_1 $blueconfig
-run_blueconfig $blueconfig | check_prints "Could not reuse load balance data" "INSTANTIATING"
+run_simulation $blueconfig | check_prints "Could not reuse load balance data" "INSTANTIATING"
 
 echo "
 >> Setting Target to Small. Must reuse info from any previous"
 blue_set CircuitTarget Small $blueconfig
-N=1 run_blueconfig $blueconfig | check_prints "Target Small is a subset of the target" "INSTANTIATING"
+N=1 run_simulation $blueconfig | check_prints "Target Small is a subset of the target" "INSTANTIATING"
 
 #skip result check
 mkdir -p "$outputdir"

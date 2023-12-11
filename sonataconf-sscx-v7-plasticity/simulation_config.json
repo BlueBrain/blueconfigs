@@ -1,0 +1,81 @@
+{
+    "manifest": {
+        "$CURRENT_DIR": "."
+    },
+    "run": {
+        "dt": 0.025,
+        "tstop": 1000.0,
+        "random_seed": 12345
+    },
+    "conditions": {
+        "extracellular_calcium": 1.2,
+        "spike_location": "AIS",
+        "v_init": -80.0,
+        "mechanisms": {
+            "ProbAMPANMDA_EMS": {
+                "init_depleted": true,
+                "minis_single_vesicle": true
+            },
+            "ProbGABAAB_EMS": {
+                "init_depleted": true,
+                "minis_single_vesicle": true
+            },
+            "GluSynapse": {
+                "init_depleted": true,
+                "minis_single_vesicle": true,
+                "cao_CR": 1.2
+            }
+        }
+    },
+    "network": "circuit_config.json",
+    "node_sets_file": "user_node_sets.json",
+    "node_set": "200_L5_PCs",
+    "target_simulator": "NEURON",
+    "output": {
+        "output_dir": "$CURRENT_DIR/output"
+    },
+    "inputs": {
+        "RelativeShotNoise_L5E_inject": {
+            "node_set": "200_L5_PCs",
+            "input_type": "current_clamp",
+            "module": "relative_shot_noise",
+            "delay": 0.0,
+            "duration": 1000.0,
+            "decay_time": 4.0,
+            "rise_time": 0.4,
+            "amp_cv": 0.63,
+            "mean_percent": 70.0,
+            "sd_percent": 40.0
+        },
+        "hypamp_mosaic": {
+            "node_set": "200_L5_PCs",
+            "input_type": "current_clamp",
+            "module": "hyperpolarizing",
+            "delay": 0.0,
+            "duration": 10000.0
+        }
+    },
+    "connection_overrides": [
+        {
+            "source": "200_L5_PCs",
+            "target": "200_L5_PCs",
+            "modoverride": "GluSynapse",
+            "weight": 1.0,
+            "name": "plasticity"
+        },
+        {
+            "source": "200_L5_PCs",
+            "target": "200_L5_PCs",
+            "delay": 0.025,
+            "weight": 0.0,
+            "name": "disconnect"
+        },
+        {
+            "source": "200_L5_PCs",
+            "target": "200_L5_PCs",
+            "delay": 100.0,
+            "weight": 1.0,
+            "name": "reconnect"
+        }
+    ]
+}
