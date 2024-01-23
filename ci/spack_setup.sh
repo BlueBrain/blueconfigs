@@ -20,7 +20,7 @@ if [[ "$SPACK_ROOT" ]]; then
 else
     # Install spack if we are using this from anywhere else other than CI
     export LOCAL_SPACK=${WORKSPACE}/spack
-    export SPACK_SYSTEM_CONFIG_PATH=/gpfs/bbp.cscs.ch/ssd/apps/bsd/config  # latest config
+    export SPACK_SYSTEM_CONFIG_PATH=/gpfs/bbp.cscs.ch/ssd/apps/bsd/${SPACK_DEPLOYMENT_SUFFIX}/config  # selected or latest config
     export SPACK_USER_CACHE_PATH=${WORKSPACE}/INSTALL
 fi
 
@@ -29,7 +29,7 @@ log "Spack settings:
  - SPACK_SYSTEM_CONFIG_PATH: $SPACK_SYSTEM_CONFIG_PATH
  - SPACK_USER_CACHE_PATH: $SPACK_USER_CACHE_PATH"
 
-. /gpfs/bbp.cscs.ch/ssd/apps/bsd/config/modules.sh
+. /gpfs/bbp.cscs.ch/ssd/apps/bsd/${SPACK_DEPLOYMENT_SUFFIX}/config/modules.sh
 module load unstable git
 
 

@@ -215,7 +215,13 @@ get_reference_file() {
         elif [[ -f "${ref_results}/${nameroot}${arch_suffix}.h5" ]]; then
             ref_file="${ref_results}/${nameroot}${arch_suffix}.h5"
         else
-            ref_file="${ref_results}/${report_name}"
+            # If the reference file is not found, try to find a file with the same BUILD_COMPILER but different BUILD_COMPILER_VERSION
+            local alternative_compiler_version_file=$(ls ${ref_results}/${nameroot}_v${REFERENCE_REPORTS_VERSION}${coreneuron_suffix}_${BUILD_COMPILER}_*.h5 2> /dev/null || ls ${ref_results}/${nameroot}_v*[0-9]${coreneuron_suffix}_${BUILD_COMPILER}_*.h5 2> /dev/null | sort -V | tail -n 1)
+            if [[ -f "${alternative_compiler_version_file}" ]]; then
+                ref_file="${alternative_compiler_version_file}"
+            else
+                ref_file="${ref_results}/${report_name}"
+            fi
         fi
     fi
     echo "$ref_file $expected_report_name"
