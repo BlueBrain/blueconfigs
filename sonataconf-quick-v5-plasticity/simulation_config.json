@@ -1,6 +1,5 @@
 {
   "manifest": {
-    "$CIRCUIT_DIR": "/gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1/merged_circuit",
     "$OUTPUT_DIR": "output_sonata"
   },
   "run": {
@@ -24,8 +23,8 @@
     }
  },
   "target_simulator": "NEURON",
-  "network": "circuit_config.json",
-  "node_sets_file": "node_sets.json",
+  "network": "/gpfs/bbp.cscs.ch/project/proj1/circuits/SomatosensoryCxS1-v5.r0/O1-sonata/sonata/circuit_config.json",
+  "node_sets_file": "user_node_sets.json",
   "node_set": "miniColumn",
   "output": {
     "output_dir": "$OUTPUT_DIR",
@@ -38,7 +37,7 @@
       "input_type": "spikes",
       "delay": 0.0,
       "duration": 30000.0,
-      "spike_file": "input.dat",
+      "spike_file": "input.h5",
       "node_set": "Mosaic"
     },
     "ThresholdIntoExc": {

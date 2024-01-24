@@ -22,7 +22,7 @@
             "delay": 0.0,
             "duration": 1500.0,
             "module": "synapse_replay",
-            "spike_file": "in_spikes.dat"
+            "spike_file": "in_spikes.h5"
         }
     },
     "connection_overrides": [

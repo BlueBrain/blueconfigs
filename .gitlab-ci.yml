@@ -75,7 +75,7 @@ variables:
     value: ''
   REFERENCE_REPORTS_VERSION:
     description: Default version of reference reports that we compare with. In case there is no reference file with this version we look for the latest version, no version or just report name.
-    value: '4'
+    value: '5'
 
 default:
   tags:
@@ -208,9 +208,6 @@ neocortex:
     matrix:
       - ND_VERSION: neocortex
         TESTNAME: [sonataconf-sscx-O1, sonataconf-scx-v5-uhill-conductance-scale]
-      # TODO: Add a medium test for neocortetx-plasticity from scientists
-      # - ND_VERSION: ncx_plasticity
-      #   TESTNAME: [sonataconf-scx-v5]
 
 hippocampus:
   extends: .nd_medium_test
