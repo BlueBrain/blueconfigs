@@ -64,6 +64,24 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**26 Jan 2024**
+
+* Updated reference report for `sonataconf-quick-v5-plasticity` CoreNEURON simulation
+* New reference file have `v6` in its name
+* Was done due to updates in NEURON related to summation reports in cell targets and SONATA simulations: https://github.com/neuronsimulator/nrn/pull/2647
+* New reference spikes were generated with:
+   - NEURON 9.0.a15 (commit=f64b609)
+   - py-neurodamus 3.0a1
+   - Intel oneAPI Compiler 2022.2.1
+   - libsonata-report 1.2.2
+
+**24 Jan 2024**
+
+* Replay with SONATA spike files in all tests
+* And update sonataconf-quick-v5-plasticity to use the official circuit_config.json
+   - NEURON test with new reference file `v5`
+   - Add CoreNEURON test with new reference file `v5`
+
 **10 Oct 2023**
 
 * Updated reference reports for most of  `thalamus`, `hippocampus` and `neocortex` simulations
