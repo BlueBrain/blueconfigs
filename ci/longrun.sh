@@ -49,6 +49,9 @@ run_long_test() (
             module load py-neurodamus
         fi
         spack load $spec
+        log "COMMANDS: module load py-libsonata-mpi; export ROMIO_PRINT_HINTS=1" "DBG"
+        module load py-libsonata-mpi
+        export ROMIO_PRINT_HINTS=1
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done

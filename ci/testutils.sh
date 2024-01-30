@@ -169,6 +169,9 @@ _prepare_test() {
             which neurodamus &> /dev/null || module load unstable py-neurodamus
         fi
         spack load $spec
+        log "COMMANDS: module load py-libsonata-mpi; export ROMIO_PRINT_HINTS=1" "DBG"
+        module load py-libsonata-mpi
+        export ROMIO_PRINT_HINTS=1  # print hints if collective I/O
         set +e
     fi
     module list
