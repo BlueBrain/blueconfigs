@@ -13,10 +13,10 @@ Run locally
     git clone git@bbpgitlab.epfl.ch:hpc/sim/blueconfigs.git
     cd blueconfigs
 
-    export HOME=`pwd`
     export SALLOC_ACCOUNT=proj16
     # values can be neocortex, ncx_bare, ncx_plasticity, hippocampus, thalamus, mousify or ncx_ngv
     # if none is set it will run all tests
+    # Several can be exported separated by spaces
     export TEST_VERSIONS="ncx_plasticity"
 
     # The next steps are useful if you don't run when a spack is active
