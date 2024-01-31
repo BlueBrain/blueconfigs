@@ -64,6 +64,17 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**31 Jan 2024**
+
+* Updated reference report for `sonataconf-quick-v5-plasticity` and `sonataconf-quick-multiscale`
+* New reference file have `v7` in its name
+* Was done due to updates in PY-NEURODAMUS related to summation reports in NEURON simulations: https://github.com/BlueBrain/neurodamus/pull/114
+* New reference spikes were generated with:
+   - NEURON 9.0.a15 (commit=f64b609)
+   - py-neurodamus 3.0.0
+   - Intel oneAPI Compiler 2022.2.1
+   - libsonata-report 1.2.2
+
 **26 Jan 2024**
 
 * Updated reference report for `sonataconf-quick-v5-plasticity` CoreNEURON simulation
