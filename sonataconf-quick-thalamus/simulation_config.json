@@ -67,7 +67,6 @@
             "duration": 40000.0,
             "input_type": "spikes",
             "spike_file": "$INPUT_DIR/ml_noise_rawgid.h5",
-            "source": "ML_afferents",
             "node_set": "Mosaic"
         },
         "spikeReplay_ct_noise": {
@@ -76,7 +75,6 @@
             "duration": 40000.0,
             "input_type": "spikes",
             "spike_file": "$INPUT_DIR/ct_noise_rawgid.h5",
-            "source": "CT_afferents",
             "node_set": "Mosaic"
         }
     },

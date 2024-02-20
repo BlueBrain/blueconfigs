@@ -16,7 +16,6 @@
     },
     "inputs": {
         "external_spikes_inject_to_pc": {
-            "source":"CA3_SP_PC",
             "node_set": "Excitatory",
             "input_type": "spikes",
             "delay": 0.0,
