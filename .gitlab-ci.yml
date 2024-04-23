@@ -43,18 +43,8 @@ variables:
     description: 'Which branch of py-neurodamus to use for the build.'
   LIBSONATA_REPORT_BRANCH:
     description: 'Which branch of libsonata-report to use for the build.'
-  SYNAPSETOOL_BRANCH:
-    description: 'Which branch of synapsetool to use for the build.'
-  NEURODAMUS_CORE_BRANCH:
-    description: 'Which branch of neurodamus-core to use for the build.'
-  NEURODAMUS_HIPPOCAMPUS_BRANCH:
-    description: 'Which branch of neurodamus-hippocampus to use for the build.'
-  NEURODAMUS_MOUSIFY_BRANCH:
-    description: 'Which branch of neurodamus-mousify to use for the build.'
-  NEURODAMUS_NEOCORTEX_BRANCH:
-    description: 'Which branch of neurodamus-neocortex to use for the build.'
-  NEURODAMUS_THALAMUS_BRANCH:
-    description: 'Which branch of neurodamus-thalamus to use for the build.'
+  NEURODAMUS_MODELS_BRANCH:
+    description: 'Which branch of neurodamus-models to use for the build.'
   RUN_PY_TESTS:
     value: 'yes'
     description: 'Run tests with Python Neurodamus'
@@ -107,7 +97,7 @@ setup_spack:
     # If there are already commits configured for selected projects (from the CI launched by a NEURON PR for example)
     # we should avoid trying to set again the branches from the blueconfigs branch commit
     - |
-      for project in "NEURON" "NMODL" "SPACK" "PY_NEURODAMUS" "LIBSONATAREPORT" "NEURODAMUS_CORE" "NEURODAMUS_HIPPOCAMPUS" "NEURODAMUS_MOUSIFY" "NEURODAMUS_NEOCORTEX" "NEURODAMUS_THALAMUS"; do
+      for project in "NEURON" "NMODL" "SPACK" "PY_NEURODAMUS" "LIBSONATAREPORT" "NEURODAMUS_MODELS"; do
       commit_var_name="${project}_COMMIT"; if [[ ! -z ${!commit_var_name} ]]; then unset "${project}_BRANCH"; fi
       done
 
@@ -118,12 +108,16 @@ build_neurodamus:
     bb5_cpus_per_task: 16
     bb5_constraint: cpu
   script:
-      # Tell Git how to re-write BBP GitLab URLs to use a token instead of SSH
+    # Tell Git how to re-write BBP GitLab URLs to use a token instead of SSH
     - !reference [.bbp_gitlab_access, script]
+    # Setup an ominous SSH key to access private Github repos?
+    - eval $(ssh-agent -s)
+    - echo "${BBPHPC_NEURODAMUS_PRIVATE_KEY}" | ssh-add -
+    # The real script!
     - module purge && unset MODULEPATH
     - export
     - source ./.tests_setup.sh
-    # Needs to be new enough for rewriting to work.
+    # Git needs to be new enough for rewriting to work.
     - module load unstable git
     # If the CI is launched via a push we don't run any tests and there is no
     # reason to install the neurodamus modules as well

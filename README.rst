@@ -222,7 +222,7 @@ This assumes that .test_setup.sh has been sourced:
 
 .. code-block:: bash
 
-    spack load neurodamus-neocortex@develop%oneapi ~plasticity+coreneuron+synapsetool
+    spack load neurodamus-neocortex@develop%oneapi ~plasticity+coreneuron
     hocify /gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/morphologies/ -v --output-dir=/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-2k/morphologies/_fasthoc_<new_version>
 
 Subsequently, update the file `quick-v6/test_quick_v6_fasthoc.sh` with the newly generated `_fasthoc` folder.

@@ -33,13 +33,13 @@ log "DATADIR=$DATADIR; BASE_OPTIONS=$_BASE_OPTIONS; BUILD_OPTIONS=$BUILD_OPTIONS
 
 declare -A VERSIONS
 # Master is a plain v5+v6 version
-VERSIONS[neocortex]="neurodamus-neocortex$BUILD_VERSION ~plasticity$_BASE_OPTIONS"
-VERSIONS[ncx_bare]="neurodamus-neocortex$BUILD_VERSION ~plasticity~coreneuron~synapsetool$EXTRA_VARIANT"
-VERSIONS[ncx_plasticity]="neurodamus-neocortex$BUILD_VERSION +plasticity$_BASE_OPTIONS"
-VERSIONS[hippocampus]="neurodamus-hippocampus$BUILD_VERSION $_BASE_OPTIONS"
-VERSIONS[thalamus]="neurodamus-thalamus$BUILD_VERSION $_BASE_OPTIONS"
+VERSIONS[neocortex]="neurodamus-models model=neocortex$BUILD_VERSION ~plasticity$_BASE_OPTIONS"
+VERSIONS[ncx_bare]="neurodamus-models model=neocortex$BUILD_VERSION ~plasticity~coreneuron$EXTRA_VARIANT"
+VERSIONS[ncx_plasticity]="neurodamus-models model=neocortex$BUILD_VERSION +plasticity$_BASE_OPTIONS"
+VERSIONS[hippocampus]="neurodamus-models model=hippocampus$BUILD_VERSION $_BASE_OPTIONS"
+VERSIONS[thalamus]="neurodamus-models model=thalamus$BUILD_VERSION $_BASE_OPTIONS"
 VERSIONS[mousify]="neurodamus-mousify$BUILD_VERSION $_BASE_OPTIONS"
-VERSIONS[ncx_ngv]="neurodamus-neocortex$BUILD_VERSION +ngv+metabolism+synapsetool~plasticity~coreneuron"
+VERSIONS[ncx_ngv]="neurodamus-models model=neocortex$BUILD_VERSION +ngv+metabolism~plasticity~coreneuron"
 
 # list of simulations to run
 declare -A TESTS

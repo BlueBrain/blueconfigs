@@ -44,7 +44,7 @@ upstreams:
 $cur_upstreams
 " > "$upstreams_f"
 
-spack install neurodamus-neocortex@develop +ngv+synapsetool~plasticity~coreneuron %intel
+spack install neurodamus-neocortex@develop +ngv~plasticity~coreneuron %intel
 
 spack install py-neurodamus@develop
 
