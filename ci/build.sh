@@ -40,11 +40,11 @@ spack config add concretizer:unify:when_possible
 spack config add concretizer:reuse:false
 
 spack config add "modules:default:tcl:include:[py-neurodamus@develop]"
-spack config add "packages:neurodamus-models:require:'%oneapi'"
 
 spack config blame concretizer
 spack config blame config
 spack config blame modules
+spack config blame packages
 
 spack concretize -f
 
