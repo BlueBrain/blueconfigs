@@ -47,7 +47,8 @@
       "duration": 30000.0,
       "mean_percent": 100.457136089,
       "variance": 0.001,
-      "node_set": "Excitatory"
+      "node_set": "Excitatory",
+      "represents_physical_electrode":true
     },
     "ThresholdIntoInh": {
       "module": "noise",
@@ -56,14 +57,16 @@
       "duration": 30000.0,
       "mean_percent": 100.457136089,
       "variance": 0.001,
-      "node_set": "Inhibitory"
+      "node_set": "Inhibitory",
+      "represents_physical_electrode":true
     },
     "hypamp_mosaic": {
       "module": "hyperpolarizing",
       "input_type": "current_clamp",
       "delay": 0.0,
       "duration": 30000.0,
-      "node_set": "Mosaic"
+      "node_set": "Mosaic",
+      "represents_physical_electrode":true
     }
   },
   "connection_overrides": [
