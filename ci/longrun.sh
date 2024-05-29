@@ -72,5 +72,5 @@ prepare_sonataconfig() (
     outputdir=$2
     target=$3
     cp simulation_config.json $configfile
-    python $_THISDIR/update_simconf_longrun.py $configfile $outputdir $target
+    python $_THISDIR/update_simconf.py "update_longrun" $configfile $outputdir $target
 )

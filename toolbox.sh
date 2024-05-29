@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Get the directory of the current script
+THISDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Creates a sed expression to comment/uncomment several lines
 _sed_comment() {
     local _expr=""
@@ -118,3 +121,12 @@ sonataconf_set() (
     sonataconf="${3:-simulation_config.json}"
     sed -i "s#\"${entry}\": \".*\"#\"${entry}\": \"${newval}\"#g" "$sonataconf"
 )
+
+# Function to update a key-value pair in a specified section of simulation_config.json using Python
+update_simconf() {
+    local json_file="${1:-simulation_config.json}"
+    local section="${2}"
+    local key="${3}"
+    local value="${4}"
+    python $THISDIR/ci/update_simconf.py update_simconf "$json_file" "$section" "$key" "$value"
+}
