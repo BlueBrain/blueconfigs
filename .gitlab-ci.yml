@@ -32,7 +32,7 @@ variables:
   bb5_cpus_per_task: 2
   SALLOC_ACCOUNT: proj9998  # salloc won't require `-A` param
   TEST_VERSIONS:
-    value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus mousify ncx_ngv"
+    value: "neocortex ncx_bare ncx_plasticity hippocampus thalamus ncx_ngv"
     description: 'Which version of the package to build & test.'
   SPACK_BRANCH:
     value: "develop"
@@ -182,14 +182,6 @@ q_thalamus:
       - ND_VERSION: thalamus
         TESTNAME: sonataconf-quick-thalamus
 
-q_mousify:
-  extends: .nd_quick_test
-  parallel:
-    matrix:
-      - ND_VERSION: mousify
-        TESTNAME: sonataconf-quick-mousify
-
-
 # Neurodamus Medium Size tests
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -282,8 +274,6 @@ nmodl_tests:
         TESTNAME:  sonataconf-sscx-v7-plasticity
       - ND_VERSION: hippocampus
         TESTNAME: sonataconf-quick-hip-multipopulation
-      - ND_VERSION: mousify
-        TESTNAME: sonataconf-quick-mousify
       - ND_VERSION: thalamus
         TESTNAME: sonataconf-quick-thalamus
       - ND_VERSION: neocortex
