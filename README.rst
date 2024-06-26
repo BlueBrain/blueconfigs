@@ -64,6 +64,19 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**30 May**
+
+* Update CoreNEURON reference reports for the medium tests `sonataconf-hippocampus`
+* Update CoreNEURON reference reports for the long tests `sonataconf-hippocampus` and `sonataconf-thalamus`
+* New reference files have `v9` in its name
+* Was done due to changing the way of synapse replay for CoreNEURON in neurodamus https://github.com/BlueBrain/neurodamus/pull/173
+   - Use the same replay method as NEURON by netcons and VecStim
+* New CoreNEURON references are links to the NEURON ones if existing. Otherwise (e.g. long run thalamus), they were generated with:
+   - NEURON 9.0.a16 (commit=13654b3)
+   - py-neurodamus 3.3.0
+   - Intel oneAPI compiler 2023.2.0
+   - libsonata-report 1.2.3
+
 **26 March 2024**
 
 * Updated reference report for `sonataconf-quick-multiscale`
