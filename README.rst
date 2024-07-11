@@ -64,6 +64,16 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**11 July**
+* Update reference reports for the test `sonataconf-quick-multiscale`
+* New reference files have `v10` in its name
+* Was done due to changing the multiscale emodels to the V10 emodels, and changes in the mod files (https://github.com/BlueBrain/neurodamus-models/pull/14)
+* New refereces were generated with:
+   - NEURON 9.0.a16 (commit=13654b3)
+   - py-neurodamus 3.4.0
+   - Intel oneAPI compiler 2023.2.0
+   - libsonata-report 1.2.3
+
 **30 May**
 
 * Update CoreNEURON reference reports for the medium tests `sonataconf-hippocampus`
