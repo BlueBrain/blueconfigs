@@ -62,7 +62,7 @@ run_long_test() (
     if [ $testname = "thalamus" ]; then
         nodes=16  # thalamus cell count is slightly lower and mods are really fast
     fi
-    SALLOC_PARTITION=prod N=${nodes} n=$(expr "$nodes" '*' 40) run_simulation "$configfile" --lb-mode=WholeCell
+    SALLOC_PARTITION=prod N=${nodes} n=$(expr "$nodes" '*' 40) run_simulation "$configfile" --lb-mode=WholeCell --coreneuron-direct-mode
     test_check_results "$outputdir" "${REF_RESULTS_LONGRUN[$testname]}" "${REF_RESULTS_LONGRUN[$testname]}/out.h5"
 
 )

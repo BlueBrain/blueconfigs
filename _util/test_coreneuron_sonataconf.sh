@@ -5,4 +5,4 @@ sonata_configfile_bk $1
 
 sonataconf_set "target_simulator" "CORENEURON" "$sonataconfig"
 echo "Run CORENEURON with $sonataconfig"
-run_simulation $sonataconfig
+run_simulation $sonataconfig "--coreneuron-direct-mode"
