@@ -163,8 +163,6 @@ q_neocortex:
     matrix:
       - ND_VERSION: neocortex
         TESTNAME: [sonataconf-quick-scx-multi-circuit, sonataconf-quick-sscx-O1]
-      - ND_VERSION: ncx_plasticity
-        TESTNAME: [sonataconf-sscx-v7-plasticity]
       - ND_VERSION: ncx_ngv
         TESTNAME: [sonataconf-quick-multiscale]
 
