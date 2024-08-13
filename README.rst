@@ -64,6 +64,16 @@ Note: There are cases where for some reason CoreNEURON reports have slightly dif
 
 Below are the timestamps of the updates to the reference files:
 
+**12 August**
+* Update reference spike reports for the test `sonataconf-sscx-v7-plasticity`
+* New reference files have `v11` in its name
+* Was done due to changes in the "signal" shot noise parameterization (https://github.com/BlueBrain/neurodamus/pull/187)
+* New refereces were generated with:
+   - NEURON 9.0.a17 (commit=c48d7d5)
+   - py-neurodamus 3.6.0
+   - Intel oneAPI compiler 2023.2.0
+   - libsonata-report 1.2.3
+
 **11 July**
 * Update reference reports for the test `sonataconf-quick-multiscale`
 * New reference files have `v10` in its name
