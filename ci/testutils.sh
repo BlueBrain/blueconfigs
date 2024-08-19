@@ -282,6 +282,10 @@ test_check_results() (
         log_ok "Expected exception detected"
         return
     fi
+    if [ -f "$output/.test_check_results.skip" ]; then
+        log_ok "Test finished"
+        return
+    fi
 
     # load libsonata now since its required for new comparison tools
     module load unstable py-libsonata python-dev

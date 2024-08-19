@@ -43,7 +43,7 @@ VERSIONS[ncx_ngv]="neurodamus-models model=neocortex$BUILD_VERSION +ngv+metaboli
 
 # list of simulations to run
 declare -A TESTS
-TESTS[neocortex]="sonataconf-scx-v5-uhill-conductance-scale sonataconf-quick-scx-multi-circuit sonataconf-sscx-O1 sonataconf-quick-sscx-O1"
+TESTS[neocortex]="sonataconf-scx-v5-uhill-conductance-scale sonataconf-quick-scx-multi-circuit sonataconf-sscx-O1 sonataconf-quick-sscx-O1 sonataconf-quick-keep-axon"
 TESTS[ncx_bare]="quick-v5-gaps quick-v6 quick-v5-multisplit"
 TESTS[ncx_plasticity]="sonataconf-sscx-v7-plasticity sonataconf-quick-v5-plasticity"
 TESTS[hippocampus]="sonataconf-quick-hip-multipopulation sonataconf-hippocampus"
@@ -59,4 +59,3 @@ source ci/build.sh || return $?
 
 # load test/check routines
 source ci/testutils.sh
-
