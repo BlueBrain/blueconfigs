@@ -4,7 +4,7 @@
 log "Loading test definitions..."
 
 # defaults
-RUN_PY_TESTS="${RUN_PY_TESTS:-no}"
+RUN_PY_TESTS="${RUN_PY_TESTS:-yes}"
 BLUECONFIG_DIR=`pwd`
 DATADIR="${DATADIR:-/gpfs/bbp.cscs.ch/project/proj12/jenkins}"
 EXTENDED_RESULTS="$DATADIR/cellular"

@@ -3,7 +3,7 @@
 source "${BASH_SOURCE%/*}/../toolbox.sh"
 
 BASE_DIR=`pwd`
-RUN_PY_TESTS="${RUN_PY_TESTS:-no}"
+RUN_PY_TESTS="${RUN_PY_TESTS:-yes}"
 declare -A REF_RESULTS_LONGRUN
 REF_RESULTS_LONGRUN["scx-v5-plasticity"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-scx-v5-plasticity/simulation-long"
 REF_RESULTS_LONGRUN["quick-hip-multipopulation"]="/gpfs/bbp.cscs.ch/project/proj12/jenkins/cellular/circuit-hip-mooc/simulation-long"
