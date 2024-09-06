@@ -27,6 +27,7 @@ def update_simconf(json_file, section, key, value):
     except json.JSONDecodeError:
         pass
 
+    data.setdefault(section, {}) # if section doesn't exist
     data[section][key] = value
 
     with open(json_file, 'w') as f:
