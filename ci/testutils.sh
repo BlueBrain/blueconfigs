@@ -176,10 +176,6 @@ _prepare_test() {
     fi
     module list
     module list -t 2>&1 | grep neurodamus | while read mod; do module show "$mod"; done
-    # Loading bluepy for the libsonata readers
-    # olupton 2022-02-02: this leaks a deployed NEURON version into the
-    #   environment, let's load it when needed instead.
-    # module load unstable py-bluepy
     set -$_tsetbk  # reenable disabled flags
 }
 

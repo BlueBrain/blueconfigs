@@ -1,0 +1,3 @@
+libsonata
+libsonata-mpi
+pandas
