@@ -279,3 +279,15 @@ Subsequently, update the file `quick-v6/test_quick_v6_fasthoc.sh` with the newly
    !!!BE CAREFULL!!!
 
 After doing these changes the changes in the reference files need to be commited in the local git repo of `/gpfs/bbp.cscs.ch/project/proj12/jenkins` and documented in this README.
+
+
+License
+=======
+See LICENSE file.
+
+
+Acknowledgment
+==============
+The development of this software was supported by funding to the Blue Brain Project, a research center of the École polytechnique fédérale de Lausanne (EPFL), from the Swiss government's ETH Board of the Swiss Federal Institutes of Technology.
+
+Copyright (c) 2018-2023 Blue Brain Project/EPFL
